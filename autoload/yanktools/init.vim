@@ -50,8 +50,8 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
             exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
         endif
-        exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
-        exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
+        exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
+        exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
         "exec 'nnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
         "exec 'xnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
     endfor

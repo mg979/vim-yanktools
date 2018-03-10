@@ -22,6 +22,9 @@ function! s:update_stack()
     let type = getregtype(reg)
     let ix = index(stack, reg)
 
+    " restore register if necessary
+    if s:redirected_reg | call yanktools#restore_after_redirect() | endif
+
     if empty(stack)
         call add(stack, reg) | call add(types, type)
     elseif ix == -1
@@ -63,11 +66,12 @@ fun! yanktools#restore_after_redirect()
     return ''
 endfun
 
-function! yanktools#redirect_reg_with_key(key)
+function! yanktools#redirect_reg_with_key(key, register)
     let s:redirected_reg = 1
     let r = s:default_reg()
+    let reg = a:register==r ? g:yanktools_redirect_register : a:register
     let s:r = [r, getreg(r), getregtype(r)]
-    return "\"".g:yanktools_redirect_register . a:key
+    return "\"" . reg . a:key
 endfunction
 
 function! yanktools#paste_with_key(key)
@@ -83,7 +87,7 @@ function! yanktools#swap_paste(forward)
 
     if !s:was_last_change_paste()
         call s:update_stack()
-        normal P
+        normal! P
         let s:offset = 0
         let s:yanks = len(g:yanktools_stack)
         let s:last_paste_tick = b:changedtick
@@ -106,7 +110,7 @@ function! yanktools#swap_paste(forward)
     let type = s:yanktools_types[s:offset]
     call setreg(rg, text, type)
 
-    exec 'normal uP'
+    exec 'normal! uP'
     call setreg(rg, oldreg, oldregtype)
     let s:last_paste_tick = b:changedtick
 endfunction

@@ -45,6 +45,7 @@ function! yanktools#init_vars()
     let g:yanktools_stack = []
     let s:last_paste_tick = 0
     let s:yanktools_types = []
+    let s:redirected_reg = 0
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -58,13 +59,22 @@ endfunction
 
 fun! yanktools#restore_after_redirect()
     call setreg(s:r[0], s:r[1], s:r[2])
+    let s:redirected_reg = 0
     return ''
 endfun
 
 function! yanktools#redirect_reg_with_key(key)
+    let s:redirected_reg = 1
     let r = s:default_reg()
     let s:r = [r, getreg(r), getregtype(r)]
-    return "\"".g:yanktools_redirect_register . a:key . ":call yanktools#restore_after_redirect()\<cr>"
+    return "\"".g:yanktools_redirect_register . a:key
+endfunction
+
+function! yanktools#paste_with_key(key)
+    if s:redirected_reg
+        call yanktools#restore_after_redirect()
+    endif
+    return a:key
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

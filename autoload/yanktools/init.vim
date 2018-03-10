@@ -5,8 +5,10 @@
 function! yanktools#init#maps()
 
     call yanktools#init_vars()
-    "let paste_keys = ['p', 'P', 'gp', 'gP']
-    let paste_keys = []
+
+    if !exists('g:yanktools_paste_keys ')
+        let g:yanktools_paste_keys  = ['p', 'P', 'gp', 'gP']
+    endif
 
     if !exists('g:yanktools_yank_keys')
         let g:yanktools_yank_keys = ['y', 'Y']
@@ -15,7 +17,7 @@ function! yanktools#init#maps()
     if !exists('g:yanktools_redirect_register')
         let g:yanktools_redirect_register = "x"
     endif
-    let rr = g:yanktools_redirect_register
+    let redirect = g:yanktools_redirect_register
 
     if !exists('g:yanktools_black_hole_keys')
         let g:yanktools_black_hole_keys = ['x','X','s','S']
@@ -45,29 +47,33 @@ function! yanktools#init#maps()
 
     for key in g:yanktools_redirect_keys
         if !hasmapto('<Plug>RegRedirect_'.key)
-            exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.rr.'_'.key
-            exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.rr.'_'.key
+            exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
+            exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
         endif
-        exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.rr.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
-        exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.rr.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
+        exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
+        exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '")'
+        "exec 'nnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
+        "exec 'xnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
     endfor
 
-    if !hasmapto('<Plug>PasteRedirected'.key)
-        nmap <unique> zP <Plug>PasteRedirectedBefore
-        nmap <unique> zp <Plug>PasteRedirected
-        xmap <unique> zp <Plug>PasteRedirected
+    if !hasmapto('<Plug>PasteRedirected')
+        nmap <unique> zp <Plug>PasteRedirectedAfter
+        vmap <unique> zp <Plug>PasteRedirectedAfter
     endif
-    exec 'nnoremap <silent> <Plug>PasteRedirected       "'.g:yanktools_redirect_register.'p'
-    exec 'nnoremap <silent> <Plug>PasteRedirectedBefore "'.g:yanktools_redirect_register.'P'
-    exec 'xnoremap <silent> <Plug>PasteRedirected       "'.g:yanktools_redirect_register.'p'
+    if !hasmapto('<Plug>PasteRedirectedBefore')
+        nmap <unique> zP <Plug>PasteRedirectedBefore
+    endif
+    exec 'nnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
+    exec 'xnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
+    exec 'nnoremap <silent> <Plug>PasteRedirectedBefore "'.redirect.'P'
 
-    for key in paste_keys
+    for key in g:yanktools_paste_keys
         if !hasmapto('<Plug>Paste_'.key)
             exec 'nmap <unique> '.key.' <Plug>Paste_'.key
             exec 'xmap <unique> '.key.' <Plug>Paste_'.key
         endif
-        exec 'nnoremap <silent> <Plug>Paste :<C-u>call <SID>paste_with_key("' . key . '", "n", v:register, v:count1)<CR>'
-        exec 'xnoremap <silent> <Plug>Paste :<C-u>call <SID>paste_with_key("' . key . '", "v", v:register, v:count1)<CR>'
+        exec 'nnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
+        exec 'xnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
     endfor
 
     if !exists('g:yanktools_map_keys') || g:yanktools_map_keys
@@ -76,10 +82,4 @@ function! yanktools#init#maps()
         nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1)<cr>
         nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0)<cr>
     endif
-"1
-"2
-"3
-"4
-"5
 endfunction
-

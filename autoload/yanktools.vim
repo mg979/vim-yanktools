@@ -22,9 +22,6 @@ function! s:update_stack()
     let type = getregtype(reg)
     let ix = index(stack, reg)
 
-    " restore register if necessary
-    if s:redirected_reg | call yanktools#restore_after_redirect() | endif
-
     if empty(stack)
         call add(stack, reg) | call add(types, type)
     elseif ix == -1
@@ -63,7 +60,6 @@ endfunction
 fun! yanktools#restore_after_redirect()
     call setreg(s:r[0], s:r[1], s:r[2])
     let s:redirected_reg = 0
-    return ''
 endfun
 
 function! yanktools#redirect_reg_with_key(key, register)
@@ -75,12 +71,15 @@ function! yanktools#redirect_reg_with_key(key, register)
 endfunction
 
 function! yanktools#paste_with_key(key)
-    if s:redirected_reg
-        call yanktools#restore_after_redirect()
-    endif
     return a:key
 endfunction
 
+augroup plugin-yanktools
+    autocmd!
+
+    autocmd TextChanged * if s:redirected_reg | call yanktools#restore_after_redirect() | endif
+
+augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#swap_paste(forward)

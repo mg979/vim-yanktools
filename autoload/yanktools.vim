@@ -2,6 +2,20 @@
 " Functions
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#init_vars()
+    call yanktools#clear_yanks()
+    let s:last_paste_tick = -1
+    let g:yanktools#redirected_reg = 0
+    let s:has_yanked = 0
+endfunction
+
+function! yanktools#clear_yanks()
+    let r = s:default_reg()
+    let g:yanktools_stack = [{'text': eval("@".r), 'type': getregtype(r)}]
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! s:default_reg()
     let clipboard_flags = split(&clipboard, ',')
     if index(clipboard_flags, 'unnamedplus') >= 0
@@ -17,20 +31,17 @@ endfunction
 
 function! s:update_stack()
     let stack = g:yanktools_stack
-    let types = s:yanktools_types
-    let reg = eval("@".s:default_reg())
-    let type = getregtype(reg)
-    let ix = index(stack, reg)
+    let r = s:default_reg() | let text = eval("@".r) | let type = getregtype(r)
+    let ix = index(stack, {'text': text, 'type': type})
 
-    if empty(stack)
-        call add(stack, reg) | call add(types, type)
-    elseif ix == -1
-        call insert(stack, reg) | call insert(types, type)
+    if ix == -1
+        call insert(stack, {'text': text, 'type': type})
     else
-
-        call remove(stack, ix) | call remove(types, ix)
-        call insert(stack, reg) | call insert(types, type)
+        call remove(stack, ix)
+        call insert(stack, {'text': text, 'type': type})
     endif
+
+    let s:yanks = len(stack)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -41,17 +52,9 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#init_vars()
-    let g:yanktools_stack = []
-    let s:last_paste_tick = 0
-    let s:yanktools_types = []
-    let s:redirected_reg = 0
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 function! yanktools#yank_with_key(key)
     call s:update_stack()
+    let s:has_yanked = 1
     return a:key
 endfunction
 
@@ -59,37 +62,38 @@ endfunction
 
 fun! yanktools#restore_after_redirect()
     call setreg(s:r[0], s:r[1], s:r[2])
-    let s:redirected_reg = 0
+    let g:yanktools#redirected_reg = 0
 endfun
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#redirect_reg_with_key(key, register)
-    let s:redirected_reg = 1
+    let g:yanktools#redirected_reg = 1
     let r = s:default_reg()
-    let reg = a:register==r ? g:yanktools_redirect_register : a:register
     let s:r = [r, getreg(r), getregtype(r)]
+    let reg = a:register==r ? g:yanktools_redirect_register : a:register
     return "\"" . reg . a:key
 endfunction
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#paste_with_key(key)
+    let s:last_paste_tick = b:changedtick + 1
+    if s:has_yanked | call s:update_stack() | endif
+    let s:offset = 0 | let s:last_paste_key = a:key
     return a:key
 endfunction
 
-augroup plugin-yanktools
-    autocmd!
-
-    autocmd TextChanged * if s:redirected_reg | call yanktools#restore_after_redirect() | endif
-
-augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#swap_paste(forward)
+function! yanktools#swap_paste(forward, key)
 
     if !s:was_last_change_paste()
-        call s:update_stack()
-        normal! P
-        let s:offset = 0
-        let s:yanks = len(g:yanktools_stack)
-        let s:last_paste_tick = b:changedtick
+        if s:has_yanked | call s:update_stack() | endif
+        " recursive mapping to trigger yanktools#paste_with_key()
+        execute "normal ".a:key
+        "let s:offset = 0 | let s:last_paste_key = a:key
         return
     endif
 
@@ -104,12 +108,11 @@ function! yanktools#swap_paste(forward)
         let s:offset = s:yanks-1
     endif
 
-    "let text = g:yanktools_stack()[s:offset]['text']
-    let text = g:yanktools_stack[s:offset]
-    let type = s:yanktools_types[s:offset]
+    let text = g:yanktools_stack[s:offset]['text']
+    let type = g:yanktools_stack[s:offset]['type']
     call setreg(rg, text, type)
 
-    exec 'normal! uP'
+    exec 'normal! u'.s:last_paste_key
     call setreg(rg, oldreg, oldregtype)
     let s:last_paste_tick = b:changedtick
 endfunction

@@ -22,7 +22,7 @@ function! yanktools#init#maps()
     let redirect = g:yanktools_redirect_register
 
     if !exists('g:yanktools_black_hole_keys')
-        let g:yanktools_black_hole_keys = ['x','X','s','S']
+        let g:yanktools_black_hole_keys = ['x','X','s','S','gr']
     endif
 
     if !exists('g:yanktools_redirect_keys')
@@ -62,24 +62,24 @@ function! yanktools#init#maps()
         endif
         exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
-        "exec 'nnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
-        "exec 'xnoremap <silent> <Plug>RegRedirect_"'.redirect.'_'.key.' "'.redirect.key
     endfor
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste redirected
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !hasmapto('<Plug>PasteRedirected')
+    if !hasmapto('<Plug>PasteRedirectedAfter')
         nmap <unique> zp <Plug>PasteRedirectedAfter
-        vmap <unique> zp <Plug>PasteRedirectedAfter
     endif
     if !hasmapto('<Plug>PasteRedirectedBefore')
         nmap <unique> zP <Plug>PasteRedirectedBefore
     endif
+    if !hasmapto('<Plug>PasteRedirectedVisual')
+        xmap <unique> zp <Plug>PasteRedirectedVisual
+    endif
     exec 'nnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
-    exec 'xnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
     exec 'nnoremap <silent> <Plug>PasteRedirectedBefore "'.redirect.'P'
+    exec 'xnoremap <silent> <Plug>PasteRedirectedVisual "'.redirect.'p'
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste keys
@@ -127,5 +127,16 @@ function! yanktools#init#maps()
         nmap <unique> <C-K>sy <Plug>ShowYanks
     endif
     nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Interactive Paste
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if !hasmapto('<Plug>IPaste')
+        nmap <unique> <C-K>p <Plug>IPasteAfter
+        nmap <unique> <C-K>P <Plug>IPasteBefore
+    endif
+    nnoremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
+    nnoremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
 
 endfunction

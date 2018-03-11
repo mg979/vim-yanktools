@@ -10,13 +10,13 @@ function! yanktools#init_vars()
 endfunction
 
 function! yanktools#clear_yanks()
-    let r = s:default_reg()
+    let r = yanktools#default_reg()
     let g:yanktools_stack = [{'text': eval("@".r), 'type': getregtype(r)}]
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:default_reg()
+function! yanktools#default_reg()
     let clipboard_flags = split(&clipboard, ',')
     if index(clipboard_flags, 'unnamedplus') >= 0
         return "+"
@@ -29,9 +29,9 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:update_stack()
+function! yanktools#update_stack()
     let stack = g:yanktools_stack
-    let r = s:default_reg() | let text = eval("@".r) | let type = getregtype(r)
+    let r = yanktools#default_reg() | let text = eval("@".r) | let type = getregtype(r)
     let ix = index(stack, {'text': text, 'type': type})
 
     if ix == -1
@@ -53,7 +53,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#yank_with_key(key)
-    call s:update_stack()
+    call yanktools#update_stack()
     let s:has_yanked = 1
     return a:key
 endfunction
@@ -69,7 +69,7 @@ endfun
 
 function! yanktools#redirect_reg_with_key(key, register)
     let g:yanktools#redirected_reg = 1
-    let r = s:default_reg()
+    let r = yanktools#default_reg()
     let s:r = [r, getreg(r), getregtype(r)]
     let reg = a:register==r ? g:yanktools_redirect_register : a:register
     return "\"" . reg . a:key
@@ -80,7 +80,7 @@ endfunction
 
 function! yanktools#paste_with_key(key)
     let s:last_paste_tick = b:changedtick + 1
-    if s:has_yanked | call s:update_stack() | endif
+    if s:has_yanked | call yanktools#update_stack() | endif
     let s:offset = 0 | let s:last_paste_key = a:key
     return a:key
 endfunction
@@ -90,14 +90,14 @@ endfunction
 function! yanktools#swap_paste(forward, key)
 
     if !s:was_last_change_paste()
-        if s:has_yanked | call s:update_stack() | endif
+        if s:has_yanked | call yanktools#update_stack() | endif
         " recursive mapping to trigger yanktools#paste_with_key()
         execute "normal ".a:key
         "let s:offset = 0 | let s:last_paste_key = a:key
         return
     endif
 
-    let rg = s:default_reg()
+    let rg = yanktools#default_reg()
     let oldregtype = getregtype(rg)
     let oldreg = getreg(rg)
 

@@ -4,6 +4,7 @@
 
 function! yanktools#init_vars()
     call yanktools#clear_yanks()
+    let g:yanktools_zeta_stack = []
     let s:last_paste_tick = -1
     let g:yanktools#redirected_reg = 0
     let s:has_yanked = 0
@@ -42,6 +43,7 @@ function! yanktools#update_stack()
     endif
 
     let s:yanks = len(stack)
+    let s:has_yanked = 0
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

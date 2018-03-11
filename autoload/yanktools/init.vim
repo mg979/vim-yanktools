@@ -69,13 +69,13 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>PasteRedirectedAfter')
-        nmap <unique> zp <Plug>PasteRedirectedAfter
+        nmap <unique> <leader>p <Plug>PasteRedirectedAfter
     endif
     if !hasmapto('<Plug>PasteRedirectedBefore')
-        nmap <unique> zP <Plug>PasteRedirectedBefore
+        nmap <unique> <leader>P <Plug>PasteRedirectedBefore
     endif
     if !hasmapto('<Plug>PasteRedirectedVisual')
-        xmap <unique> zp <Plug>PasteRedirectedVisual
+        xmap <unique> <leader>p <Plug>PasteRedirectedVisual
     endif
     exec 'nnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
     exec 'nnoremap <silent> <Plug>PasteRedirectedBefore "'.redirect.'P'
@@ -109,6 +109,28 @@ function! yanktools#init#maps()
         nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1, "P")<cr>
         nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P")<cr>
     endif
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " "z" mode
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    for key in g:yanktools_yank_keys
+        if !hasmapto('<Plug>ZetaYank_'.key)
+            exec 'nmap <unique> z'.key.' <Plug>ZetaYank_z'.key
+            exec 'xmap <unique> z'.key.' <Plug>ZetaYank_z'.key
+        endif
+        exec 'nnoremap <silent> <expr> <Plug>ZetaYank_z'.key.' yanktools#zeta#yank_with_key("' . key . '")'
+        exec 'xnoremap <silent> <expr> <Plug>ZetaYank_z'.key.' yanktools#zeta#yank_with_key("' . key . '")'
+    endfor
+
+    for key in g:yanktools_paste_keys
+        if !hasmapto('<Plug>ZetaPaste_'.key)
+            exec 'nmap <unique> z'.key.' <Plug>ZetaPaste_z'.key
+            exec 'xmap <unique> z'.key.' <Plug>ZetaPaste_z'.key
+        endif
+        exec "nnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
+        exec "xnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
+    endfor
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Clear yanks

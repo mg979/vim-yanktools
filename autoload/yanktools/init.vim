@@ -4,30 +4,14 @@
 
 function! yanktools#init#maps()
 
-    if !exists('g:yanktools_auto_swap')
-        let g:yanktools_auto_swap = 0
-    endif
+    let g:yanktools_auto_format_all   = get(g:, 'yanktools_auto_format_all', 0)
+    let g:yanktools_paste_keys        = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
+    let g:yanktools_yank_keys         = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
+    let g:yanktools_black_hole_keys   = get(g:, 'yanktools_black_hole_keys', ['x','X','s','S','gr'])
+    let g:yanktools_redirect_keys     = get(g:, 'yanktools_redirect_keys', ['c', 'C', 'd', 'D'])
 
-    if !exists('g:yanktools_paste_keys')
-        let g:yanktools_paste_keys = ['p', 'P', 'gp', 'gP']
-    endif
-
-    if !exists('g:yanktools_yank_keys')
-        let g:yanktools_yank_keys = ['y', 'Y']
-    endif
-
-    if !exists('g:yanktools_redirect_register')
-        let g:yanktools_redirect_register = "x"
-    endif
+    let g:yanktools_redirect_register = get(g:, 'yanktools_redirect_register', "x")
     let redirect = g:yanktools_redirect_register
-
-    if !exists('g:yanktools_black_hole_keys')
-        let g:yanktools_black_hole_keys = ['x','X','s','S','gr']
-    endif
-
-    if !exists('g:yanktools_redirect_keys')
-        let g:yanktools_redirect_keys = ['c', 'C', 'd', 'D']
-    endif
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Yank keys
@@ -90,25 +74,27 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.key.' <Plug>Paste_'.key
             exec 'xmap <unique> '.key.' <Plug>Paste_'.key
         endif
-        if g:yanktools_auto_swap
-            exec "nnoremap <silent> <Plug>Paste_".key." :call yanktools#swap_paste(1, '".key."')\<cr>"
-            exec "xnoremap <silent> <Plug>Paste_".key." :call yanktools#swap_paste(1, '".key."')\<cr>"
-        else
-            exec 'nnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
-            exec 'xnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
+        exec 'nnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
+        exec 'xnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
+
+        if !hasmapto('<Plug>FormatPaste_'.key)
+            exec 'nmap <unique> <'.key.' <Plug>FormatPaste_'.key
         endif
+        exec 'nnoremap <silent> <expr> <Plug>FormatPaste_'.key.' yanktools#paste_with_key("' . key . '", 1)'
     endfor
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Swap pastes
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !g:yanktools_auto_swap && (!exists('g:yanktools_map_keys') || g:yanktools_map_keys)
+    if !hasmapto('<Plug>SwapPasteNext')
         nmap <unique> <M-p> <Plug>SwapPasteNext
-        nmap <unique> <M-P> <Plug>SwapPastePrevious
-        nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1, "P")<cr>
-        nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P")<cr>
     endif
+    if !hasmapto('<Plug>SwapPastePrevious')
+        nmap <unique> <M-P> <Plug>SwapPastePrevious
+    endif
+    nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1, "P")<cr>
+    nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P")<cr>
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " "z" mode

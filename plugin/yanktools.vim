@@ -2,10 +2,15 @@
 " Autocommands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! s:OnTextChange()
+    if (g:yanktools_auto_format_all || g:yanktools_auto_format_this) | call yanktools#format#do() | endif
+    if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
+endfunction
+
 augroup plugin-yanktools
     autocmd!
     autocmd VimEnter * call yanktools#init_vars()
-    autocmd TextChanged * if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
+    autocmd TextChanged * call s:OnTextChange()
 augroup END
 
 

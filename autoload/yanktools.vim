@@ -6,11 +6,12 @@ function! yanktools#init_vars()
     call yanktools#clear_yanks()
     call yanktools#zeta#init_vars()
     let s:last_paste_tick = -1
-    let g:yanktools#redirected_reg = 0
-    let g:yanktools_auto_format_this = 0
+    let s:yanktools_redirected_reg = 0
+    let s:yanktools_auto_format_this = 0
     let g:yanktools_has_pasted = 0
     let s:has_yanked = 0
     let s:yanks = 1
+    let s:yanktools_is_replacing = 0
 endfunction
 
 function! yanktools#clear_yanks()
@@ -18,6 +19,44 @@ function! yanktools#clear_yanks()
     let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
 endfunction
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" autocmd TextChanged call
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:replace_text()
+    let s:yanktools_is_replacing = 0
+    normal! P
+    let &virtualedit = s:oldvmode
+endfunction
+
+function! yanktools#on_text_change()
+    if g:yanktools_has_pasted
+        let g:yanktools_has_pasted = 0
+
+        " restore register after redirection
+        if s:yanktools_redirected_reg
+            call yanktools#restore_after_redirect()
+            if s:yanktools_is_replacing | call s:replace_text() | endif
+            return
+        endif
+
+        " replace operator
+        if s:yanktools_is_replacing | call s:replace_text() | return | endif
+
+        " autoformat
+        let all = g:yanktools_auto_format_all | let this = s:yanktools_auto_format_this
+        if (!all && this) || (all && !this)
+            normal! =`]
+            let s:yanktools_auto_format_this = 0
+        endif
+
+        if g:yanktools_move_cursor_after_paste | execute "normal `]" | endif
+    endif
+endfunction
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Default register
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#get_reg()
@@ -36,6 +75,9 @@ function! yanktools#get_reg()
     return s:r
 endfunction
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Update stack
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#update_stack()
@@ -71,11 +113,11 @@ endfunction
 function! yanktools#paste_with_key(key, ...)
 
     " prepare autoformat
-    if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    if a:0 | let s:yanktools_auto_format_this = 1 | endif
     let g:yanktools_has_pasted = 1
 
     " check if register needs to be restored
-    if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
+    if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
 
     " after pasting, b:changedtick will increase, update s:last_paste_key to match it
     let s:last_paste_tick = b:changedtick + 1
@@ -92,18 +134,32 @@ endfunction
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Replace operator
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#replace(line)
+    let g:yanktools_has_pasted = 1
+    let s:yanktools_is_replacing = 1
+    let reg = g:yanktools_replace_operator_bh ? "\"_" : ""
+    let s:oldvmode = &virtualedit | set virtualedit=onemore
+    if a:line | return reg.'dd' | else | return reg.'d' | endif
+endfunction
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Redirect
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
     call setreg(s:r[0], s:r[1], s:r[2])
-    let g:yanktools#redirected_reg = 0
+    let s:yanktools_redirected_reg = 0
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#redirect_reg_with_key(key, register)
-    let g:yanktools#redirected_reg = 1
+    let s:yanktools_redirected_reg = 1
     let g:yanktools_has_pasted = 1
     call yanktools#get_reg()
     let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register

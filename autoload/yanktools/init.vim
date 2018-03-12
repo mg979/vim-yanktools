@@ -6,10 +6,14 @@ function! yanktools#init#maps()
 
     let g:yanktools_paste_keys              = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
     let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
-    let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['x','X','s','S','gr'])
+    let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['x','X', '<Del>'])
     let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['c', 'C', 'd', 'D'])
     let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
     let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
+
+    let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
+    let g:yanktools_replace_operator_line   = get(g:, 'yanktools_replace_operator_line', 'ss')
+    let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
     let redirect                            = g:yanktools_redirect_register
@@ -48,6 +52,24 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
     endfor
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Replace operator
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    let key = g:yanktools_replace_operator
+    if !hasmapto('<Plug>ReplaceOperator')
+        exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
+        exec 'xmap <unique> '.key.' <Plug>ReplaceOperator'
+    endif
+    nmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
+    xmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
+
+    let key = g:yanktools_replace_operator_line
+    if !hasmapto('<Plug>ReplaceOperatorLine')
+        exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLine'
+    endif
+    nmap <silent> <expr> <Plug>ReplaceOperatorLine yanktools#replace(1)
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste redirected
@@ -118,6 +140,16 @@ function! yanktools#init#maps()
         exec "nnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
         exec "xnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
     endfor
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Toggle Autoindent
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if !hasmapto('<Plug>ToggleAutoIndent')
+        nmap <unique> <C-K>tai <Plug>ToggleAutoIndent
+    endif
+    nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
+                \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Clear yanks

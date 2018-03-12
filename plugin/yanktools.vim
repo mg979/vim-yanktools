@@ -3,8 +3,19 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:OnTextChange()
-    if (g:yanktools_auto_format_all || g:yanktools_auto_format_this) | call yanktools#format#do() | endif
-    if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
+    if g:yanktools_has_pasted
+        let g:yanktools_has_pasted = 0
+
+        " autoformat
+        let all = g:yanktools_auto_format_all | let this = g:yanktools_auto_format_this
+        if (!all && this) || (all && !this)
+            normal! =`]
+            let g:yanktools_auto_format_this = 0
+        endif
+
+        if g:yanktools_move_cursor_after_paste | execute "normal `]" | endif
+        if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
+    endif
 endfunction
 
 augroup plugin-yanktools

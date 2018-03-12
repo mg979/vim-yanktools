@@ -4,14 +4,15 @@
 
 function! yanktools#init#maps()
 
-    let g:yanktools_auto_format_all   = get(g:, 'yanktools_auto_format_all', 0)
-    let g:yanktools_paste_keys        = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
-    let g:yanktools_yank_keys         = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
-    let g:yanktools_black_hole_keys   = get(g:, 'yanktools_black_hole_keys', ['x','X','s','S','gr'])
-    let g:yanktools_redirect_keys     = get(g:, 'yanktools_redirect_keys', ['c', 'C', 'd', 'D'])
+    let g:yanktools_paste_keys              = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
+    let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
+    let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['x','X','s','S','gr'])
+    let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['c', 'C', 'd', 'D'])
+    let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
+    let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 
-    let g:yanktools_redirect_register = get(g:, 'yanktools_redirect_register', "x")
-    let redirect = g:yanktools_redirect_register
+    let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
+    let redirect                            = g:yanktools_redirect_register
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Yank keys

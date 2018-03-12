@@ -8,6 +8,7 @@ function! yanktools#init_vars()
     let s:last_paste_tick = -1
     let g:yanktools#redirected_reg = 0
     let g:yanktools_auto_format_this = 0
+    let g:yanktools_has_pasted = 0
     let s:has_yanked = 0
     let s:yanks = 1
 endfunction
@@ -53,12 +54,6 @@ function! yanktools#update_stack()
     let s:has_yanked = 0
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! s:was_last_change_paste()
-    return b:changedtick == s:last_paste_tick
-endfunction
-
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -77,11 +72,12 @@ function! yanktools#paste_with_key(key, ...)
 
     " prepare autoformat
     if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    let g:yanktools_has_pasted = 1
 
     " check if register needs to be restored
     if g:yanktools#redirected_reg | call yanktools#restore_after_redirect() | endif
 
-    " set tick to the value it will be set to, after paste has happened
+    " after pasting, b:changedtick will increase, update s:last_paste_key to match it
     let s:last_paste_tick = b:changedtick + 1
 
     " update stack before pasting, if needed
@@ -108,6 +104,7 @@ endfun
 
 function! yanktools#redirect_reg_with_key(key, register)
     let g:yanktools#redirected_reg = 1
+    let g:yanktools_has_pasted = 1
     call yanktools#get_reg()
     let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register
     return "\"" . reg . a:key
@@ -117,6 +114,16 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swap paste
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:was_last_change_paste()
+    if !g:yanktools_auto_format_all
+        return b:changedtick == s:last_paste_tick
+    else
+        return b:changedtick <= s:last_paste_tick + 1
+    endif
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#swap_paste(forward, key)
@@ -142,51 +149,11 @@ function! yanktools#swap_paste(forward, key)
     let type = g:yanktools_stack[s:offset]['type']
     call setreg(r[0], text, type)
 
+    " set flag before actual paste
+    let g:yanktools_has_pasted = 1
+
     exec 'normal! u'.s:last_paste_key
     call setreg(r[0], r[1], r[2])
     let s:last_paste_tick = b:changedtick
-endfunction
-
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Autoformat
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#format()
-
-    " reset this in any case
-    let g:yanktools_auto_format_this = 0
-
-    " Only auto-format if it's multiline or pasting into an empty line
-    if (isMultiLine || isEmptyLine)
-        if exists('s:ForceAutoFormat')
-            let shouldAutoFormat = s:ForceAutoFormat
-        else
-            let shouldAutoFormat = a:format && g:EasyClipAutoFormat && get(b:, 'EasyClipAutoFormat', 1)
-        endif
-    endif
-
-    if (shouldAutoFormat)
-        let s:lastPasteWasAutoFormatted = 1
-        keepjumps normal! `]
-        let startPos = getpos('.')
-        normal! ^
-        let numFromStart = startPos[2] - col('.')
-
-        " Suppress 'x lines indented' message
-        silent exec "keepjumps normal! `[=`]"
-        call setpos('.', startPos)
-        normal! ^
-
-        if numFromStart > 0
-            " Preserve cursor position so that it is placed at the last pasted character
-            exec 'normal! ' . numFromStart . 'l'
-        endif
-
-        normal! m]
-    else
-        let s:lastPasteWasAutoFormatted = 0
-    endif
 endfunction
 

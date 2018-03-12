@@ -33,6 +33,7 @@ function! yanktools#zeta#paste_with_key(key)
     call remove(g:yanktools_zeta_stack, 0)
 
     " perform paste
+    let g:yanktools_has_pasted = 1
     exec 'normal! '.a:key
 
     " restore register

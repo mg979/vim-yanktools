@@ -4,7 +4,7 @@
 
 function! yanktools#init_vars()
     call yanktools#clear_yanks()
-    let g:yanktools_zeta_stack = []
+    call yanktools#zeta#init_vars()
     let s:last_paste_tick = -1
     let g:yanktools#redirected_reg = 0
     let s:has_yanked = 0

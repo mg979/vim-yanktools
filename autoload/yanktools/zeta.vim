@@ -2,8 +2,15 @@
 " Functions
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#zeta#init_vars()
+    let g:yanktools_zeta_stack = []
+    let s:has_yanked = 0
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#zeta#yank_with_key(key)
-    if get(s:, 'has_yanked', 0) | call yanktools#zeta#update_stack() | endif
+    if s:has_yanked | call yanktools#zeta#update_stack() | endif
     let s:has_yanked = 1
     return a:key
 endfunction

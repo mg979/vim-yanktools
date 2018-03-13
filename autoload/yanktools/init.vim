@@ -61,15 +61,6 @@ function! yanktools#init#maps()
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
     endfor
 
-    " fix issue that C doesn't update stack (it doesn't trigger TextChanged?)
-    if g:yanktools_convenient_remaps
-        if index(g:yanktools_black_hole_keys, 'C') >= 0
-            nnoremap C "_Da
-        elseif index(g:yanktools_black_hole_keys, 'D') == -1
-            nmap C Da
-        endif
-    endif
-
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Replace operator
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

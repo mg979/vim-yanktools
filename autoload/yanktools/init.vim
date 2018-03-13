@@ -15,15 +15,23 @@ function! yanktools#init#maps()
     let g:yanktools_replace_operator_line   = get(g:, 'yanktools_replace_operator_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
+    let g:yanktools_format_operator         = get(g:, 'yanktools_format_operator', "<")
+    let g:yanktools_zeta_operator           = get(g:, 'yanktools_zeta_operator', "z")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
     let redirect                            = g:yanktools_redirect_register
+    let zeta                                = g:yanktools_zeta_operator
+    let format                              = g:yanktools_format_operator
+    let lead                                = g:mapleader
+
+    let g:yanktools_zeta_inverted           = get(g:, 'yanktools_zeta_inverted', 1)
+    let g:yanktools_convenient_remaps       = get(g:, 'yanktools_convenient_remaps', 1)
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Yank keys
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_yank_keys
-        if !hasmapto('<Plug>Yank_'.key)
+        if mapcheck(key) == '' && !hasmapto('<Plug>Yank_'.key)
             exec 'nmap <unique> '.key.' <Plug>Yank_'.key
             exec 'xmap <unique> '.key.' <Plug>Yank_'.key
         endif
@@ -36,7 +44,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_black_hole_keys
-        if !hasmapto('<Plug>Black_Hole_'.key)
+        if mapcheck(key) == '' && !hasmapto('<Plug>Black_Hole_'.key)
             exec 'nmap <unique> '.key.' <Plug>Black_Hole_'.key
             exec 'xmap <unique> '.key.' <Plug>Black_Hole_'.key
         endif
@@ -45,7 +53,7 @@ function! yanktools#init#maps()
     endfor
 
     for key in g:yanktools_redirect_keys
-        if !hasmapto('<Plug>RegRedirect_'.key)
+        if mapcheck(key) == '' && !hasmapto('<Plug>RegRedirect_'.key)
             exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
             exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
         endif
@@ -53,57 +61,76 @@ function! yanktools#init#maps()
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
     endfor
 
+    " fix issue that C doesn't update stack (it doesn't trigger TextChanged?)
+    if g:yanktools_convenient_remaps
+        if index(g:yanktools_black_hole_keys, 'C') >= 0
+            nnoremap C "_Da
+        elseif index(g:yanktools_black_hole_keys, 'D') == -1
+            nmap C Da
+        endif
+    endif
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Replace operator
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let key = g:yanktools_replace_operator
-    if !hasmapto('<Plug>ReplaceOperator')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
-        exec 'xmap <unique> '.key.' <Plug>ReplaceOperator'
-    endif
-    nmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
-    xmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
 
-    let key = g:yanktools_replace_operator_line
-    if !hasmapto('<Plug>ReplaceOperatorLine')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLine'
+    " only replace s operator if option is set
+    if !g:yanktools_convenient_remaps && key == 's'
+    else
+        if !hasmapto('<Plug>ReplaceOperator')
+            exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
+            exec 'xmap <unique> '.key.' <Plug>ReplaceOperator'
+        endif
+        nmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
+        xmap <silent> <expr> <Plug>ReplaceOperator yanktools#replace(0)
+
+        let key = g:yanktools_replace_operator_line
+        if !hasmapto('<Plug>ReplaceOperatorLine')
+            exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLine'
+        endif
+        nmap <silent> <expr> <Plug>ReplaceOperatorLine yanktools#replace(1)
+
+        " remap normal substitution operator to S
+        nnoremap S s
     endif
-    nmap <silent> <expr> <Plug>ReplaceOperatorLine yanktools#replace(1)
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste redirected
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !hasmapto('<Plug>PasteRedirectedAfter')
-        nmap <unique> <leader>p <Plug>PasteRedirectedAfter
-    endif
-    if !hasmapto('<Plug>PasteRedirectedBefore')
-        nmap <unique> <leader>P <Plug>PasteRedirectedBefore
-    endif
-    if !hasmapto('<Plug>PasteRedirectedVisual')
-        xmap <unique> <leader>p <Plug>PasteRedirectedVisual
-    endif
-    exec 'nnoremap <silent> <Plug>PasteRedirectedAfter "'.redirect.'p'
-    exec 'nnoremap <silent> <Plug>PasteRedirectedBefore "'.redirect.'P'
-    exec 'xnoremap <silent> <Plug>PasteRedirectedVisual "'.redirect.'p'
+    for key in g:yanktools_paste_keys
+        if mapcheck(lead.key) == '' && !hasmapto('<Plug>PasteRedirected_'.key)
+            exec 'nmap <unique> '.lead.key.' <Plug>PasteRedirected_'.key
+            exec 'xmap <unique> '.lead.key.' <Plug>PasteRedirected_'.key
+        endif
+        exec 'nnoremap <silent> <expr> <Plug>PasteRedirected_'.key.' yanktools#paste_redirected_with_key("' . key . '", "' . redirect . '")'
+        exec 'xnoremap <silent> <expr> <Plug>PasteRedirected_'.key.' yanktools#paste_redirected_with_key("' . key . '", "' . redirect . '")'
+
+
+        if mapcheck(format.lead.key) == '' && !hasmapto('<Plug>PasteRedirectedIndent_'.key)
+            exec 'nmap <unique> '.format.lead.key.' <Plug>PasteRedirectedIndent_'.key
+        endif
+        exec 'nnoremap <silent> <expr> <Plug>PasteRedirectedIndent_'.key.' yanktools#paste_redirected_with_key("' . key . '", "' . redirect . '", 1)'
+    endfor
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste keys
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_paste_keys
-        if !hasmapto('<Plug>Paste_'.key)
+        if mapcheck(key) == '' && !hasmapto('<Plug>Paste_'.key)
             exec 'nmap <unique> '.key.' <Plug>Paste_'.key
             exec 'xmap <unique> '.key.' <Plug>Paste_'.key
         endif
         exec 'nnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Paste_'.key.' yanktools#paste_with_key("' . key . '")'
 
-        if !hasmapto('<Plug>FormatPaste_'.key)
-            exec 'nmap <unique> <'.key.' <Plug>FormatPaste_'.key
+        if mapcheck(format.key) == '' && !hasmapto('<Plug>PasteIndent_'.key)
+            exec 'nmap <unique> '.format.key.' <Plug>PasteIndent_'.key
         endif
-        exec 'nnoremap <silent> <expr> <Plug>FormatPaste_'.key.' yanktools#paste_with_key("' . key . '", 1)'
+        exec 'nnoremap <silent> <expr> <Plug>PasteIndent_'.key.' yanktools#paste_with_key("' . key . '", 1)'
     endfor
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -124,22 +151,31 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_yank_keys
-        if !hasmapto('<Plug>ZetaYank_'.key)
-            exec 'nmap <unique> z'.key.' <Plug>ZetaYank_z'.key
-            exec 'xmap <unique> z'.key.' <Plug>ZetaYank_z'.key
+        if mapcheck(zeta.key) == '' && !hasmapto('<Plug>ZetaYank_'.key)
+            exec 'nmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
+            exec 'xmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
         endif
-        exec 'nnoremap <silent> <expr> <Plug>ZetaYank_z'.key.' yanktools#zeta#yank_with_key("' . key . '")'
-        exec 'xnoremap <silent> <expr> <Plug>ZetaYank_z'.key.' yanktools#zeta#yank_with_key("' . key . '")'
+        exec 'nnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
+        exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
     endfor
 
-    for key in g:yanktools_paste_keys
-        if !hasmapto('<Plug>ZetaPaste_'.key)
-            exec 'nmap <unique> z'.key.' <Plug>ZetaPaste_z'.key
-            exec 'xmap <unique> z'.key.' <Plug>ZetaPaste_z'.key
+    for key in ['p', 'P']
+        if mapcheck(zeta.key) == '' && !hasmapto('<Plug>ZetaPaste_'.key)
+            exec 'nmap <unique> '.zeta.key.' <Plug>ZetaPaste_'.key
+            exec 'xmap <unique> '.zeta.key.' <Plug>ZetaPaste_'.key
         endif
-        exec "nnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
-        exec "xnoremap <silent> <Plug>ZetaPaste_z".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
+        exec "nnoremap <silent> <Plug>ZetaPaste_".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
+        exec "xnoremap <silent> <Plug>ZetaPaste_".key." :call yanktools#zeta#paste_with_key('" . key . "')\<cr>"
+
+        if mapcheck(format.zeta.key) == '' && !hasmapto('<Plug>ZetaPasteIndent_'.key)
+            exec 'nmap <unique> '.format.zeta.key.' <Plug>ZetaPasteIndent_'.key
+        endif
+        exec "nnoremap <silent> <Plug>ZetaPasteIndent_".key." :call yanktools#zeta#paste_with_key('" . key . "', 1)\<cr>"
     endfor
+
+    if g:yanktools_convenient_remaps
+        nmap zY zy$
+    endif
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Toggle Autoindent

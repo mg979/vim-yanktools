@@ -7,11 +7,12 @@ function! yanktools#init_vars()
     call yanktools#zeta#init_vars()
     let s:last_paste_tick = -1
     let s:yanktools_redirected_reg = 0
-    let s:yanktools_auto_format_this = 0
+    let g:yanktools_auto_format_this = 0
     let g:yanktools_has_pasted = 0
     let s:has_yanked = 0
     let s:yanks = 1
     let s:yanktools_is_replacing = 0
+    let s:last_paste_format_this = 0
 endfunction
 
 function! yanktools#clear_yanks()
@@ -29,6 +30,12 @@ function! s:replace_text()
     let &virtualedit = s:oldvmode
 endfunction
 
+function! s:is_being_formatted(...)
+    let all = g:yanktools_auto_format_all | let this = a:0 ? s:last_paste_format_this : g:yanktools_auto_format_this
+    echom all." ".this." ".g:yanktools_auto_format_this
+    return (all && !this) || (!all && this)
+endfunction
+
 function! yanktools#on_text_change()
     if g:yanktools_has_pasted
         let g:yanktools_has_pasted = 0
@@ -44,11 +51,10 @@ function! yanktools#on_text_change()
         if s:yanktools_is_replacing | call s:replace_text() | return | endif
 
         " autoformat
-        let all = g:yanktools_auto_format_all | let this = s:yanktools_auto_format_this
-        if (!all && this) || (all && !this)
-            normal! =`]
-            let s:yanktools_auto_format_this = 0
+        if s:is_being_formatted()
+            normal! `[=`]
         endif
+        let g:yanktools_auto_format_this = 0
 
         if g:yanktools_move_cursor_after_paste | execute "normal `]" | endif
     endif
@@ -113,7 +119,7 @@ endfunction
 function! yanktools#paste_with_key(key, ...)
 
     " prepare autoformat
-    if a:0 | let s:yanktools_auto_format_this = 1 | endif
+    if a:0 | let g:yanktools_auto_format_this = 1 | endif
     let g:yanktools_has_pasted = 1
 
     " check if register needs to be restored
@@ -126,7 +132,11 @@ function! yanktools#paste_with_key(key, ...)
     if s:has_yanked | call yanktools#update_stack() | endif
 
     " reset stack offset, so that next swap will start from 0
-    let s:offset = 0 | let s:last_paste_key = a:key
+    let s:offset = 0
+
+    " set last_paste_key and remember format_this option (used by swap)
+    let s:last_paste_key = a:key
+    let s:last_paste_format_this = g:yanktools_auto_format_this
 
     return a:key
 endfunction
@@ -158,6 +168,14 @@ endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#paste_redirected_with_key(key, register, ...)
+    if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    let g:yanktools_has_pasted = 1
+    return '"'.a:register.a:key
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#redirect_reg_with_key(key, register)
     let s:yanktools_redirected_reg = 1
     let g:yanktools_has_pasted = 1
@@ -173,10 +191,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:was_last_change_paste()
-    if !g:yanktools_auto_format_all
-        return b:changedtick == s:last_paste_tick
-    else
+    if s:is_being_formatted(1)
         return b:changedtick <= s:last_paste_tick + 1
+    else
+        return b:changedtick == s:last_paste_tick
     endif
 endfunction
 
@@ -188,7 +206,6 @@ function! yanktools#swap_paste(forward, key)
         if s:has_yanked | call yanktools#update_stack() | endif
         " recursive mapping to trigger yanktools#paste_with_key()
         execute "normal ".a:key
-        "let s:offset = 0 | let s:last_paste_key = a:key
         return
     endif
 
@@ -208,6 +225,7 @@ function! yanktools#swap_paste(forward, key)
     " set flag before actual paste
     let g:yanktools_has_pasted = 1
 
+    if s:last_paste_format_this | let g:yanktools_auto_format_this = 1 | endif
     exec 'normal! u'.s:last_paste_key
     call setreg(r[0], r[1], r[2])
     let s:last_paste_tick = b:changedtick

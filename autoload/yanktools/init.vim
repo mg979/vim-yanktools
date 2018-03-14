@@ -203,8 +203,21 @@ function! yanktools#init#maps()
     if !hasmapto('<Plug>IPaste')
         nmap <unique> <C-K>p <Plug>IPasteAfter
         nmap <unique> <C-K>P <Plug>IPasteBefore
+        xmap <unique> <C-K>p <Plug>IPasteAfter
+        xmap <unique> <C-K>P <Plug>IPasteBefore
     endif
     nnoremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
     nnoremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
+    xnoremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
+    xnoremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Change yank type
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if !hasmapto('<Plug>YankType')
+        nmap <unique> <C-K>yt <Plug>YankType
+    endif
+    nnoremap <silent> <Plug>YankType :call yanktools#extras#change_yank_type()<cr>
 
 endfunction

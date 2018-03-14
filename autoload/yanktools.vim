@@ -66,18 +66,21 @@ endfunction
 " Default register
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#get_reg()
-
+function! yanktools#default_reg()
     " get default register
+
     let clipboard_flags = split(&clipboard, ',')
     if index(clipboard_flags, 'unnamedplus') >= 0
-        let r = "+"
+        return "+"
     elseif index(clipboard_flags, 'unnamed') >= 0
-        let r = "*"
+        return "*"
     else
-        let r = "\""
+        return "\""
     endif
+endfunction
 
+function! yanktools#get_reg()
+    let r = yanktools#default_reg()
     let s:r = [r, getreg(r), getregtype(r)]
     return s:r
 endfunction

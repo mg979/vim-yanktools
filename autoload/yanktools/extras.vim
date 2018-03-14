@@ -63,6 +63,30 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#extras#change_yank_type()
+    let r = v:register | let text = getreg(r) | let type = getregtype(r)
+    if type ==# 'v' | echo "Not a multiline yank." | return | endif
+
+    if type[:0] ==# ""
+        call setreg(r, text, "V")
+        echo "Register ".r." converted to linewise yank."
+        if r ==# yanktools#default_reg() | call remove(g:yanktools_stack, 0) |  call yanktools#update_stack() | endif
+        return
+    endif 
+
+    let lines = split(text, '\n') | let maxl = 0
+    for line in lines
+        let l = [maxl, len(line)]
+        let maxl = max(l)
+    endfor
+
+    call setreg(r, text, "".maxl)
+    echo "Register ".r." converted to blockwise yank."
+    if r ==# yanktools#default_reg() | call remove(g:yanktools_stack, 0) |  call yanktools#update_stack() | endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#extras#select_yank(before)
     call yanktools#update_stack()
     echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None

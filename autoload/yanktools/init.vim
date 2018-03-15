@@ -24,7 +24,6 @@ function! yanktools#init#maps()
     let zeta                                = g:yanktools_zeta_prefix
     let format                              = g:yanktools_format_prefix
 
-    let g:yanktools_convenient_remaps       = get(g:, 'yanktools_convenient_remaps', 1)
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Yank keys
@@ -38,6 +37,7 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
     endfor
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Redirection
@@ -61,6 +61,7 @@ function! yanktools#init#maps()
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
     endfor
 
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Replace operator
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -73,6 +74,7 @@ function! yanktools#init#maps()
     endif
     nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
     xmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Replace line
@@ -89,6 +91,7 @@ function! yanktools#init#maps()
         exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceOperatorLineMulti'
     endif
     nmap <silent> <Plug>ReplaceOperatorLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste redirected
@@ -115,6 +118,7 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '", 1)'
     endfor
 
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste keys
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -138,6 +142,7 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1)'
     endfor
 
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Swap pastes
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -150,6 +155,7 @@ function! yanktools#init#maps()
     endif
     nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1, "P")<cr>
     nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P")<cr>
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " "z" mode
@@ -183,15 +189,6 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1)'."\<cr>"
     endfor
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Convenient remaps
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if g:yanktools_convenient_remaps
-        map Y y$
-        map zY zy$
-        nnoremap S s
-    endif
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Toggle Autoindent
@@ -203,6 +200,7 @@ function! yanktools#init#maps()
     nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
                 \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
 
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Clear yanks
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -212,6 +210,7 @@ function! yanktools#init#maps()
     endif
     nnoremap <silent> <Plug>ClearYanks :call yanktools#clear_yanks()<cr>
 
+
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Show yanks
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -220,6 +219,7 @@ function! yanktools#init#maps()
         nmap <unique> <C-K>sy <Plug>ShowYanks
     endif
     nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Interactive Paste
@@ -235,6 +235,7 @@ function! yanktools#init#maps()
     nnoremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
     xnoremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
     xnoremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
+
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Change yank type

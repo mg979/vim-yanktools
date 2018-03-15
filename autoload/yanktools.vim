@@ -88,8 +88,8 @@ function! yanktools#default_reg()
     endif
 endfunction
 
-function! yanktools#get_reg()
-    let r = yanktools#default_reg()
+function! yanktools#get_reg(...)
+    let r = a:0 ? g:yanktools_redirect_register : yanktools#default_reg()
     let s:r = [r, getreg(r), getregtype(r)]
     return s:r
 endfunction

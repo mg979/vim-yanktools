@@ -18,10 +18,12 @@ function! yanktools#init#maps()
 
     let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
+    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "k")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
 
     let redirect                            = g:yanktools_redirect_register
     let zeta                                = g:yanktools_zeta_prefix
+    let kill                                = g:yanktools_zeta_kill
     let format                              = g:yanktools_format_prefix
 
 
@@ -169,6 +171,15 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
     endfor
+
+    if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKill_'.key)
+        exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKill'
+        exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
+        exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKill'
+    endif
+    nnoremap <silent> <expr> <Plug>ZetaKill yanktools#zeta#kill_with_key("d")
+    nnoremap <silent> <expr> <Plug>ZetaKillLine yanktools#zeta#kill_with_key("dd")
+    xnoremap <silent> <expr> <Plug>ZetaKill yanktools#zeta#kill_with_key("d")
 
     let cmd = ' :call yanktools#zeta#paste_with_key'
 

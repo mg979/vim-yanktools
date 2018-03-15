@@ -5,6 +5,7 @@
 function! yanktools#init#maps()
 
     let g:yanktools_paste_keys              = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
+    let g:yanktools_redir_paste_prefix      = get(g:, 'yanktools_redir_paste_prefix', '<leader>')
     let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
     let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['x','X', '<Del>'])
     let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['c', 'C', 'd', 'D'])
@@ -15,15 +16,14 @@ function! yanktools#init#maps()
     let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
-    let g:yanktools_format_operator         = get(g:, 'yanktools_format_operator', "<")
-    let g:yanktools_zeta_operator           = get(g:, 'yanktools_zeta_operator', "z")
+    let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
+    let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
-    let redirect                            = g:yanktools_redirect_register
-    let zeta                                = g:yanktools_zeta_operator
-    let format                              = g:yanktools_format_operator
-    let lead                                = g:mapleader
 
-    let g:yanktools_zeta_inverted           = get(g:, 'yanktools_zeta_inverted', 1)
+    let redirect                            = g:yanktools_redirect_register
+    let zeta                                = g:yanktools_zeta_prefix
+    let format                              = g:yanktools_format_prefix
+
     let g:yanktools_convenient_remaps       = get(g:, 'yanktools_convenient_remaps', 1)
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -86,7 +86,7 @@ function! yanktools#init#maps()
     nmap <silent> <Plug>ReplaceOperatorLine :call yanktools#replop#replace_line(v:register, v:count)<cr>
 
     if !hasmapto('<Plug>ReplaceOperatorLineMulti')
-        exec 'nmap <unique> '.lead.key.' <Plug>ReplaceOperatorLineMulti'
+        exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceOperatorLineMulti'
     endif
     nmap <silent> <Plug>ReplaceOperatorLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
 
@@ -95,21 +95,22 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let cmd = ' yanktools#paste_redirected_with_key'
+    let prefix = g:yanktools_redir_paste_prefix
 
     for key in g:yanktools_paste_keys
         let plug = 'PasteRedirected_'.key
 
-        if mapcheck(lead.key) == '' && !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.lead.key.' <Plug>'.plug
-            exec 'xmap <unique> '.lead.key.' <Plug>'.plug
+        if mapcheck(prefix.key) == '' && !hasmapto('<Plug>'.plug)
+            exec 'nmap <unique> '.prefix.key.' <Plug>'.plug
+            exec 'xmap <unique> '.prefix.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '")'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '")'
 
         let plug = 'PasteRedirectedIndent_'.key
 
-        if mapcheck(format.lead.key) == '' && !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.format.lead.key.' <Plug>'.plug
+        if mapcheck(format.prefix.key) == '' && !hasmapto('<Plug>'.plug)
+            exec 'nmap <unique> '.format.prefix.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '", 1)'
     endfor
@@ -187,8 +188,8 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if g:yanktools_convenient_remaps
-        nmap Y y$
-        nmap zY zy$
+        map Y y$
+        map zY zy$
         nnoremap S s
     endif
 

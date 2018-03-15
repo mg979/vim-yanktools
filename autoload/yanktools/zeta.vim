@@ -17,9 +17,15 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#zeta#paste_with_key(key, ...)
+function! yanktools#zeta#paste_with_key(key, plug, ...)
     if s:has_yanked | call yanktools#zeta#update_stack() | endif
     if !len(g:yanktools_zeta_stack) | echo "Empty zeta stack." | return | endif
+
+    " set vars
+    let g:yanktools_has_pasted = 1
+    let g:yanktools_move_this = 1
+    if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    let g:yanktools_plug = [a:plug, v:count, yanktools#default_reg()]
 
     " backup register
     let r = yanktools#get_reg()
@@ -29,31 +35,15 @@ function! yanktools#zeta#paste_with_key(key, ...)
     let type = g:yanktools_zeta_stack[0]['type']
     call setreg(r[0], text, type)
 
-    " invert paste behaviour if paste is linewise
-    if g:yanktools_zeta_inverted && type ==# 'V'
-        if a:key ==# 'p' | let key = 'P' | else | let key = 'p' | endif
-    else
-        let key = a:key
-    endif
-
     " remove index from zeta stack
     call remove(g:yanktools_zeta_stack, 0)
 
-    let g:yanktools_has_pasted = 1
-    " perform paste and move cursor at end, autoformat if arg is given
-    if a:0
-        exec 'normal! '.key.'`[=`]`]'
-    else
-        exec 'normal! '.key.'`]'
-    endif
-
-    " move to line below if paste was linewise
-    if type ==# 'V'
-        normal j
-    endif
+    " perform paste
+    exec 'normal! '.a:key
 
     " restore register
     call setreg(r[0], r[1], r[2])
+
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

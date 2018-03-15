@@ -5,14 +5,18 @@
 function! yanktools#init_vars()
     call yanktools#clear_yanks()
     call yanktools#zeta#init_vars()
+    call yanktools#replop#init()
     let s:last_paste_tick = -1
     let s:yanktools_redirected_reg = 0
     let g:yanktools_auto_format_this = 0
     let g:yanktools_has_pasted = 0
     let s:has_yanked = 0
     let s:yanks = 1
-    let s:yanktools_is_replacing = 0
+    let g:yanktools_is_replacing = 0
     let s:last_paste_format_this = 0
+    let g:yanktools_plug = []
+    let g:yanktools_move_this = 0
+    let s:replace_count = 0
 endfunction
 
 function! yanktools#clear_yanks()
@@ -20,20 +24,19 @@ function! yanktools#clear_yanks()
     let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
 endfunction
 
+function! yanktools#set_repeat()
+    let p = g:yanktools_plug
+    silent! call repeat#setreg("\<Plug>".p[0], p[2])
+    silent! call repeat#set("\<Plug>".p[0], p[1])
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " autocmd calls
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:replace_text()
-    let s:yanktools_is_replacing = 0
-    normal! P
-    let &virtualedit = s:oldvmode
-endfunction
-
 function! s:is_being_formatted(...)
     let all = g:yanktools_auto_format_all
     let this = a:0 ? s:last_paste_format_this : g:yanktools_auto_format_this
-    "echom all." ".this." ".g:yanktools_auto_format_this
     return (all && !this) || (!all && this)
 endfunction
 
@@ -45,19 +48,25 @@ endfunction
 
 function! yanktools#on_text_change()
     if !g:yanktools_has_pasted | return | endif
-    let g:yanktools_has_pasted = 0 | let move_this_cursor = 0
+    let g:yanktools_has_pasted = 0
 
     " restore register after redirection
     if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
 
-    " replace operator
-    if s:yanktools_is_replacing | call s:replace_text() | let move_this_cursor = 1 | endif
+    " replace operator: complete replacement and return
+    if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | return | endif
 
-    " autoformat
-    if s:is_being_formatted() | execute "normal! `[=`]" | endif
+    " autoformat / move cursor
+    if s:is_being_formatted() | execute "keepjump normal! `[=`]" | endif
+    if (g:yanktools_move_cursor_after_paste || g:yanktools_move_this) | execute "keepjump normal `]" | endif
+
+    " update repeat.vim
+    if !s:yanktools_redirected_reg && !empty(g:yanktools_plug) | call yanktools#set_repeat() | endif
+
+    " reset vars
     let g:yanktools_auto_format_this = 0
-
-    if (g:yanktools_move_cursor_after_paste || move_this_cursor) | execute "normal `]" | endif
+    let g:yanktools_move_this = 0
+    let s:yanktools_redirected_reg = 0
     let s:last_paste_tick = b:changedtick
 endfunction
 
@@ -121,10 +130,9 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_with_key(key, ...)
+function! yanktools#paste_with_key(key, plug, ...)
     let g:yanktools_has_pasted = 1
-
-    " prepare autoformat
+    let g:yanktools_plug = [a:plug, v:count, v:register]
     if a:0 | let g:yanktools_auto_format_this = 1 | endif
 
     " check if register needs to be restored
@@ -144,35 +152,24 @@ function! yanktools#paste_with_key(key, ...)
 endfunction
 
 
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Replace operator
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#replace(line)
-    let g:yanktools_has_pasted = 1
-    let s:yanktools_is_replacing = 1
-    let reg = g:yanktools_replace_operator_bh ? "\"_" : ""
-    let s:oldvmode = &virtualedit | set virtualedit=onemore
-    if a:line | return reg.'dd' | else | return reg.'d' | endif
-endfunction
-
-
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Redirect
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
     call setreg(s:r[0], s:r[1], s:r[2])
-    let s:yanktools_redirected_reg = 0
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_redirected_with_key(key, register, ...)
+function! yanktools#paste_redirected_with_key(key, plug, register, ...)
     if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    let g:yanktools_plug = [a:plug, v:count, a:register]
     let g:yanktools_has_pasted = 1
+
+    " reset stack offset, so that next swap will start from 0
+    let s:offset = 0
+
     return '"'.a:register.a:key
 endfunction
 

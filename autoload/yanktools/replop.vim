@@ -57,8 +57,10 @@ function! yanktools#replop#replace_line(r, c, ...)
     " last line needs 'paste after'
     let paste_type = (line(".") == line("$")) ? "p" : "P"
 
+    " store count in the first iteration (it will be 0 afterwards)
     if a:c | let s:replace_count = a:c | endif
 
+    " no count, single line replacement
     if !a:c && !s:replace_count
         call s:d_before_replace(a:r, reg)
         execute "normal \"".a:r.paste_type
@@ -69,24 +71,25 @@ function! yanktools#replop#replace_line(r, c, ...)
     if s:replace_count
 
         " delete lines to replace first
+        " using v:count, so that it will run in 1st iteration only
         for i in range(a:c)
             call s:d_before_replace(a:r, reg)
         endfor
 
         if a:0          " multiple replacements
-
             for i in range(a:c)
                 execute "normal \"".a:r.paste_type
             endfor
 
         elseif a:c      " single replacement (à la ReplaceWithRegister)
-
             execute "normal \"".a:r.paste_type
         endif
 
+        " will reset vars when this reaches 0 
         let s:replace_count -= 1
 
     else
+        " final iteration, can reset
         call s:reset_vars_after_replace()
     endif
 

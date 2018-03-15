@@ -12,7 +12,7 @@ function! yanktools#init#maps()
     let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 
     let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
-    let g:yanktools_replace_operator_line   = get(g:, 'yanktools_replace_operator_line', 'ss')
+    let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
     let g:yanktools_format_operator         = get(g:, 'yanktools_format_operator', "<")
@@ -74,11 +74,21 @@ function! yanktools#init#maps()
     nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
     xmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
 
-    let key = g:yanktools_replace_operator_line
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Replace line
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    let key = g:yanktools_replace_line
+
     if !hasmapto('<Plug>ReplaceOperatorLine')
         exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLine'
     endif
     nmap <silent> <Plug>ReplaceOperatorLine :call yanktools#replop#replace_line(v:register, v:count)<cr>
+
+    if !hasmapto('<Plug>ReplaceOperatorLineMulti')
+        exec 'nmap <unique> '.lead.key.' <Plug>ReplaceOperatorLineMulti'
+    endif
+    nmap <silent> <Plug>ReplaceOperatorLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Paste redirected

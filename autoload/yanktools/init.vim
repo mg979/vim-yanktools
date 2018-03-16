@@ -84,10 +84,10 @@ function! yanktools#init#maps()
 
     let key = g:yanktools_replace_line
 
-    if !hasmapto('<Plug>ReplaceOperatorLine')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLine'
+    if !hasmapto('<Plug>ReplaceOperatorLineSingle')
+        exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLineSingle'
     endif
-    nmap <silent> <Plug>ReplaceOperatorLine :call yanktools#replop#replace_line(v:register, v:count)<cr>
+    nmap <silent> <Plug>ReplaceOperatorLineSingle :call yanktools#replop#replace_line(v:register, v:count)<cr>
 
     if !hasmapto('<Plug>ReplaceOperatorLineMulti')
         exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceOperatorLineMulti'
@@ -172,14 +172,16 @@ function! yanktools#init#maps()
         exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
     endfor
 
-    if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKill')
-        exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKill'
-        exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
-        exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKill'
+    if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKillMotion')
+        exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
+        exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
     endif
-    nnoremap <silent> <expr> <Plug>ZetaKill yanktools#zeta#kill_with_key("d")
+    if mapcheck(zeta.kill.kill) == '' && !hasmapto('<Plug>ZetaKillLine')
+        exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
+    endif
+    nnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
     nnoremap <silent> <expr> <Plug>ZetaKillLine yanktools#zeta#kill_with_key("dd")
-    xnoremap <silent> <expr> <Plug>ZetaKill yanktools#zeta#kill_with_key("d")
+    xnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
 
     let cmd = ' :call yanktools#zeta#paste_with_key'
 

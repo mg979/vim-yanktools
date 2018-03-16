@@ -30,6 +30,10 @@ function! yanktools#set_repeat()
     silent! call repeat#set("\<Plug>".p[0], p[1])
 endfunction
 
+function! yanktools#zeta_call()
+    let s:zeta = 1 | let s:has_yanked = 1
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " autocmd calls
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -42,7 +46,12 @@ endfunction
 
 function! yanktools#on_cursor_moved()
     if s:has_yanked
-        call yanktools#update_stack()
+        if s:zeta
+            let s:zeta = 0 | let s:has_yanked = 0
+            call yanktools#zeta#check_stack()
+        else
+            call yanktools#update_stack()
+        endif
     endif
 endfunction
 

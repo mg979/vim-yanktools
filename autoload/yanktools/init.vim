@@ -172,7 +172,7 @@ function! yanktools#init#maps()
         exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
     endfor
 
-    if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKill_'.key)
+    if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKill')
         exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKill'
         exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
         exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKill'

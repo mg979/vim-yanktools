@@ -85,7 +85,7 @@ function! yanktools#replop#replace_line(r, c, ...)
             execute "normal \"".a:r.paste_type
         endif
 
-        " will reset vars when this reaches 0 
+        " will reset vars when this reaches 0
         let s:replace_count -= 1
 
     else

@@ -11,22 +11,26 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#zeta#yank_with_key(key)
-    if s:has_yanked | call yanktools#zeta#update_stack() | endif
     let s:has_yanked = 1
+    call yanktools#zeta_call()
     return a:key
 endfunction
 
 function! yanktools#zeta#kill_with_key(key)
-    if s:has_killed | call yanktools#zeta#update_stack(1) | endif
     let s:has_killed = 1
-    return "\"x".a:key
+    call yanktools#zeta_call()
+    return "\"".g:yanktools_redirect_register.a:key
+endfunction
+
+function! yanktools#zeta#check_stack()
+    if s:has_yanked | let s:has_yanked = 0 | call yanktools#zeta#update_stack(0) | endif
+    if s:has_killed | let s:has_killed = 0 | call yanktools#zeta#update_stack(1) | endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#zeta#paste_with_key(key, plug, ...)
-    if s:has_yanked | call yanktools#zeta#update_stack() | endif
-    if s:has_killed | call yanktools#zeta#update_stack(1) | endif
+    call yanktools#zeta#check_stack()
     if !len(g:yanktools_zeta_stack) | echo "Empty zeta stack." | return | endif
 
     " set vars
@@ -56,12 +60,14 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#zeta#update_stack(...)
+function! yanktools#zeta#update_stack(redirected)
 
     " duplicate yanks will be added to this stack nonetheless
-    let stack = g:yanktools_zeta_stack
-    let r = yanktools#get_reg(a:0)
-    call add(stack, {'text': r[1], 'type': r[2]})
-    let s:has_yanked = 0 | let s:has_killed = 0
+    if a:redirected
+        let r = yanktools#get_reg(a:redirected)
+    else
+        let r = yanktools#get_reg()
+    endif
+    call add(g:yanktools_zeta_stack, {'text': r[1], 'type': r[2]})
 endfunction
 

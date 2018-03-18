@@ -7,7 +7,8 @@ function! yanktools#replop#init()
 endfunction
 
 function! yanktools#replop#replace_get_reg()
-    let s:repl_reg = v:register
+    " prevent black hole register bug
+    let s:repl_reg = v:register == "_" ? yanktools#default_reg() : v:register
 endfunction
 
 function! yanktools#replop#paste_replacement()

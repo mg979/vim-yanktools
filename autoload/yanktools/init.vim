@@ -16,7 +16,7 @@ function! yanktools#init#maps()
     let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
-    let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
+    let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "\\")
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
     let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "k")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
@@ -204,6 +204,45 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1)'."\<cr>"
     endfor
 
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Convenient remaps
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if get(g:, 'yanktools_convenient_remaps', 0)
+        nmap Y y$
+        xmap Y $y
+        nmap zY zy$
+        xmap zY $zy
+        nmap S s$
+        xmap S $p
+        nmap sx "xs
+        xmap sx "xp
+        nmap sxx "xss
+        xmap sxx $"xp
+        nmap zl zyy
+        xmap zl <S-V>zy
+
+        if get(g:, 'yanktools_auto_format_all', 0)
+            map [p <Plug>Paste_P
+            map ]p <Plug>Paste_p
+            map =p <Plug>PasteRedirected_p
+            map -p <Plug>PasteRedirected_P
+            execute "map ".format."[p <Plug>PasteIndent_P"
+            execute "map ".format."]p <Plug>PasteIndent_p"
+            execute "map ".format."=p <Plug>PasteRedirectedIndent_p"
+            execute "map ".format."-p <Plug>PasteRedirectedIndent_P"
+        else
+            map [p <Plug>PasteIndent_P
+            map ]p <Plug>PasteIndent_p
+            map =p <Plug>PasteRedirectedIndent_p
+            map -p <Plug>PasteRedirectedIndent_P
+            execute "map ".format."[p <Plug>Paste_P"
+            execute "map ".format."]p <Plug>Paste_p"
+            execute "map ".format."=p <Plug>PasteRedirected_p"
+            execute "map ".format."-p <Plug>PasteRedirected_P"
+        endif
+    endif
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Toggle Autoindent

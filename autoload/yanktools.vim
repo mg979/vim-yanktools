@@ -11,6 +11,7 @@ function! yanktools#init_vars()
     let g:yanktools_auto_format_this = 0
     let g:yanktools_has_pasted = 0
     let s:has_yanked = 0
+    let s:has_swapped = 0
     let s:yanks = 1
     let g:yanktools_is_replacing = 0
     let s:last_paste_format_this = 0
@@ -46,11 +47,16 @@ endfunction
 
 function! yanktools#on_cursor_moved()
     if s:has_yanked
-        if s:zeta
-            let s:zeta = 0 | let s:has_yanked = 0
+        if s:zeta | let s:zeta = 0 | let s:has_yanked = 0
             call yanktools#zeta#check_stack()
         else
-            call yanktools#update_stack()
+            call yanktools#update_stack() | endif
+
+    elseif s:has_swapped
+        " reset offset if cursor moved after finishing swap
+        if getpos('.') != s:post_swap_pos
+            let s:has_swapped = 0      | let s:offset = 0
+            let s:last_paste_tick = -1 | let s:post_swap_pos = -1
         endif
     endif
 endfunction
@@ -198,18 +204,30 @@ endfunction
 " Swap paste
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:was_last_change_paste()
-    return b:changedtick == s:last_paste_tick
+function! s:last_change_was_not_paste()
+    return b:changedtick != s:last_paste_tick
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:swap_msg(...)
+    echohl WarningMsg
+    if a:1 == 1 | echo "Reached the end of the stack, restarting from the beginning."
+    else        | echo "Reached the beginning of the stack, restarting from the end."
+    endif
+    echohl None
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#swap_paste(forward, key)
+    let msg = 0
 
-    if !s:was_last_change_paste()
+    if !s:has_swapped && s:last_change_was_not_paste()
         if s:has_yanked | call yanktools#update_stack() | endif
         " recursive mapping to trigger yanktools#paste_with_key()
         execute "normal ".a:key
+        let s:has_swapped = 1 | let s:post_swap_pos = getpos('.')
         return
     endif
 
@@ -217,9 +235,9 @@ function! yanktools#swap_paste(forward, key)
 
     let s:offset += (a:forward ? 1 : -1)
     if s:offset >= s:yanks
-        let s:offset = 0
+        let s:offset = 0 | let msg = 1
     elseif s:offset < 0
-        let s:offset = s:yanks-1
+        let s:offset = s:yanks-1 | let msg = 2
     endif
 
     let text = g:yanktools_stack[s:offset]['text']
@@ -231,6 +249,10 @@ function! yanktools#swap_paste(forward, key)
 
     if s:last_paste_format_this | let g:yanktools_auto_format_this = 1 | endif
     exec 'normal! u'.s:last_paste_key
+    let s:has_swapped = 1 | let s:post_swap_pos = getpos('.')
+
+    " restore register
     call setreg(r[0], r[1], r[2])
+    if msg | call s:swap_msg(msg) | endif
 endfunction
 

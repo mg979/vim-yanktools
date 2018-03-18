@@ -10,6 +10,25 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#zeta#update_stack(redirected)
+
+    " duplicate yanks will be added to this stack nonetheless
+    if a:redirected
+        let r = yanktools#get_reg(a:redirected)
+    else
+        let r = yanktools#get_reg()
+    endif
+    call add(g:yanktools_zeta_stack, {'text': r[1], 'type': r[2]})
+endfunction
+
+function! s:msg()
+    echohl WarningMsg
+    echo "There are ".len(g:yanktools_zeta_stack)." entries left in the zeta stack."
+    echohl None
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#zeta#yank_with_key(key)
     let s:has_yanked = 1
     call yanktools#zeta_call()
@@ -29,14 +48,14 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#zeta#paste_with_key(key, plug, ...)
+function! yanktools#zeta#paste_with_key(key, plug, visual, format)
     call yanktools#zeta#check_stack()
     if !len(g:yanktools_zeta_stack) | echo "Empty zeta stack." | return | endif
 
     " set vars
     let g:yanktools_has_pasted = 1
     let g:yanktools_move_this = 1
-    if a:0 | let g:yanktools_auto_format_this = 1 | endif
+    if a:format | let g:yanktools_auto_format_this = 1 | endif
     let g:yanktools_plug = [a:plug, v:count, yanktools#default_reg()]
 
     " backup register
@@ -55,19 +74,6 @@ function! yanktools#zeta#paste_with_key(key, plug, ...)
 
     " restore register
     call setreg(r[0], r[1], r[2])
-
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#zeta#update_stack(redirected)
-
-    " duplicate yanks will be added to this stack nonetheless
-    if a:redirected
-        let r = yanktools#get_reg(a:redirected)
-    else
-        let r = yanktools#get_reg()
-    endif
-    call add(g:yanktools_zeta_stack, {'text': r[1], 'type': r[2]})
+    call s:msg()
 endfunction
 

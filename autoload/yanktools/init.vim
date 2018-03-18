@@ -181,8 +181,6 @@ function! yanktools#init#maps()
     if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKillMotion')
         exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
         exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
-    endif
-    if mapcheck(zeta.kill.kill) == '' && !hasmapto('<Plug>ZetaKillLine')
         exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
     endif
     nnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
@@ -198,14 +196,16 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.zeta.key.' <Plug>'.plug
             exec 'xmap <unique> '.zeta.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'")'."\<cr>"
-        exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'")'."\<cr>"
+        exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'."\<cr>"
+        exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'."\<cr>"
 
         let plug = "ZetaPasteIndent_".key
         if mapcheck(format.zeta.key) == '' && !hasmapto('<Plug>'.plug)
             exec 'nmap <unique> '.format.zeta.key.' <Plug>'.plug
+            exec 'xmap <unique> '.format.zeta.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1)'."\<cr>"
+        exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'."\<cr>"
+        exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'."\<cr>"
     endfor
 
 
@@ -266,10 +266,10 @@ function! yanktools#init#maps()
     " Clear yanks
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !hasmapto('<Plug>ClearYanks')
-        nmap <unique> <C-K>cy <Plug>ClearYanks
+    if !hasmapto('<Plug>DeleteYanks')
+        nmap <unique> <C-K>dy <Plug>DeleteYanks
     endif
-    nnoremap <silent> <Plug>ClearYanks :call yanktools#clear_yanks()<cr>
+    nnoremap <silent> <Plug>DeleteYanks :call yanktools#clear_yanks()<cr>
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -302,9 +302,9 @@ function! yanktools#init#maps()
     " Change yank type
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !hasmapto('<Plug>YankType')
-        nmap <unique> <C-K>yt <Plug>YankType
+    if !hasmapto('<Plug>ConvertYank')
+        nmap <unique> <C-K>cy <Plug>ConvertYank
     endif
-    nnoremap <silent> <Plug>YankType :call yanktools#extras#change_yank_type()<cr>
+    nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
 
 endfunction

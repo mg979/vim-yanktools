@@ -145,10 +145,11 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_with_key(key, plug, ...)
+function! yanktools#paste_with_key(key, plug, visual, format)
+    if a:visual | call yanktools#get_reg() | let s:yanktools_redirected_reg = 1 | endif
+    if a:format | let g:yanktools_auto_format_this = 1 | endif
     let g:yanktools_has_pasted = 1
     let g:yanktools_plug = [a:plug, v:count, v:register]
-    if a:0 | let g:yanktools_auto_format_this = 1 | endif
 
     " check if register needs to be restored
     if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
@@ -177,15 +178,16 @@ endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_redirected_with_key(key, plug, register, ...)
-    if a:0 | let g:yanktools_auto_format_this = 1 | endif
-    let g:yanktools_plug = [a:plug, v:count, a:register]
+function! yanktools#paste_redirected_with_key(key, plug, visual, format)
+    if a:format | let g:yanktools_auto_format_this = 1 | endif
+    let register = g:yanktools_redirect_register
+    let g:yanktools_plug = [a:plug, v:count, register]
     let g:yanktools_has_pasted = 1
 
     " reset stack offset, so that next swap will start from 0
     let s:offset = 0
 
-    return '"'.a:register.a:key
+    return '"'.register.a:key
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

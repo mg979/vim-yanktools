@@ -111,15 +111,17 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.prefix.key.' <Plug>'.plug
             exec 'xmap <unique> '.prefix.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '")'
-        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '")'
+        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
+        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
 
         let plug = 'PasteRedirectedIndent_'.key
 
         if mapcheck(format.prefix.key) == '' && !hasmapto('<Plug>'.plug)
             exec 'nmap <unique> '.format.prefix.key.' <Plug>'.plug
+            exec 'xmap <unique> '.format.prefix.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", "' . redirect . '", 1)'
+        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
+        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
     endfor
 
 
@@ -136,14 +138,16 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.key.' <Plug>'.plug
             exec 'xmap <unique> '.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'")'
-        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'")'
+        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
+        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
 
         let plug = "PasteIndent_".key
         if mapcheck(format.key) == '' && !hasmapto('<Plug>'.plug)
             exec 'nmap <unique> '.format.key.' <Plug>'.plug
+            exec 'xmap <unique> '.format.key.' <Plug>'.plug
         endif
-        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1)'
+        exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
+        exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
     endfor
 
 
@@ -214,14 +218,17 @@ function! yanktools#init#maps()
         xmap Y $y
         nmap zY zy$
         xmap zY $zy
+        nmap zK zk$
+        xmap zK $zk
         nmap S s$
-        xmap S $p
+        xmap <C-s> $p
         nmap sx "xs
         xmap sx "xp
         nmap sxx "xss
-        xmap sxx $"xp
+        nmap sX "xs$
+        xmap sX $"xp
         nmap zl zyy
-        xmap zl <S-V>zy
+        xmap zl $zy
 
         if get(g:, 'yanktools_auto_format_all', 0)
             map [p <Plug>Paste_P

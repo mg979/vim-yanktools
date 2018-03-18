@@ -46,12 +46,14 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_black_hole_keys
+        if key ==? '<del>' | let map = 'x' | else | let map = key | endif
+
         if mapcheck(key) == '' && !hasmapto('<Plug>Black_Hole_'.key)
             exec 'nmap <unique> '.key.' <Plug>Black_Hole_'.key
             exec 'xmap <unique> '.key.' <Plug>Black_Hole_'.key
         endif
-        exec 'nnoremap <silent> <Plug>Black_Hole_'.key.' "_'.key
-        exec 'xnoremap <silent> <Plug>Black_Hole_'.key.' "_'.key
+        exec 'nnoremap <silent> <Plug>Black_Hole_'.key.' "_'.map
+        exec 'xnoremap <silent> <Plug>Black_Hole_'.key.' "_'.map
     endfor
 
     for key in g:yanktools_redirect_keys

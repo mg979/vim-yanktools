@@ -7,7 +7,7 @@ augroup plugin-yanktools
     autocmd VimEnter * call yanktools#init_vars()
     autocmd TextChanged * silent! call yanktools#on_text_change()
     autocmd InsertEnter * silent! call yanktools#on_text_change()
-    autocmd CursorMoved * silent! call yanktools#on_cursor_moved()
+    autocmd CursorMoved * silent! call yanktools#check_yanks()
 augroup END
 
 

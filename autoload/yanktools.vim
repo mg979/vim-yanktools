@@ -45,12 +45,11 @@ function! s:is_being_formatted(...)
     return (all && !this) || (!all && this)
 endfunction
 
-function! yanktools#on_cursor_moved()
+function! yanktools#check_yanks()
     if s:has_yanked
-        if s:zeta | let s:zeta = 0 | let s:has_yanked = 0
-            call yanktools#zeta#check_stack()
-        else
-            call yanktools#update_stack() | endif
+        if s:zeta  | call yanktools#zeta#check_stack() | endif
+        let s:zeta = 0 | let s:has_yanked = 0
+        call yanktools#update_stack()
 
     elseif s:has_swapped
         " reset offset if cursor moved after finishing swap
@@ -62,6 +61,7 @@ function! yanktools#on_cursor_moved()
 endfunction
 
 function! yanktools#on_text_change()
+    if s:has_yanked | call yanktools#check_yanks() | endif
     if !g:yanktools_has_pasted | return | endif
     let g:yanktools_has_pasted = 0
 
@@ -138,7 +138,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#yank_with_key(key)
-    if s:has_yanked | call yanktools#update_stack() | endif
+    if s:has_yanked | call yanktools#check_yanks() | endif
     let s:has_yanked = 1
     return a:key
 endfunction
@@ -155,7 +155,7 @@ function! yanktools#paste_with_key(key, plug, visual, format)
     if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
 
     " update stack before pasting, if needed
-    if s:has_yanked | call yanktools#update_stack() | endif
+    if s:has_yanked | call yanktools#check_yanks() | endif
 
     " reset stack offset, so that next swap will start from 0
     let s:offset = 0
@@ -226,7 +226,7 @@ function! yanktools#swap_paste(forward, key)
     let msg = 0
 
     if !s:has_swapped && s:last_change_was_not_paste()
-        if s:has_yanked | call yanktools#update_stack() | endif
+        if s:has_yanked | call yanktools#check_yanks() | endif
         " recursive mapping to trigger yanktools#paste_with_key()
         execute "normal ".a:key
         let s:has_swapped = 1 | let s:post_swap_pos = getpos('.')

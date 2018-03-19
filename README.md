@@ -56,44 +56,47 @@ See also g:yanktools_convenient_remaps.
 |Interactive paste                     |   yes     | no        |yes       |
 |Interactive paste with fzf-vim        |   yes     | no        |no        |
 |Convert yank type                     |   yes     | no        |no        |
+|repeat.vim support                    |   yes     | no        |yes       |
 
-Common options:
+__*Common options:*__
 
-* Cycle yank stack: all yanks are stored in a list, that can be cycled at
+* __Cycle yank stack__: all yanks are stored in a list, that can be cycled at
   cursor position, back and forth, with a specific keybinding. It keeps the
   properties of the last paste commnd.
 
-* Black hole redirection: configure motions to redirect to black hole, to
+* __Black hole redirection__: configure motions to redirect to black hole, to
   avoid overwriting of the default register.
 
-* Replace operator (default 's'): as substitution operator in easyclip or
+* __Replace operator (default 's')__: as substitution operator in easyclip or
   replace operator in similar plugins (ReplaceWithRegister, etc).
 
-* Autoindent: you can toggle it, or use a prefix to the normal
+* __Autoindent__: you can toggle it, or use a prefix to the normal
   mappings to perform a single indented paste, and this behaviour is inverted
   if autoindent is active (ie. single unindented paste).
 
+* __repeat.vim support__: yanktools supports it for most paste operations.
+
 ----------------------------------------------------------------------------
 
-The new features (compared to easyclip) are:
+__*The new features (compared to easyclip) are:*__
 
-* Register redirection: instead of redirecting to the black hole register, you
+* __Register redirection__: instead of redirecting to the black hole register, you
   can redirect the chosen commands to another register (default 'x'), without
   replacing the unnamed register. By default, paste in visual mode won't
   overwrite the default register.
 
-* Alternative paste methods: since register redirection is an option, pasting
+* __Alternative paste methods__: since register redirection is an option, pasting
   from that register has its own mapping. This can also be used in combination
   with the replace operator.
 
-* zeta-mode (by default it uses 'z' as prefix) that fills a parallel yank stack,
+* __Zeta-mode__: (by default it uses 'z' as prefix) that fills a parallel yank stack,
   from which items are taken from the back, and pasting them removes them from
   the stack as well. You can populate the stack both by yanking and cutting.
 
 * If you use fzf-vim, there's a command to browse your yank stack and paste
   from it. Otherwise the same interactive paste from easyclip is provided.
 
-* Convert yank type: convert selected register between linewise and blockwise.
+* __Convert yank type__: convert selected register between linewise and blockwise.
 
 
 ----------------------------------------------------------------------------
@@ -152,14 +155,10 @@ Simply moving the cursor after a swap resets this command.
 
 
 #### Register redirection
-                                                   *g:yanktools_black_hole_keys*
-                                                     *g:yanktools_redirect_keys*
-                                                *g:yanktools_redir_paste_prefix*
-                                                 *g:yanktools_redirect_register*
 
 By default, 'x', 'X' and `<Del>` redirect to the black hole register ("_"),
 while 'c', 'C', 'd' and 'D' redirect to a special register (default "x").
-You can paste directly from this register with <leader>p/P.
+You can paste directly from this register with `<leader>p/P`.
 
 Normally, when you yank to a specific register, you overwrite at the same time
 the unnamed register, but this isn't the case with this plugin, since it is
@@ -168,18 +167,18 @@ restored to its previous content after each delete/change opration.
 Additionally, when you paste in visual mode, the replaced text will not
 overwrite the default register.
 
-You can change the <leader> prefix by changing this setting:
+You can change the `<leader>` prefix by changing this setting:
 
-  let g:yanktools_redir_paste_prefix = `<leader>`
+    let g:yanktools_redir_paste_prefix = '<leader>'
 
 You can define the keys that redirect to the black hole/alternative register:
 
-  let g:yanktools_black_hole_keys = ['x', 'X', `<Del>`]
-  let g:yanktools_redirect_keys   = ['c', 'C', 'd', 'D']
+    let g:yanktools_black_hole_keys = ['x', 'X', '<Del>']
+    let g:yanktools_redirect_keys   = ['c', 'C', 'd', 'D']
 
 You can redefine the default register for redirection:
 
-  let g:yanktools_redirect_register = 'x'
+    let g:yanktools_redirect_register = 'x'
 
 
 ----------------------------------------------------------------------------
@@ -206,10 +205,10 @@ to complement the normal replacement mode.
 
 The 'replace line' command can have two different behaviours:
 
-- `ss` will replace [count] lines with a single instance of the register
+- `ss` will replace __*[count]*__ lines with a single instance of the register
   (this behaviour is the same as in ReplaceWithRegister plugin).
 
-- `<leader>ss` will instead replace each line ine [count] with the register
+- `<leader>ss` will instead replace each line ine __*[count]*__ with the register
   content, while keeping the order of multiline entries (improved behaviour
   from easyclip).
 
@@ -218,7 +217,6 @@ The 'replace line' command can have two different behaviours:
 
 
 #### Zeta mode
-                                 *g:yanktools_zeta_prefix* *g:yanktools_zeta_kill*
 
 By using the 'z' prefix, you can create a disposable yank stack, from which
 elements are taken from the bottom when pasting, and immediately removed.
@@ -245,17 +243,34 @@ See also g:yanktools_convenient_remaps.
 ----------------------------------------------------------------------------
 
 
+#### Repeat.vim
+
+This plugin supporrs `repeat-vim` for most paste operations. This means that
+you can press `dot` to repeat the last paste command while keeping the same
+formatting options of the last command.
+
+`zeta-mode` is also supported: press `dot` to continue pasting from the zeta
+stack, until the stack is consumed.
+
+The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
+
+
+
+
+----------------------------------------------------------------------------
+
+
 #### Autoformat
 
-*g:yanktools_format_prefix* controls autoformat for single pastes, while
-*g:yanktools_auto_format_all* controls the global behaviour. If the latter is
+__*g:yanktools_format_prefix*__ controls autoformat for single pastes, while
+__*g:yanktools_auto_format_all*__ controls the global behaviour. If the latter is
 false, the former will autoindent the current paste. And viceversa.
 
 The command `ToggleAutoIndent` (`<C-K>`tai) will toggle `yanktools_auto_format_all`
 on and off.
 
 ------------------------------------------------------------------------------
-                                           *g:yanktools_move_cursor_after_paste*
+
 
 As in vim-easyclip, you can configure an option to always move the cursor at
 the end of the pasted content:
@@ -351,12 +366,18 @@ changing them individually.
 
 
 #### Convenient remaps
-                                                 *g:yanktools_convenient_remaps*
 
 By setting this option, you can enable these keymappings, inspired by
 vim-unimpaired. They are optimal for a US keyboard, so you may need to
 change them anyway (like I did). Either set the option, or paste this into
 your .vimrc and change them according to your needs.
+
+```
+  let g:yanktools_convenient_remaps = 1
+  call yanktools#init#maps()
+```
+
+Or add:
 
 ```
   call yanktools#init#maps()

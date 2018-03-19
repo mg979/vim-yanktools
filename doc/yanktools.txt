@@ -53,7 +53,7 @@ your |.vimrc|:
 
 Only after having initialized the mappings, you should set your own remaps
 (such as `nmap Y y$`), so that they will work with the new functions.
-See also |g:yanktools_convenient_remaps|.
+See also |convenient-remaps|.
 
 
 
@@ -75,6 +75,7 @@ Move cursor to the end                |    yes    |   no      |   yes    |
 Interactive paste                     |    yes    |   no      |   yes    |
 Interactive paste with fzf-vim        |    yes    |   no      |   no     |
 Convert yank type                     |    yes    |   no      |   no     |
+|repeat-vim| support                    |    yes    |   no      |   yes    |
 --------------------------------------+-----------+-----------+----------+--
 
 Common options:
@@ -92,6 +93,8 @@ Common options:
 * Autoindent: you can toggle it, or use a prefix to the normal
   mappings to perform a single indented paste, and this behaviour is inverted
   if autoindent is active (ie. single unindented paste).
+
+* |repeat-vim| support: yanktools supports it for most paste operations.
 
 ----------------------------------------------------------------------------
 
@@ -202,7 +205,7 @@ You can redefine the default register for redirection:
 
 
 
-REPLACE OPERATOR                                            *yanktools-replace*
+REPLACE OPERATOR                           *replace-operator* *yanktools-replace*
 =============================================================================
                                               *g:yanktools_replace_operator_bh*
 
@@ -234,7 +237,7 @@ The 'replace line' command can have two different behaviours:
 
 
 
-ZETA MODE                                                       *yanktools-zeta*
+ZETA MODE                                             *zeta-mode* *yanktools-zeta*
 ==============================================================================
                                  *g:yanktools_zeta_prefix* *g:yanktools_zeta_kill*
 
@@ -257,7 +260,21 @@ You could add these mappings to make usage easier:
   map zl zyy
   map zK zk$
 <
-See also |g:yanktools_convenient_remaps|.
+See also |convenient-remaps|.
+
+
+
+REPEAT.VIM                                                *yanktools-repeat-vim*
+==============================================================================
+
+This plugin supports |repeat-vim| for most paste operations. This means that
+you can press |dot| to repeat the last paste command while keeping the same
+formatting options of the last command.
+
+|zeta-mode| is also supported: press "|.|" (dot) to continue pasting from the zeta
+stack, until the stack is consumed.
+
+The |replace-operator| is also repeatable, though it doesn't need |repeat-vim|.
 
 
 
@@ -364,7 +381,7 @@ Mapping                                     | Default                    ~
 
 
 
-CONVENIENT REMAPS                                         *yanktools-convenient*
+CONVENIENT REMAPS                       *convenient-remaps* *yanktools-convenient*
 ==============================================================================
                                                  *g:yanktools_convenient_remaps*
 
@@ -373,6 +390,11 @@ By setting this option, you can enable these keymappings, inspired by
 change them anyway (like I did). Either set the option, or paste this into
 your .vimrc and change them according to your needs.
 
+>
+  let g:yanktools_convenient_remaps = 1
+  call yanktools#init#maps()
+
+Or add:
 >
   call yanktools#init#maps()
 

@@ -6,18 +6,20 @@ function! yanktools#init_vars()
     call yanktools#clear_yanks()
     call yanktools#zeta#init_vars()
     call yanktools#replop#init()
-    let s:last_paste_tick = -1
     let s:yanktools_redirected_reg = 0
     let g:yanktools_auto_format_this = 0
-    let g:yanktools_has_pasted = 0
+    let g:yanktools_has_changed = 0
     let s:has_yanked = 0
-    let s:has_swapped = 0
+    let s:has_pasted = 0
     let s:yanks = 1
     let g:yanktools_is_replacing = 0
     let s:last_paste_format_this = 0
     let g:yanktools_plug = []
     let g:yanktools_move_this = 0
     let s:replace_count = 0
+    let s:zeta = 0
+    let s:offset = 0
+    let s:last_paste_key = 0
 endfunction
 
 function! yanktools#clear_yanks()
@@ -46,24 +48,26 @@ function! s:is_being_formatted(...)
 endfunction
 
 function! yanktools#check_yanks()
+    """This function is called on cursor moved, but also sparsely to update stacks."""
+
     if s:has_yanked
         if s:zeta  | call yanktools#zeta#check_stack() | endif
         let s:zeta = 0 | let s:has_yanked = 0
         call yanktools#update_stack()
 
-    elseif s:has_swapped
+    elseif s:has_pasted
         " reset offset if cursor moved after finishing swap
-        if getpos('.') != s:post_swap_pos
-            let s:has_swapped = 0      | let s:offset = 0
-            let s:last_paste_tick = -1 | let s:post_swap_pos = -1
+        if getpos('.') != s:post_paste_pos
+            let s:has_pasted = 0      | let s:offset = 0
+            let s:post_paste_pos = -1
         endif
     endif
 endfunction
 
 function! yanktools#on_text_change()
     if s:has_yanked | call yanktools#check_yanks() | endif
-    if !g:yanktools_has_pasted | return | endif
-    let g:yanktools_has_pasted = 0
+    if !g:yanktools_has_changed | return | endif
+    let g:yanktools_has_changed = 0
 
     " restore register after redirection
     if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
@@ -78,11 +82,12 @@ function! yanktools#on_text_change()
     " update repeat.vim
     if !s:yanktools_redirected_reg && !empty(g:yanktools_plug) | call yanktools#set_repeat() | endif
 
+    if s:has_pasted | let s:post_paste_pos = getpos('.') | endif
+
     " reset vars
     let g:yanktools_auto_format_this = 0
     let g:yanktools_move_this = 0
     let s:yanktools_redirected_reg = 0
-    let s:last_paste_tick = b:changedtick
 endfunction
 
 
@@ -148,7 +153,11 @@ endfunction
 function! yanktools#paste_with_key(key, plug, visual, format)
     if a:visual | call yanktools#get_reg() | let s:yanktools_redirected_reg = 1 | endif
     if a:format | let g:yanktools_auto_format_this = 1 | endif
-    let g:yanktools_has_pasted = 1
+
+    " set paste variables
+    let g:yanktools_has_changed = 1 | let s:has_pasted = 1
+
+    " set repeat.vim plug
     let g:yanktools_plug = [a:plug, v:count, v:register]
 
     " check if register needs to be restored
@@ -182,7 +191,7 @@ function! yanktools#paste_redirected_with_key(key, plug, visual, format)
     if a:format | let g:yanktools_auto_format_this = 1 | endif
     let register = g:yanktools_redirect_register
     let g:yanktools_plug = [a:plug, v:count, register]
-    let g:yanktools_has_pasted = 1
+    let g:yanktools_has_changed = 1
 
     " reset stack offset, so that next swap will start from 0
     let s:offset = 0
@@ -194,7 +203,7 @@ endfunction
 
 function! yanktools#redirect_reg_with_key(key, register)
     let s:yanktools_redirected_reg = 1
-    let g:yanktools_has_pasted = 1
+    let g:yanktools_has_changed = 1
     call yanktools#get_reg()
     let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register
     return "\"" . reg . a:key
@@ -204,12 +213,6 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swap paste
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! s:last_change_was_not_paste()
-    return b:changedtick != s:last_paste_tick
-endfunction
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:swap_msg(...)
@@ -225,16 +228,17 @@ endfunction
 function! yanktools#swap_paste(forward, key)
     let msg = 0
 
-    if !s:has_swapped && s:last_change_was_not_paste()
+    if !s:has_pasted
         if s:has_yanked | call yanktools#check_yanks() | endif
         " recursive mapping to trigger yanktools#paste_with_key()
         execute "normal ".a:key
-        let s:has_swapped = 1 | let s:post_swap_pos = getpos('.')
+        let s:post_paste_pos = getpos('.')
         return
     endif
 
     let r = yanktools#get_reg()
 
+    " move offset
     let s:offset += (a:forward ? 1 : -1)
     if s:offset >= s:yanks
         let s:offset = 0 | let msg = 1
@@ -242,16 +246,20 @@ function! yanktools#swap_paste(forward, key)
         let s:offset = s:yanks-1 | let msg = 2
     endif
 
+    " set register to offset
     let text = g:yanktools_stack[s:offset]['text']
     let type = g:yanktools_stack[s:offset]['type']
     call setreg(r[0], text, type)
 
     " set flag before actual paste, so that autocmd call will run
-    let g:yanktools_has_pasted = 1
+    let g:yanktools_has_changed = 1
 
+    " perform a non-recursive paste, but reuse last options and key
     if s:last_paste_format_this | let g:yanktools_auto_format_this = 1 | endif
     exec 'normal! u'.s:last_paste_key
-    let s:has_swapped = 1 | let s:post_swap_pos = getpos('.')
+
+    " update position manually
+    let s:has_pasted = 1 | let s:post_paste_pos = getpos('.')
 
     " restore register
     call setreg(r[0], r[1], r[2])

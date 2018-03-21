@@ -53,7 +53,7 @@ function! yanktools#zeta#paste_with_key(key, plug, visual, format)
     if !len(g:yanktools_zeta_stack) | echo "Empty zeta stack." | return | endif
 
     " set vars
-    let g:yanktools_has_pasted = 1
+    let g:yanktools_has_changed = 1
     let g:yanktools_move_this = 1
     if a:format | let g:yanktools_auto_format_this = 1 | endif
     let g:yanktools_plug = [a:plug, v:count, yanktools#default_reg()]

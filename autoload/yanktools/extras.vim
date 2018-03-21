@@ -70,9 +70,12 @@ function! yanktools#extras#change_yank_type()
     if type[:0] ==# ""
         call setreg(r, text, "V")
         echo "Register ".r." converted to linewise yank."
-        if r ==# yanktools#default_reg() | call remove(g:yanktools_stack, 0) |  call yanktools#update_stack() | endif
+        if r ==# yanktools#default_reg()
+            call remove(g:yanktools_stack, 0)
+            call yanktools#update_stack()
+        endif
         return
-    endif 
+    endif
 
     let lines = split(text, '\n') | let maxl = 0
     for line in lines
@@ -82,7 +85,10 @@ function! yanktools#extras#change_yank_type()
 
     call setreg(r, text, "".maxl)
     echo "Register ".r." converted to blockwise yank."
-    if r ==# yanktools#default_reg() | call remove(g:yanktools_stack, 0) |  call yanktools#update_stack() | endif
+    if r ==# yanktools#default_reg()
+        call remove(g:yanktools_stack, 0)
+        call yanktools#update_stack()
+    endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

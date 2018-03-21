@@ -19,7 +19,7 @@ endfunction
 
 function! yanktools#replop#replace(type, ...)
     let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
-    let g:yanktools_has_pasted = 1
+    let g:yanktools_has_changed = 1
     let g:yanktools_is_replacing = 1
     let s:oldvmode = &virtualedit | set virtualedit=onemore
     if a:0

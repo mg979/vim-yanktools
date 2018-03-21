@@ -157,12 +157,18 @@ function! yanktools#init#maps()
 
     if !hasmapto('<Plug>SwapPasteNext')
         nmap <unique> <M-p> <Plug>SwapPasteNext
+        xmap <unique> <M-p> <Plug>SwapPasteNext
     endif
     if !hasmapto('<Plug>SwapPastePrevious')
         nmap <unique> <M-P> <Plug>SwapPastePrevious
+        xmap <unique> <M-P> <Plug>SwapPastePrevious
     endif
-    nnoremap <silent> <Plug>SwapPasteNext :call yanktools#swap_paste(1, "P")<cr>
-    nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P")<cr>
+    nnoremap <silent> <Plug>SwapPasteNext     :call yanktools#swap_paste(1, "P", 0)<cr>
+    nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P", 0)<cr>
+
+    "black hole delete and break undo history
+    xnoremap <silent> <Plug>SwapPasteNext     "_da<C-g>u<esc>:call yanktools#swap_paste(1, "P", 1)<cr>
+    xnoremap <silent> <Plug>SwapPastePrevious "_da<C-g>u<esc>:call yanktools#swap_paste(0, "P", 1)<cr>
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

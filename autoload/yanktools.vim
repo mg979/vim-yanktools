@@ -225,13 +225,19 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#swap_paste(forward, key)
+function! yanktools#swap_paste(forward, key, visual)
     let msg = 0
 
     if !s:has_pasted
         if s:has_yanked | call yanktools#check_yanks() | endif
+
         " recursive mapping to trigger yanktools#paste_with_key()
-        execute "normal ".a:key
+        " if pasting from visual mode, force paste after if last column
+        if a:visual && col('.') == col('$')-1
+            execute "normal p"
+        else
+            execute "normal ".a:key
+        endif
         let s:post_paste_pos = getpos('.')
         return
     endif
@@ -259,7 +265,7 @@ function! yanktools#swap_paste(forward, key)
     exec 'normal! u'.s:last_paste_key
 
     " update position manually
-    let s:has_pasted = 1 | let s:post_paste_pos = getpos('.')
+    let s:post_paste_pos = getpos('.')
 
     " restore register
     call setreg(r[0], r[1], r[2])

@@ -323,4 +323,14 @@ function! yanktools#init#maps()
     endif
     nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
 
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Menu
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if !hasmapto('<Plug>YanktoolsMenu')
+        nmap <unique> <C-K><C-P> <Plug>YanktoolsMenu
+    endif
+    nnoremap <silent> <Plug>YanktoolsMenu :Yanktools<cr>
+
 endfunction

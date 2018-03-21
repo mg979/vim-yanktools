@@ -14,6 +14,26 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yanktools#extras#clear_yanks(...)
+    let r = yanktools#get_reg()
+    let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
+    if a:0 | echo "All yanks in the stack, except the last, have been cleared." | endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#extras#toggle_autoformat()
+    if g:yanktools_auto_format_all
+        let g:yanktools_auto_format_all = 0
+        echo "Autoindent disabled."
+    else
+        let g:yanktools_auto_format_all = 1
+        echo "Autoindent enabled."
+    endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#extras#show_yank(yank, index)
     let index = printf("%-4d", a:index)
     let line = substitute(a:yank.text, '\V\n', '^M', 'g')
@@ -59,6 +79,22 @@ endfunction
 
 function! yanktools#extras#fzf_before(yank)
     call yanktools#extras#select_yank_fzf(a:yank, 1)
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#extras#fzf_menu(choice)
+    if a:choice == 'Toggle Freeze Offset'
+        call yanktools#freeze_offset()
+    elseif a:choice == 'Clear Yanks'
+        call yanktools#extras#clear_yanks(1)
+    elseif a:choice == 'Show Yanks'
+        call yanktools#extras#show_yanks()
+    elseif a:choice == 'Convert Yank Type'
+        call yanktools#extras#change_yank_type()
+    elseif a:choice == 'Toggle Auto Indent'
+        call yanktools#extras#toggle_autoformat()
+    endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#init_vars()
-    call yanktools#clear_yanks()
+    call yanktools#extras#clear_yanks()
     call yanktools#zeta#init_vars()
     call yanktools#replop#init()
     let s:yanktools_redirected_reg = 0
@@ -22,11 +22,6 @@ function! yanktools#init_vars()
     let s:offset = 0
     let s:last_paste_key = 0
     let s:last_paste_tick = -1
-endfunction
-
-function! yanktools#clear_yanks()
-    let r = yanktools#get_reg()
-    let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
 endfunction
 
 function! yanktools#set_repeat()

@@ -16,16 +16,27 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 command! Yanks call yanktools#extras#show_yanks()
-command! ClearYanks call yanktools#clear_yanks() | echo "Yanks cleared."
-command! ToggleAutoIndent let g:yanktools_auto_format_all = !g:yanktools_auto_format_all
+command! ClearYanks call yanktools#extras#clear_yanks() | echo "Yanks cleared."
+command! ToggleAutoIndent call yanktools#extras#toggle_autoformat()
 
 com! FzfPasteAfter call fzf#run({'source': yanktools#extras#yanks(),
             \ 'sink': function('yanktools#extras#fzf'), 'down': '30%',
-            \ 'options': '--multi --reverse --prompt "Paste After >>>   "'})
+            \ 'options': '--prompt "Paste After >>>   "'})
 
 com! FzfPasteBefore call fzf#run({'source': yanktools#extras#yanks(),
             \ 'sink': function('yanktools#extras#fzf_before'), 'down': '30%',
-            \ 'options': '--multi --reverse --prompt "Paste Before >>>   "'})
+            \ 'options': '--prompt "Paste Before >>>   "'})
 
 com! IPasteAfter call yanktools#extras#select_yank(0)
 com! IPasteBefore call yanktools#extras#select_yank(1)
+
+com! Yanktools call fzf#run({'source': [
+            \ 'Toggle Freeze Offset',
+            \ 'Convert Yank Type',
+            \ 'Toggle Auto Indent',
+            \ 'Clear Yanks',
+            \ 'Show Yanks',
+            \ ],
+            \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
+            \ 'options': '--prompt "Yanktools Menu >>>   "'})
+

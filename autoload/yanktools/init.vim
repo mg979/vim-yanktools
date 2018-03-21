@@ -74,10 +74,10 @@ function! yanktools#init#maps()
 
     if !hasmapto('<Plug>ReplaceOperator')
         exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
-        exec 'xmap <unique> '.key.' <Plug>ReplaceOperator'
+        "exec 'xmap <unique> '.key.' <Plug>ReplaceOperator'
     endif
     nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
-    xmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
+    "xmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -221,18 +221,19 @@ function! yanktools#init#maps()
 
     if get(g:, 'yanktools_convenient_remaps', 0)
         nmap Y y$
-        xmap Y $y
+        xmap Y $hy
+        xmap D $hd
         nmap zY zy$
         xmap zY $zy
         nmap zK zk$
         xmap zK $zk
         nmap S s$
-        xmap <C-s> $p
+        xmap <C-s> $hp
         nmap sx "xs
         xmap sx "xp
         nmap sxx "xss
         nmap sX "xs$
-        xmap sX $"xp
+        xmap sX $h"xp
         nmap zl zyy
         xmap zl $zy
 

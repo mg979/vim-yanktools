@@ -399,18 +399,19 @@ Or add:
   call yanktools#init#maps()
 
   nmap Y y$
-  xmap Y $y
-  nmap S s$
-  xmap <C-s> $p
-  nmap sx "xs
-  xmap sx "xp
-  nmap sxx "xss
-  nmap sX "xs$
-  xmap sX $"xp
+  xmap Y $hy
+  xmap D $hd
   nmap zY zy$
   xmap zY $zy
   nmap zK zk$
   xmap zK $zk
+  nmap S s$
+  xmap <C-s> $hp
+  nmap sx "xs
+  xmap sx "xp
+  nmap sxx "xss
+  nmap sX "xs$
+  xmap sX $h"xp
   nmap zl zyy
   xmap zl $zy
 

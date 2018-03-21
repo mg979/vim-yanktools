@@ -237,25 +237,10 @@ function! yanktools#init#maps()
         nmap zl zyy
         xmap zl $zy
 
-        if get(g:, 'yanktools_auto_format_all', 0)
-            map [p <Plug>Paste_P
-            map ]p <Plug>Paste_p
-            map =p <Plug>PasteRedirected_p
-            map -p <Plug>PasteRedirected_P
-            execute "map ".format."[p <Plug>PasteIndent_P"
-            execute "map ".format."]p <Plug>PasteIndent_p"
-            execute "map ".format."=p <Plug>PasteRedirectedIndent_p"
-            execute "map ".format."-p <Plug>PasteRedirectedIndent_P"
-        else
-            map [p <Plug>PasteIndent_P
-            map ]p <Plug>PasteIndent_p
-            map =p <Plug>PasteRedirectedIndent_p
-            map -p <Plug>PasteRedirectedIndent_P
-            execute "map ".format."[p <Plug>Paste_P"
-            execute "map ".format."]p <Plug>Paste_p"
-            execute "map ".format."=p <Plug>PasteRedirected_p"
-            execute "map ".format."-p <Plug>PasteRedirected_P"
-        endif
+        map [p <Plug>PasteIndent_P
+        map ]p <Plug>PasteIndent_p
+        map =p <Plug>PasteRedirectedIndent_p
+        map -p <Plug>PasteRedirectedIndent_P
     endif
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

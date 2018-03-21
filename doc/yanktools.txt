@@ -415,25 +415,10 @@ Or add:
   nmap zl zyy
   xmap zl $zy
 
-  if g:yanktools_auto_format_all
-      map [p <Plug>Paste_P
-      map ]p <Plug>Paste_p
-      map -p <Plug>PasteRedirected_P
-      map =p <Plug>PasteRedirected_p
-      map <[p <Plug>PasteIndent_P
-      map <]p <Plug>PasteIndent_p
-      map <-p <Plug>PasteRedirectedIndent_P
-      map <=p <Plug>PasteRedirectedIndent_p
-  else
-      map [p <Plug>PasteIndent_P
-      map ]p <Plug>PasteIndent_p
-      map -p <Plug>PasteRedirectedIndent_P
-      map =p <Plug>PasteRedirectedIndent_p
-      map <[p <Plug>Paste_P
-      map <]p <Plug>Paste_p
-      map <-p <Plug>PasteRedirected_P
-      map <=p <Plug>PasteRedirected_p
-  endif
+  map [p <Plug>PasteIndent_P
+  map ]p <Plug>PasteIndent_p
+  map =p <Plug>PasteRedirectedIndent_p
+  map -p <Plug>PasteRedirectedIndent_P
 >
 
 

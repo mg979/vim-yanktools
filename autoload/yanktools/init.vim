@@ -262,10 +262,20 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ToggleAutoIndent')
-        nmap <unique> <C-K>tai <Plug>ToggleAutoIndent
+        nmap <unique> <C-K>yi <Plug>ToggleAutoIndent
     endif
     nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
                 \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
+
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Freeze yank offset
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    if !hasmapto('<Plug>FreezeYank')
+        nmap <unique> <C-K>yf <Plug>FreezeYank
+    endif
+    nnoremap <silent> <Plug>FreezeYank :call yanktools#freeze_offset()<cr>
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -273,7 +283,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>DeleteYanks')
-        nmap <unique> <C-K>dy <Plug>DeleteYanks
+        nmap <unique> <C-K>yd <Plug>DeleteYanks
     endif
     nnoremap <silent> <Plug>DeleteYanks :call yanktools#clear_yanks()<cr>
 
@@ -283,7 +293,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ShowYanks')
-        nmap <unique> <C-K>sy <Plug>ShowYanks
+        nmap <unique> <C-K>ys <Plug>ShowYanks
     endif
     nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
 
@@ -309,7 +319,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ConvertYank')
-        nmap <unique> <C-K>cy <Plug>ConvertYank
+        nmap <unique> <C-K>yc <Plug>ConvertYank
     endif
     nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
 

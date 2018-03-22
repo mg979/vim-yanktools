@@ -199,11 +199,19 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#redirect_reg_with_key(key, register)
+function! yanktools#redirect_reg_with_key(key, register, ...)
+
     let s:yanktools_redirected_reg = 1
     let g:yanktools_has_changed = 1
     call yanktools#get_reg()
-    let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register
+
+    if a:0
+        " black hole redirection
+        let reg = a:register==s:r[0] ? "_" : a:register
+    else
+        " register redirection
+        let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register
+    endif
     return "\"" . reg . a:key
 endfunction
 

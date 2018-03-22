@@ -52,8 +52,8 @@ function! yanktools#init#maps()
             exec 'nmap <unique> '.key.' <Plug>Black_Hole_'.key
             exec 'xmap <unique> '.key.' <Plug>Black_Hole_'.key
         endif
-        exec 'nnoremap <silent> <Plug>Black_Hole_'.key.' "_'.map
-        exec 'xnoremap <silent> <Plug>Black_Hole_'.key.' "_'.map
+        exec 'nnoremap <silent> <expr> <Plug>Black_Hole_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register, 1)'
+        exec 'xnoremap <silent> <expr> <Plug>Black_Hole_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register, 1)'
     endfor
 
     for key in g:yanktools_redirect_keys

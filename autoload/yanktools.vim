@@ -11,7 +11,6 @@ function! yanktools#init_vars()
     let g:yanktools_has_changed = 0
     let s:has_yanked = 0
     let s:has_pasted = 0
-    let s:yanks = 1
     let g:yanktools_is_replacing = 0
     let s:last_paste_format_this = 0
     let g:yanktools_plug = []
@@ -51,12 +50,15 @@ function! yanktools#check_yanks()
         if s:zeta  | call yanktools#zeta#check_stack() | endif
         let s:zeta = 0 | let s:has_yanked = 0
         call yanktools#update_stack()
+    endif
 
-    elseif s:has_pasted
+    if s:has_pasted && !g:yanktools_has_changed
         " reset swap state if cursor moved after finishing swap
+        " g:yanktools_has_changed must be 0 because this must run after on_text_change()
         if getpos('.') != s:post_paste_pos
-            let s:has_pasted = 0      | call s:offset()
-            let s:post_paste_pos = -1
+            call s:offset()
+            let s:has_pasted = 0
+            let s:post_paste_pos = getpos('.')
             let s:last_paste_tick = b:changedtick
         endif
     endif
@@ -132,9 +134,6 @@ function! yanktools#update_stack()
         call remove(stack, ix)
         call insert(stack, {'text': text, 'type': type})
     endif
-
-    let s:yanks = len(stack)    "used by swap
-    let s:has_yanked = 0        "reset yank state variable
 endfunction
 
 
@@ -258,6 +257,7 @@ endfunction
 
 function! yanktools#swap_paste(forward, key, visual)
     let msg = 0
+    let yanks = len(g:yanktools_stack)
 
     if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
 
@@ -277,10 +277,10 @@ function! yanktools#swap_paste(forward, key, visual)
 
     " move offset
     let s:offset += (a:forward ? 1 : -1)
-    if s:offset >= s:yanks
+    if s:offset >= yanks
         let s:offset = 0 | let msg = 1
     elseif s:offset < 0
-        let s:offset = s:yanks-1 | let msg = 2
+        let s:offset = yanks-1 | let msg = 2
     endif
 
     " set register to offset

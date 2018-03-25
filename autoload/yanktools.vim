@@ -38,9 +38,9 @@ endfunction
 " autocmd calls
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:is_being_formatted(...)
+function! s:is_being_formatted()
     let all = g:yanktools_auto_format_all
-    let this = a:0 ? s:last_paste_format_this : g:yanktools_auto_format_this
+    let this = g:yanktools_auto_format_this
     return (all && !this) || (!all && this)
 endfunction
 
@@ -57,11 +57,14 @@ function! yanktools#check_yanks()
         if getpos('.') != s:post_paste_pos
             let s:has_pasted = 0      | call s:offset()
             let s:post_paste_pos = -1
+            let s:last_paste_tick = b:changedtick
         endif
     endif
 endfunction
 
 function! yanktools#on_text_change()
+    """This function is called on TextChanged event."""
+
     if s:has_yanked | call yanktools#check_yanks() | endif
     if !g:yanktools_has_changed | return | endif
     let g:yanktools_has_changed = 0
@@ -80,7 +83,7 @@ function! yanktools#on_text_change()
     if !s:yanktools_redirected_reg && !empty(g:yanktools_plug) | call yanktools#set_repeat() | endif
 
     " record position and tick
-    if s:has_pasted | let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.') | endif
+    let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
 
     " reset vars
     let g:yanktools_auto_format_this = 0

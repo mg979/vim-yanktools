@@ -16,9 +16,9 @@ function! yanktools#init#maps()
     let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
-    let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "\\")
+    let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
-    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "k")
+    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "K")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
 
     let redirect                            = g:yanktools_redirect_register
@@ -28,7 +28,7 @@ function! yanktools#init#maps()
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Yank keys
+    " Yank keys {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_yank_keys
@@ -39,10 +39,11 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
     endfor
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Redirection
+    " Redirection {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_black_hole_keys
@@ -64,10 +65,11 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
     endfor
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Replace operator
+    " Replace operator {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let key = g:yanktools_replace_operator
@@ -76,28 +78,29 @@ function! yanktools#init#maps()
         exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
     endif
     nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
-
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Replace line
+    " Replace line {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let key = g:yanktools_replace_line
 
-    if !hasmapto('<Plug>ReplaceOperatorLineSingle')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceOperatorLineSingle'
+    if !hasmapto('<Plug>ReplaceLineSingle')
+        exec 'nmap <unique> '.key.' <Plug>ReplaceLineSingle'
     endif
-    nmap <silent> <Plug>ReplaceOperatorLineSingle :call yanktools#replop#replace_line(v:register, v:count)<cr>
+    nmap <silent> <Plug>ReplaceLineSingle :call yanktools#replop#replace_line(v:register, v:count)<cr>
 
-    if !hasmapto('<Plug>ReplaceOperatorLineMulti')
-        exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceOperatorLineMulti'
+    if !hasmapto('<Plug>ReplaceLineMulti')
+        exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
     endif
-    nmap <silent> <Plug>ReplaceOperatorLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
+    nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Paste redirected
+    " Paste redirected {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let cmd = ' yanktools#paste_redirected_with_key'
@@ -122,10 +125,11 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
     endfor
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Paste keys
+    " Paste keys {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     let cmd = ' yanktools#paste_with_key'
@@ -148,10 +152,11 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
     endfor
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Swap pastes
+    " Swap pastes {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>SwapPasteNext')
@@ -168,10 +173,11 @@ function! yanktools#init#maps()
     "black hole delete and break undo history
     xnoremap <silent> <Plug>SwapPasteNext     "_da<C-g>u<esc>:call yanktools#swap_paste(1, "P", 1)<cr>
     xnoremap <silent> <Plug>SwapPastePrevious "_da<C-g>u<esc>:call yanktools#swap_paste(0, "P", 1)<cr>
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " "z" mode
+    " "z" mode {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     for key in g:yanktools_yank_keys
@@ -184,9 +190,9 @@ function! yanktools#init#maps()
     endfor
 
     if mapcheck(zeta.kill) == '' && !hasmapto('<Plug>ZetaKillMotion')
-        exec 'nmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
-        exec 'xmap <unique> '.zeta.kill.' <Plug>ZetaKillMotion'
-        exec 'nmap <unique> '.zeta.kill.kill.' <Plug>ZetaKillLine'
+        exec 'nmap <unique> '.kill.' <Plug>ZetaKillMotion'
+        exec 'xmap <unique> '.kill.' <Plug>ZetaKillMotion'
+        exec 'nmap <unique> '.kill.kill.' <Plug>ZetaKillLine'
     endif
     nnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
     nnoremap <silent> <expr> <Plug>ZetaKillLine yanktools#zeta#kill_with_key("dd")
@@ -212,17 +218,18 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'."\<cr>"
         exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'."\<cr>"
     endfor
+    "}}}
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Convenient remaps
+    " Convenient remaps {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if get(g:, 'yanktools_convenient_remaps', 0)
         nmap Y y$
         nmap S s$
         nmap zY zy$
-        nmap zK zk$
+        nmap KL K$
         nmap sx "xs
         nmap sxx "xss
         nmap sX "xs$
@@ -233,16 +240,17 @@ function! yanktools#init#maps()
         xmap sx "xp
         xmap sX $h"xp
         xmap zY $zy
-        xmap zK $zk
+        xmap KL $K
 
         map [p <Plug>PasteIndent_P
         map ]p <Plug>PasteIndent_p
         map =p <Plug>PasteRedirectedIndent_p
         map -p <Plug>PasteRedirectedIndent_P
     endif
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Toggle Autoindent
+    " Toggle Autoindent {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ToggleAutoIndent')
@@ -250,40 +258,40 @@ function! yanktools#init#maps()
     endif
     nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
                 \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Freeze yank offset
+    " Freeze yank offset {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>FreezeYank')
         nmap <unique> <C-K>yf <Plug>FreezeYank
     endif
     nnoremap <silent> <Plug>FreezeYank :call yanktools#freeze_offset()<cr>
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Clear yanks
+    " Clear yanks {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>DeleteYanks')
         nmap <unique> <C-K>yd <Plug>DeleteYanks
     endif
     nnoremap <silent> <Plug>DeleteYanks :call yanktools#clear_yanks()<cr>
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Show yanks
+    " Show yanks {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ShowYanks')
         nmap <unique> <C-K>ys <Plug>ShowYanks
     endif
     nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Interactive Paste
+    " Interactive Paste {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>IPaste')
@@ -294,25 +302,26 @@ function! yanktools#init#maps()
     noremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
     noremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
     noremap <silent> <expr> <Plug>IPasteSelect g:loaded_fzf ? ":FzfSelectYank\<cr>" : ":IPasteSelect\<cr>"
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Change yank type
+    " Change yank type {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ConvertYank')
         nmap <unique> <C-K>yc <Plug>ConvertYank
     endif
     nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
-
+    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Menu
+    " Menu {{{
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>YanktoolsMenu')
         nmap <unique> <C-K><C-P> <Plug>YanktoolsMenu
     endif
     nnoremap <silent> <Plug>YanktoolsMenu :Yanktools<cr>
+    "}}}
 
 endfunction

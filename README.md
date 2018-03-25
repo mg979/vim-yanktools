@@ -106,25 +106,25 @@ __*The new features (compared to easyclip) are:*__
 
 |Option                                        |Default                |
 |----------------------------------------------|-----------------------|
-|g:yanktools_yank_keys                         | ['y', 'Y']            |
-|g:yanktools_paste_keys                        | ['p', 'P', 'gp', 'gP']|
-|g:yanktools_black_hole_keys                   | ['x', 'X', `<Del>`]   |
-|g:yanktools_redir_paste_prefix                | `<leader>`            |
-|                                              |                       |
-|g:yanktools_redirect_register                 | "x"                   |
-|g:yanktools_redirect_keys                     | ['c', 'C', 'd', 'D']  |
-|                                              |                       |
-|g:yanktools_replace_operator                  | 's'                   |
-|g:yanktools_replace_line                      | 'ss'                  |
-|                                              |                       |
-|g:yanktools_format_prefix                     | "\\"                  |
-|g:yanktools_zeta_prefix                       | "z"                   |
-|g:yanktools_zeta_kill                         | "k"                   |
-|                                              |                       |
-|g:yanktools_replace_operator_bh               | 1                     |
-|g:yanktools_move_cursor_after_paste           | 0                     |
-|g:yanktools_auto_format_all                   | 0                     |
-|g:yanktools_convenient_remaps                 | 0                     |
+|g:yanktools_yank_keys                         | `['y', 'Y']            `|
+|g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
+|g:yanktools_black_hole_keys                   | `['x', 'X', '<Del>']   `|
+|g:yanktools_redir_paste_prefix                | `'<leader>'            `|
+|                                              | `                      `|
+|g:yanktools_redirect_register                 | `'x'                   `|
+|g:yanktools_redirect_keys                     | `['c', 'C', 'd', 'D']  `|
+|                                              | `                      `|
+|g:yanktools_replace_operator                  | `'s'                   `|
+|g:yanktools_replace_line                      | `'ss'                  `|
+|                                              | `                      `|
+|g:yanktools_format_prefix                     | `'<'                   `|
+|g:yanktools_zeta_prefix                       | `'z'                   `|
+|g:yanktools_zeta_kill                         | `'K'                   `|
+|                                              | `                      `|
+|g:yanktools_replace_operator_bh               | `1                     `|
+|g:yanktools_move_cursor_after_paste           | `0                     `|
+|g:yanktools_auto_format_all                   | `0                     `|
+|g:yanktools_convenient_remaps                 | `0                     `|
 
 You can change these options to control which keys redirect to which register,
 the default register for redirection, the prefixes used for several mapping
@@ -141,11 +141,11 @@ Default mappings for cycling the yank stack are `<M-p>` / `<M-P>`.
 If you press one of these keys before doing a paste, it will paste the last
 entry of the stack (the last yanked item), using 'P' (paste before).
 
-If you press another paste key (p, gp, \p, \P...), the stack will be cycled
+If you press another paste key (`p`, `gp`, `<p`, `<P`...), the stack will be cycled
 keeping the properties of that paste command (before or after, move cursor at
 end, autoindent, etc).
 
-Eg. you press `\P` (formatted paste before), cycling the stack will keep
+Eg. you press `<P` (formatted paste before), cycling the stack will keep
 pasting before, and applying autoformat.
 
 Simply moving the cursor after a swap resets this command.
@@ -156,8 +156,8 @@ Simply moving the cursor after a swap resets this command.
 
 #### Register redirection
 
-By default, 'x', 'X' and `<Del>` redirect to the black hole register ("_"),
-while 'c', 'C', 'd' and 'D' redirect to a special register (default "x").
+By default, `x`, `X` and `<Del>` redirect to the black hole register ("_"),
+while `c`, `C`, `d` and `D` redirect to a special register (default "x").
 You can paste directly from this register with `<leader>p/P`.
 
 Normally, when you yank to a specific register, you overwrite at the same time
@@ -218,7 +218,7 @@ The 'replace line' command can have two different behaviours:
 
 #### Zeta mode
 
-By using the 'z' prefix, you can create a disposable yank stack, from which
+By using the `z` prefix, you can create a disposable yank stack, from which
 elements are taken from the bottom when pasting, and immediately removed.
 
 Eg:  
@@ -229,8 +229,10 @@ Eg:
 The key sequence `zpzpzp` would then recreate the same sequence and empty the
 stack.
 
-You can add elements both with `zy` (zeta-yanking) and `zk` (zeta-killing,
-that is cutting). They behave just like 'y' and 'd' operators.
+Zeta-killing uses its own mapping (`K` by default), without `z` prefix.
+
+You can add elements both with `zy` (zeta-yanking) and `K` (zeta-killing,
+that is cutting). They behave just like `y` and `d` operators.
 You could add these mappings to make usage easier:
 
     map zY zy$
@@ -266,7 +268,7 @@ __*g:yanktools_format_prefix*__ controls autoformat for single pastes, while
 __*g:yanktools_auto_format_all*__ controls the global behaviour. If the latter is
 false, the former will autoindent the current paste. And viceversa.
 
-The command `ToggleAutoIndent` (`<C-K>`tai) will toggle `yanktools_auto_format_all`
+The command `ToggleAutoIndent` (`<C-K>`yi) will toggle `yanktools_auto_format_all`
 on and off.
 
 ------------------------------------------------------------------------------
@@ -292,6 +294,7 @@ Commands are:
 
     <C-K>p    choose and paste after
     <C-K>P    choose and paste before
+    <C-K>Y    select yank without pasting
 
 
 ----------------------------------------------------------------------------
@@ -299,10 +302,11 @@ Commands are:
 
 #### Other commands
 
-    <C-K>tai  toggle autoindent
-    <C-K>dy   delete yanks       (reset yank stack)
-    <C-K>sy   show yanks         (same as in vim-easyclip)
-    <C-K>cy   convert yank       (turns a blockwise yank to linewise, and vv.)
+    <C-K><C-P>   yanktools menu
+    <C-K>yi      toggle autoindent
+    <C-K>yd      delete yanks       (reset yank stack)
+    <C-K>ys      show yanks         (same as in vim-easyclip)
+    <C-K>yc      convert yank       (turns a blockwise yank to linewise, and vv.)
 
 
 ----------------------------------------------------------------------------
@@ -328,9 +332,9 @@ changing them individually.
     let g:yanktools_replace_line            = 'ss'
     let g:yanktools_replace_operator_bh     = 1
 
-    let g:yanktools_format_prefix           = "\\"
+    let g:yanktools_format_prefix           = "<"
     let g:yanktools_zeta_prefix             = "z"
-    let g:yanktools_zeta_kill               = "k"
+    let g:yanktools_zeta_kill               = "K"
     let g:yanktools_redirect_register       = "x"
     let g:yanktools_move_cursor_after_paste = 0
     let g:yanktools_auto_format_all         = 0
@@ -338,29 +342,31 @@ changing them individually.
 |Mapping                       |              | Default   |
 |------------------------------|--------------|-----------|
 |<Plug>Paste_                  |(`<key>`)       | `<key>`     |
-|<Plug>PasteIndent_            |(`<key>`)       | \\`<key>`    |
+|<Plug>PasteIndent_            |(`<key>`)       | `<` `<key>`    |
 |<Plug>PasteRedirected_        |(`<key>`)       | `<key>`     |
-|<Plug>PasteRedirectedIndent_  |(`<key>`)       | \\`<key>`    |
+|<Plug>PasteRedirectedIndent_  |(`<key>`)       | `<` `<key>`    |
 |                              |              |           |
 |<Plug>ReplaceOperator         |              | s         |
-|<Plug>ReplaceOperatorLine     |              | ss        |
-|<Plug>ReplaceOperatorLineMulti|              | `<leader>ss`|
+|<Plug>ReplaceLine             |              | ss        |
+|<Plug>ReplaceLineMulti        |              | `<leader>ss`|
 |                              |              |           |
 |<Plug>ZetaYank_               |(`<key>`)       | z `<key>`   |
-|<Plug>ZetaKill                |              | zk        |
-|<Plug>ZetaKillLine            |              | zkk       |
+|<Plug>ZetaKillMotion          |              | K        |
+|<Plug>ZetaKillLine            |              | KK       |
 |<Plug>ZetaPaste_              |(`<key>`)       | z `<key>`   |
-|<Plug>ZetaPasteIndent_        |(`<key>`)       | \\z `<key>`  |
+|<Plug>ZetaPasteIndent_        |(`<key>`)       | `<` z `<key>`  |
 |                              |              |           |
 |<Plug>SwapPasteNext           |              | `<M-p>`     |
 |<Plug>SwapPastePrevious       |              | `<M-P>`     |
 |                              |              |           |
-|<Plug>ToggleAutoIndent        |              | `<C-K>`tai  |
-|<Plug>ClearYanks              |              |`<C-K>`cy    |
-|<Plug>ShowYanks               |              |`<C-K>`sy    |
-|<Plug>YankType                |              |`<C-K>`yt    |
-|<Plug>IPasteAfter             |              |`<C-K>`p     |
-|<Plug>IPasteBefore            |              |`<C-K>`P     |
+|<Plug>ToggleAutoIndent         |             | `<C-K>`yi  |
+|<Plug>DeleteYanks              |             | `<C-K>`yd  |
+|<Plug>ShowYanks                |             | `<C-K>`ys  |
+|<Plug>ConvertYank              |             | `<C-K>`yc  |
+|<Plug>FreezeYank               |             | `<C-K>`yf  |
+|<Plug>IPasteAfter              |             | `<C-K>`p   |
+|<Plug>IPasteBefore             |             | `<C-K>`P   |
+|<Plug>IPasteSelect             |             | `<C-K>`Y   |
 
 ----------------------------------------------------------------------------
 
@@ -383,40 +389,25 @@ Or add:
   call yanktools#init#maps()
 
   nmap Y y$
-  xmap Y $y
   nmap S s$
-  xmap <C-s> $p
   nmap sx "xs
-  xmap sx "xp
   nmap sxx "xss
   nmap sX "xs$
-  xmap sX $"xp
   nmap zY zy$
-  xmap zY $zy
   nmap zK zk$
-  xmap zK $zk
-  nmap zl zyy
-  xmap zl $zy
 
-  if g:yanktools_auto_format_all
-      map [p <Plug>Paste_P
-      map ]p <Plug>Paste_p
-      map -p <Plug>PasteRedirected_P
-      map =p <Plug>PasteRedirected_p
-      map <[p <Plug>PasteIndent_P
-      map <]p <Plug>PasteIndent_p
-      map <-p <Plug>PasteRedirectedIndent_P
-      map <=p <Plug>PasteRedirectedIndent_p
-  else
-      map [p <Plug>PasteIndent_P
-      map ]p <Plug>PasteIndent_p
-      map -p <Plug>PasteRedirectedIndent_P
-      map =p <Plug>PasteRedirectedIndent_p
-      map <[p <Plug>Paste_P
-      map <]p <Plug>Paste_p
-      map <-p <Plug>PasteRedirected_P
-      map <=p <Plug>PasteRedirected_p
-  endif
+  xmap Y $hy
+  xmap D $hd
+  xmap X $hp
+  xmap sx "xp
+  xmap sX $h"xp
+  xmap zY $zy
+  xmap zK $zk
+
+  map [p <Plug>PasteIndent_P
+  map ]p <Plug>PasteIndent_p
+  map =p <Plug>PasteRedirectedIndent_p
+  map -p <Plug>PasteRedirectedIndent_P
 ```
 
 

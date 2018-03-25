@@ -1,5 +1,5 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Functions
+" Functions {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#init_vars()
@@ -23,18 +23,63 @@ function! yanktools#init_vars()
     let s:last_paste_tick = -1
 endfunction
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#set_repeat()
     let p = g:yanktools_plug
     silent! call repeat#setreg("\<Plug>".p[0], p[2])
     silent! call repeat#set("\<Plug>".p[0], p[1])
 endfunction
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yanktools#zeta_call()
     let s:zeta = 1 | let s:has_yanked = 1
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" autocmd calls
+
+function! yanktools#default_reg()
+    " get default register
+
+    let clipboard_flags = split(&clipboard, ',')
+    if index(clipboard_flags, 'unnamedplus') >= 0
+        return "+"
+    elseif index(clipboard_flags, 'unnamed') >= 0
+        return "*"
+    else
+        return "\""
+    endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#get_reg(...)
+    let r = a:0 ? g:yanktools_redirect_register : yanktools#default_reg()
+    let s:r = [r, getreg(r), getregtype(r)]
+    return s:r
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#update_stack()
+    let stack = g:yanktools_stack
+    let r = yanktools#get_reg() | let text = r[1] | let type = r[2]
+    let ix = index(stack, {'text': text, 'type': type})
+
+    " if yank is duplicate, put it upfront removing the previous one
+    if ix == -1
+        call insert(stack, {'text': text, 'type': type})
+    else
+        call remove(stack, ix)
+        call insert(stack, {'text': text, 'type': type})
+    endif
+endfunction
+"}}}
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Autocommand calls {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:is_being_formatted()
@@ -42,6 +87,8 @@ function! s:is_being_formatted()
     let this = g:yanktools_auto_format_this
     return (all && !this) || (!all && this)
 endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#check_yanks()
     """This function is called on cursor moved, but also sparsely to update stacks."""
@@ -63,6 +110,8 @@ function! yanktools#check_yanks()
         endif
     endif
 endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#on_text_change()
     """This function is called on TextChanged event."""
@@ -92,54 +141,11 @@ function! yanktools#on_text_change()
     let g:yanktools_move_this = 0
     let s:yanktools_redirected_reg = 0
 endfunction
+"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Default register
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#default_reg()
-    " get default register
-
-    let clipboard_flags = split(&clipboard, ',')
-    if index(clipboard_flags, 'unnamedplus') >= 0
-        return "+"
-    elseif index(clipboard_flags, 'unnamed') >= 0
-        return "*"
-    else
-        return "\""
-    endif
-endfunction
-
-function! yanktools#get_reg(...)
-    let r = a:0 ? g:yanktools_redirect_register : yanktools#default_reg()
-    let s:r = [r, getreg(r), getregtype(r)]
-    return s:r
-endfunction
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Update stack
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#update_stack()
-    let stack = g:yanktools_stack
-    let r = yanktools#get_reg() | let text = r[1] | let type = r[2]
-    let ix = index(stack, {'text': text, 'type': type})
-
-    " if yank is duplicate, put it upfront removing the previous one
-    if ix == -1
-        call insert(stack, {'text': text, 'type': type})
-    else
-        call remove(stack, ix)
-        call insert(stack, {'text': text, 'type': type})
-    endif
-endfunction
-
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Yank/paste
+" Yank/paste {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#yank_with_key(key)
@@ -175,10 +181,11 @@ function! yanktools#paste_with_key(key, plug, visual, format)
 
     return a:key
 endfunction
+"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirect
+" Redirect {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
@@ -216,11 +223,11 @@ function! yanktools#redirect_reg_with_key(key, register, ...)
     endif
     return "\"" . reg . a:key
 endfunction
-
+"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Swap paste
+" Swap paste {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:offset()
@@ -302,4 +309,5 @@ function! yanktools#swap_paste(forward, key, visual)
     if !s:freeze_offset | call setreg(r[0], r[1], r[2]) | endif
     if msg | call s:msg(msg) | endif
 endfunction
+"}}}
 

@@ -69,7 +69,7 @@ function! yanktools#extras#select_yank_fzf(yank, before)
     let index = substitute(index, "]", "", "")
     let index = substitute(index, " ", "", "g")
     let r = yanktools#get_reg()
-    call setreg(r[0], g:yanktools_stack[index]['text'], r[2])
+    call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
     if a:before >= 0
         if a:before | execute "normal P" | else | execute "normal p" | endif
     endif
@@ -159,7 +159,7 @@ function! yanktools#extras#select_yank(before)
             echo "\n" | echoerr "Yank index out of bounds"
         else
             let r = yanktools#get_reg()
-            call setreg(r[0], g:yanktools_stack[index]['text'], r[2])
+            call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
             if a:before >= 0
                 if a:before | execute "normal P" | else | execute "normal p" | endif
             endif

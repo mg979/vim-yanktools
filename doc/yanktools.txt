@@ -185,7 +185,7 @@ You can paste directly from this register with <leader>p/P.
 
 Normally, when you yank to a specific register, you overwrite at the same time
 the unnamed register, but this isn't the case with this plugin, since it is
-restored to its previous content after each delete/change opration.
+restored to its previous content after each delete/change operation.
 
 Black hole and special register are only the defaults for each key: you can
 still specify a register and it will override the default redirection. Eg.:
@@ -257,7 +257,7 @@ Eg:
     `text 2`    (zyy)
     `text 3`    (zyy)
 
-The key sequence `zpzpzp` would then recreate the same sequence and empty the
+The key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack.
 
 Zeta-killing uses its own mapping ('K' by default), without 'z' prefix.

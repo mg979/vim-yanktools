@@ -162,7 +162,15 @@ You can paste directly from this register with `<leader>p/P`.
 
 Normally, when you yank to a specific register, you overwrite at the same time
 the unnamed register, but this isn't the case with this plugin, since it is
-restored to its previous content after each delete/change opration.
+restored to its previous content after each delete/change operation.
+
+Black hole and special register are only the defaults for each key: you can
+still specify a register and it will override the default redirection. Eg.:
+
+    dd     will delete the line while redirecting to register "x"
+    "_dd   will delete the line while redirecting to black hole register
+    cc     will change the line while redirecting to black hole register
+    "xcc   will change the line while redirecting to register "x"
 
 Additionally, when you paste in visual mode, the replaced text will not
 overwrite the default register.
@@ -173,8 +181,8 @@ You can change the `<leader>` prefix by changing this setting:
 
 You can define the keys that redirect to the black hole/alternative register:
 
-    let g:yanktools_black_hole_keys = ['x', 'X', '<Del>']
-    let g:yanktools_redirect_keys   = ['c', 'C', 'd', 'D']
+    let g:yanktools_black_hole_keys = ['c', 'C', 'x', 'X', '<Del>']
+    let g:yanktools_redirect_keys   = ['d', 'D']
 
 You can redefine the default register for redirection:
 
@@ -186,15 +194,15 @@ You can redefine the default register for redirection:
 
 #### Replace operator
 
-Default mapping is 's' for the operator, 'ss' to replace whole lines.
+Default mapping is `s` for the operator, `ss` to replace whole lines.
 
 By default the replaced content is redirected to the black hole, but you can
-have it redirected to the 'x' register (or your redirection register) by
+have it redirected to the `x` register (or your redirection register) by
 setting:
 
     let g:yanktools_replace_operator_bh = 0
 
-Both 's' and 'ss' accept a register from which to paste. You can therefore
+Both `s` and `ss` accept a register from which to paste. You can therefore
 create a mapping such as:
 
     map sx "xs
@@ -226,7 +234,7 @@ Eg:
     `text 2`    (zyy)  
     `text 3`    (zyy)  
 
-The key sequence `zpzpzp` would then recreate the same sequence and empty the
+The key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack.
 
 Zeta-killing uses its own mapping (`K` by default), without `z` prefix.
@@ -264,11 +272,11 @@ The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
 
 #### Autoformat
 
-__*g:yanktools_format_prefix*__ controls autoformat for single pastes, while
-__*g:yanktools_auto_format_all*__ controls the global behaviour. If the latter is
+`g:yanktools_format_prefix` controls autoformat for single pastes, while
+`g:yanktools_auto_format_all` controls the global behaviour. If the latter is
 false, the former will autoindent the current paste. And viceversa.
 
-The command `ToggleAutoIndent` (`<C-K>`yi) will toggle `yanktools_auto_format_all`
+The command `ToggleAutoIndent` (`<C-K>yi`) will toggle `yanktools_auto_format_all`
 on and off.
 
 ------------------------------------------------------------------------------
@@ -332,41 +340,41 @@ changing them individually.
     let g:yanktools_replace_line            = 'ss'
     let g:yanktools_replace_operator_bh     = 1
 
-    let g:yanktools_format_prefix           = "<"
-    let g:yanktools_zeta_prefix             = "z"
-    let g:yanktools_zeta_kill               = "K"
-    let g:yanktools_redirect_register       = "x"
+    let g:yanktools_format_prefix           = '<'
+    let g:yanktools_zeta_prefix             = 'z'
+    let g:yanktools_zeta_kill               = 'K'
+    let g:yanktools_redirect_register       = 'x'
     let g:yanktools_move_cursor_after_paste = 0
     let g:yanktools_auto_format_all         = 0
 
-|Mapping                       |              | Default   |
-|------------------------------|--------------|-----------|
-|<Plug>Paste_                  |(`<key>`)       | `<key>`     |
-|<Plug>PasteIndent_            |(`<key>`)       | `<` `<key>`    |
-|<Plug>PasteRedirected_        |(`<key>`)       | `<key>`     |
-|<Plug>PasteRedirectedIndent_  |(`<key>`)       | `<` `<key>`    |
-|                              |              |           |
-|<Plug>ReplaceOperator         |              | s         |
-|<Plug>ReplaceLine             |              | ss        |
-|<Plug>ReplaceLineMulti        |              | `<leader>ss`|
-|                              |              |           |
-|<Plug>ZetaYank_               |(`<key>`)       | z `<key>`   |
-|<Plug>ZetaKillMotion          |              | K        |
-|<Plug>ZetaKillLine            |              | KK       |
-|<Plug>ZetaPaste_              |(`<key>`)       | z `<key>`   |
-|<Plug>ZetaPasteIndent_        |(`<key>`)       | `<` z `<key>`  |
-|                              |              |           |
-|<Plug>SwapPasteNext           |              | `<M-p>`     |
-|<Plug>SwapPastePrevious       |              | `<M-P>`     |
-|                              |              |           |
-|<Plug>ToggleAutoIndent         |             | `<C-K>`yi  |
-|<Plug>DeleteYanks              |             | `<C-K>`yd  |
-|<Plug>ShowYanks                |             | `<C-K>`ys  |
-|<Plug>ConvertYank              |             | `<C-K>`yc  |
-|<Plug>FreezeYank               |             | `<C-K>`yf  |
-|<Plug>IPasteAfter              |             | `<C-K>`p   |
-|<Plug>IPasteBefore             |             | `<C-K>`P   |
-|<Plug>IPasteSelect             |             | `<C-K>`Y   |
+|Mapping                       |            | Default   |
+|------------------------------|------------|-----------|
+|<Plug>Paste_                  |`(<key>)`   | `<key>`     |
+|<Plug>PasteIndent_            |`(<key>)`   | `< <key>`    |
+|<Plug>PasteRedirected_        |`(<key>)`   | `<key>`     |
+|<Plug>PasteRedirectedIndent_  |`(<key>)`   | `< <key>`    |
+|                              |            |           |
+|<Plug>ReplaceOperator         |            | `s`        |
+|<Plug>ReplaceLine             |            | `ss`        |
+|<Plug>ReplaceLineMulti        |            | `<leader>ss`|
+|                              |            |           |
+|<Plug>ZetaYank_               |`(<key>)`   | `z <key>`   |
+|<Plug>ZetaKillMotion          |            | `K`        |
+|<Plug>ZetaKillLine            |            | `KK`       |
+|<Plug>ZetaPaste_              |`(<key>)`   | `z <key>`   |
+|<Plug>ZetaPasteIndent_        |`(<key>)`   | `<z <key>`  |
+|                              |            |           |
+|<Plug>SwapPasteNext           |            | `<M-p>`     |
+|<Plug>SwapPastePrevious       |            | `<M-P>`     |
+|                              |            |           |
+|<Plug>ToggleAutoIndent        |            | `<C-K>yi` |
+|<Plug>DeleteYanks             |            | `<C-K>yd` |
+|<Plug>ShowYanks               |            | `<C-K>ys` |
+|<Plug>ConvertYank             |            | `<C-K>yc` |
+|<Plug>FreezeYank              |            | `<C-K>yf` |
+|<Plug>IPasteAfter             |            | `<C-K>p` |
+|<Plug>IPasteBefore            |            | `<C-K>P` |
+|<Plug>IPasteSelect            |            | `<C-K>Y` |
 
 ----------------------------------------------------------------------------
 

@@ -70,7 +70,9 @@ function! yanktools#extras#select_yank_fzf(yank, before)
     let index = substitute(index, " ", "", "g")
     let r = yanktools#get_reg()
     call setreg(r[0], g:yanktools_stack[index]['text'], r[2])
-    if a:before | execute "normal P" | else | execute "normal p" | endif
+    if a:before >= 0
+        if a:before | execute "normal P" | else | execute "normal p" | endif
+    endif
 endfunction
 
 function! yanktools#extras#fzf(yank)
@@ -81,6 +83,10 @@ function! yanktools#extras#fzf_before(yank)
     call yanktools#extras#select_yank_fzf(a:yank, 1)
 endfunction
 
+function! yanktools#extras#fzf_select_only(yank)
+    call yanktools#extras#select_yank_fzf(a:yank, -1)
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#extras#fzf_menu(choice)
@@ -88,8 +94,10 @@ function! yanktools#extras#fzf_menu(choice)
         call yanktools#freeze_offset()
     elseif a:choice == 'Clear Yanks'
         call yanktools#extras#clear_yanks(1)
-    elseif a:choice == 'Show Yanks'
+    elseif a:choice == 'Display Yanks'
         call yanktools#extras#show_yanks()
+    elseif a:choice == 'Select Yank'
+        FzfSelectYank
     elseif a:choice == 'Convert Yank Type'
         call yanktools#extras#change_yank_type()
     elseif a:choice == 'Toggle Auto Indent'
@@ -152,7 +160,9 @@ function! yanktools#extras#select_yank(before)
         else
             let r = yanktools#get_reg()
             call setreg(r[0], g:yanktools_stack[index]['text'], r[2])
-            if a:before | execute "normal P" | else | execute "normal p" | endif
+            if a:before >= 0
+                if a:before | execute "normal P" | else | execute "normal p" | endif
+            endif
         endif
     endif
 endfunction

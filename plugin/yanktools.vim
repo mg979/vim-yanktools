@@ -27,15 +27,21 @@ com! FzfPasteBefore call fzf#run({'source': yanktools#extras#yanks(),
             \ 'sink': function('yanktools#extras#fzf_before'), 'down': '30%',
             \ 'options': '--prompt "Paste Before >>>   "'})
 
+com! FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(),
+            \ 'sink': function('yanktools#extras#fzf_select_only'), 'down': '30%',
+            \ 'options': '--prompt "Select Yank >>>   "'})
+
 com! IPasteAfter call yanktools#extras#select_yank(0)
 com! IPasteBefore call yanktools#extras#select_yank(1)
+com! IPasteSelect call yanktools#extras#select_yank(-1)
 
 com! Yanktools call fzf#run({'source': [
             \ 'Toggle Freeze Offset',
             \ 'Convert Yank Type',
             \ 'Toggle Auto Indent',
             \ 'Clear Yanks',
-            \ 'Show Yanks',
+            \ 'Display Yanks',
+            \ 'Select Yank',
             \ ],
             \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
             \ 'options': '--prompt "Yanktools Menu >>>   "'})

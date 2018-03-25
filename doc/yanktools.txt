@@ -408,21 +408,20 @@ Or add:
   call yanktools#init#maps()
 
   nmap Y y$
-  xmap Y $hy
-  xmap D $hd
-  nmap zY zy$
-  xmap zY $zy
-  nmap zK zk$
-  xmap zK $zk
   nmap S s$
-  xmap <C-s> $hp
   nmap sx "xs
-  xmap sx "xp
   nmap sxx "xss
   nmap sX "xs$
+  nmap zY zy$
+  nmap zK zk$
+
+  xmap Y $hy
+  xmap D $hd
+  xmap X $hp
+  xmap sx "xp
   xmap sX $h"xp
-  nmap zl zyy
-  xmap zl $zy
+  xmap zY $zy
+  xmap zK $zk
 
   map [p <Plug>PasteIndent_P
   map ]p <Plug>PasteIndent_p

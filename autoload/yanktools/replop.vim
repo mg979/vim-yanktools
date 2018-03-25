@@ -17,12 +17,12 @@ function! yanktools#replop#paste_replacement()
     let &virtualedit = s:oldvmode
 endfunction
 
-function! yanktools#replop#replace(type, ...)
+function! yanktools#replop#replace(type)
     let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
     let g:yanktools_has_changed = 1
     let g:yanktools_is_replacing = 1
     let s:oldvmode = &virtualedit | set virtualedit=onemore
-    if a:0
+    if a:type == 'line'
         exe "keepjump normal! `[V`]"
         execute "normal! \"".reg."d"
     else
@@ -30,6 +30,7 @@ function! yanktools#replop#replace(type, ...)
         execute "normal! \"".reg."d"
     endif
 endfunction
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Replace lines
@@ -51,15 +52,19 @@ function! s:reset_vars_after_replace()
 endfunction
 
 function! yanktools#replop#replace_line(r, c, ...)
-    let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
-    let s:repl_reg = a:r
-    let s:oldvmode = &virtualedit | set virtualedit=onemore
 
-    " last line needs 'paste after'
-    let paste_type = (line(".") == line("$")) ? "p" : "P"
+    " only run in first iteration
+    if !s:replace_count
+        let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
+        let s:repl_reg = a:r
+        let s:oldvmode = &virtualedit | set virtualedit=onemore
 
-    " store count in the first iteration (it will be 0 afterwards)
-    if a:c | let s:replace_count = a:c | endif
+        " last line needs 'paste after'
+        let paste_type = (line(".") == line("$")) ? "p" : "P"
+
+        " store count in the first iteration (it will be 0 afterwards)
+        if a:c | let s:replace_count = a:c | endif
+    endif
 
     " no count, single line replacement
     if !a:c && !s:replace_count
@@ -88,12 +93,8 @@ function! yanktools#replop#replace_line(r, c, ...)
 
         " will reset vars when this reaches 0
         let s:replace_count -= 1
-
-    else
-        " final iteration, can reset
-        call s:reset_vars_after_replace()
+        if !s:replace_count | call s:reset_vars_after_replace() | endif
     endif
-
 endfunction
 
 

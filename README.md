@@ -108,19 +108,19 @@ __*The new features (compared to easyclip) are:*__
 |----------------------------------------------|-----------------------|
 |g:yanktools_yank_keys                         | `['y', 'Y']            `|
 |g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
-|g:yanktools_black_hole_keys                   | `['x', 'X', '<Del>']   `|
+|g:yanktools_black_hole_keys                   | `['c', 'C', 'x', 'X', '<Del>']   `|
 |g:yanktools_redir_paste_prefix                | `'<leader>'            `|
-|                                              | `                      `|
+|                                              |                       |
 |g:yanktools_redirect_register                 | `'x'                   `|
-|g:yanktools_redirect_keys                     | `['c', 'C', 'd', 'D']  `|
-|                                              | `                      `|
+|g:yanktools_redirect_keys                     | `['d', 'D']  `|
+|                                              |                       |
 |g:yanktools_replace_operator                  | `'s'                   `|
 |g:yanktools_replace_line                      | `'ss'                  `|
-|                                              | `                      `|
+|                                              |                       |
 |g:yanktools_format_prefix                     | `'<'                   `|
 |g:yanktools_zeta_prefix                       | `'z'                   `|
 |g:yanktools_zeta_kill                         | `'K'                   `|
-|                                              | `                      `|
+|                                              |                       |
 |g:yanktools_replace_operator_bh               | `1                     `|
 |g:yanktools_move_cursor_after_paste           | `0                     `|
 |g:yanktools_auto_format_all                   | `0                     `|
@@ -332,8 +332,8 @@ changing them individually.
 
     let g:yanktools_paste_keys              = ['p', 'P', 'gp', 'gP']
     let g:yanktools_yank_keys               = ['y', 'Y']
-    let g:yanktools_black_hole_keys         = ['x','X', '<Del>']
-    let g:yanktools_redirect_keys           = ['c', 'C', 'd', 'D']
+    let g:yanktools_black_hole_keys         = ['c', 'C', 'x', 'X', '<Del>']
+    let g:yanktools_redirect_keys           = ['d', 'D']
     let g:yanktools_redir_paste_prefix      = '<leader>'
 
     let g:yanktools_replace_operator        = 's'

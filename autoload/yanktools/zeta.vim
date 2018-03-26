@@ -16,7 +16,7 @@ function! yanktools#zeta#update_stack(redirected)
     if a:redirected
         let r = yanktools#get_reg(a:redirected)
     else
-        let r = yanktools#get_reg()
+        let r = yanktools#get_reg(0)
     endif
     call add(g:yanktools_zeta_stack, {'text': r[1], 'type': r[2]})
 endfunction
@@ -59,7 +59,7 @@ function! yanktools#zeta#paste_with_key(key, plug, visual, format)
     let g:yanktools_plug = [a:plug, v:count, yanktools#default_reg()]
 
     " backup register
-    let r = yanktools#get_reg()
+    let r = yanktools#get_reg(0)
 
     " set register
     let text = g:yanktools_zeta_stack[0]['text']

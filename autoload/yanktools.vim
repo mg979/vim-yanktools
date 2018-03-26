@@ -11,6 +11,7 @@ function! yanktools#init_vars()
     let g:yanktools_has_changed = 0
     let s:has_yanked = 0
     let s:has_pasted = 0
+    let s:using_redir_stack = 0
     let g:yanktools_is_replacing = 0
     let s:last_paste_format_this = 0
     let g:yanktools_plug = []
@@ -54,17 +55,22 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#get_reg(...)
-    let r = a:0 ? g:yanktools_redirect_register : yanktools#default_reg()
+function! yanktools#get_reg(redir)
+    let r = a:redir ? g:yanktools_redirect_register : yanktools#default_reg()
+
+    " asking for redirected register, don't store s:var
+    if a:redir | return [r, getreg(r), getregtype(r)] | endif
+
+    " store current register as s:var for later restoring, then return it
     let s:r = [r, getreg(r), getregtype(r)]
     return s:r
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#update_stack()
-    let stack = g:yanktools_stack
-    let r = yanktools#get_reg() | let text = r[1] | let type = r[2]
+function! yanktools#update_stack(...)
+    let stack = a:0 ? g:yanktools_redir_stack : g:yanktools_stack
+    let r = yanktools#get_reg(a:0) | let text = r[1] | let type = r[2]
     let ix = index(stack, {'text': text, 'type': type})
 
     " if yank is duplicate, put it upfront removing the previous one
@@ -157,7 +163,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#paste_with_key(key, plug, visual, format)
-    if a:visual | call yanktools#get_reg() | let s:yanktools_redirected_reg = 1 | endif
+    if a:visual | call yanktools#get_reg(0) | let s:yanktools_redirected_reg = 1 | endif
     if a:format | let g:yanktools_auto_format_this = 1 | endif
 
     " set paste variables
@@ -189,6 +195,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
+    call yanktools#update_stack(1)
     call setreg(s:r[0], s:r[1], s:r[2])
 endfun
 
@@ -199,9 +206,14 @@ function! yanktools#paste_redirected_with_key(key, plug, visual, format)
     let register = g:yanktools_redirect_register
     let g:yanktools_plug = [a:plug, v:count, register]
     let g:yanktools_has_changed = 1
+    let s:has_pasted = 1
+
+    " set last_paste_key and remember format_this option (used by swap)
+    let s:last_paste_key = a:key
+    let s:last_paste_format_this = g:yanktools_auto_format_this
 
     " reset stack offset (unless frozen)
-    call s:offset()
+    call s:offset(1)
 
     return '"'.register.a:key
 endfunction
@@ -212,15 +224,13 @@ function! yanktools#redirect_reg_with_key(key, register, ...)
 
     let s:yanktools_redirected_reg = 1
     let g:yanktools_has_changed = 1
-    call yanktools#get_reg()
+    call yanktools#get_reg(0)
 
-    if a:0
-        " black hole redirection
-        let reg = a:register==s:r[0] ? "_" : a:register
-    else
-        " register redirection
-        let reg = a:register==s:r[0] ? g:yanktools_redirect_register : a:register
-    endif
+    " key uses black hole or register redirection?
+    let redir = a:0 ? "_" : g:yanktools_redirect_register
+    " really redirect or a register has been specified?
+    let reg = a:register==s:r[0] ? redir : a:register
+
     return "\"" . reg . a:key
 endfunction
 "}}}
@@ -230,15 +240,17 @@ endfunction
 " Swap paste {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:offset()
+function! s:offset(...)
     if !s:freeze_offset | let s:offset = 0 | endif
+    let s:using_redir_stack = a:0
 endfunction
 
 function! s:msg(...)
     echohl WarningMsg
+    let t = s:using_redir_stack ? 'redirected' : 'yank'
     if a:1 == 3     | echo a:2
-    elseif a:1 == 1 | echo "Reached the end of the stack, restarting from the beginning."
-    else            | echo "Reached the beginning of the stack, restarting from the end."
+    elseif a:1 == 1 | echo "Reached the end of the ".t." stack, restarting from the beginning."
+    else            | echo "Reached the beginning of the ".t." stack, restarting from the end."
     endif
     echohl None
 endfunction
@@ -254,7 +266,7 @@ function! yanktools#freeze_offset()
         call setreg(r[0], r[1], r[2])
         call s:msg(3, "Yank offset will be reset normally.")
     else
-        let s:frozenreg = yanktools#get_reg()
+        let s:frozenreg = yanktools#get_reg(0)
         let s:freeze_offset = 1
         call s:msg(3, "Yank offset won't be reset.")
     endif
@@ -264,7 +276,6 @@ endfunction
 
 function! yanktools#swap_paste(forward, key, visual)
     let msg = 0
-    let yanks = len(g:yanktools_stack)
 
     if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
 
@@ -280,7 +291,14 @@ function! yanktools#swap_paste(forward, key, visual)
         return
     endif
 
-    let r = yanktools#get_reg()
+    let r = yanktools#get_reg(0)
+    if s:using_redir_stack
+        let stack = g:yanktools_redir_stack
+        let yanks = len(stack)
+    else
+        let stack = g:yanktools_stack
+        let yanks = len(stack)
+    endif
 
     " move offset
     let s:offset += (a:forward ? 1 : -1)
@@ -291,8 +309,8 @@ function! yanktools#swap_paste(forward, key, visual)
     endif
 
     " set register to offset
-    let text = g:yanktools_stack[s:offset]['text']
-    let type = g:yanktools_stack[s:offset]['type']
+    let text = stack[s:offset]['text']
+    let type = stack[s:offset]['type']
     call setreg(r[0], text, type)
 
     " set flag before actual paste, so that autocmd call will run

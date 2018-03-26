@@ -15,8 +15,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#extras#clear_yanks(...)
-    let r = yanktools#get_reg()
+    let r = yanktools#get_reg(0)
+    let rd = yanktools#get_reg(1)
     let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
+    let g:yanktools_redir_stack = [{'text': rd[1], 'type': rd[2]}]
     if a:0 | echo "All yanks in the stack, except the last, have been cleared." | endif
 endfunction
 
@@ -68,7 +70,7 @@ function! yanktools#extras#select_yank_fzf(yank, before)
     let index = substitute(index, "[", "", "")
     let index = substitute(index, "]", "", "")
     let index = substitute(index, " ", "", "g")
-    let r = yanktools#get_reg()
+    let r = yanktools#get_reg(0)
     call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
     if a:before >= 0
         if a:before | execute "normal P" | else | execute "normal p" | endif
@@ -158,7 +160,7 @@ function! yanktools#extras#select_yank(before)
         if index < 0 || index > len(g:yanktools_stack)
             echo "\n" | echoerr "Yank index out of bounds"
         else
-            let r = yanktools#get_reg()
+            let r = yanktools#get_reg(0)
             call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
             if a:before >= 0
                 if a:before | execute "normal P" | else | execute "normal p" | endif

@@ -239,6 +239,24 @@ endfunction
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Move operator {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#move(plug, line)
+
+    if s:has_yanked | call yanktools#check_yanks() | endif
+    let s:has_yanked = 1
+    let g:yanktools_has_changed = 1
+
+    " set repeat.vim plug
+    let g:yanktools_plug = [a:plug, v:count, v:register]
+
+    return a:line ? 'dd' : 'd'
+endfunction
+"}}}
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swap paste {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

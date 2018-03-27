@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------------
 
 
-#### Introduction
+### Introduction
 
 Yanktools is a plugin inspired by vim-yankstack and vim-easyclip, and it
 takes elements from both. You should expect all features from vim-easyclip,
@@ -18,7 +18,7 @@ vim-yankstack operates).
 ----------------------------------------------------------------------------
 
 
-#### Installation
+### Installation
 
 Use [vim-plug](https://github.com/junegunn/vim-plug) or any other Vim plugin manager.
 
@@ -40,7 +40,7 @@ See also g:yanktools_convenient_remaps.
 ----------------------------------------------------------------------------
 
 
-#### Features list
+### Features list
 
 |Feature                               |  yanktools| yankstack |easyclip  |
 |--------------------------------------|-----------|-----------|----------|
@@ -74,6 +74,8 @@ __*Common options:*__
   mappings to perform a single indented paste, and this behaviour is inverted
   if autoindent is active (ie. single unindented paste).
 
+* __Move operator__: included, but disabled by default (replaced by redirection).
+
 * __repeat.vim support__: yanktools supports it for most paste operations.
 
 ----------------------------------------------------------------------------
@@ -102,7 +104,7 @@ __*The new features (compared to easyclip) are:*__
 ----------------------------------------------------------------------------
 
 
-#### Options
+### Options
 
 |Option                                        |Default                |
 |----------------------------------------------|-----------------------|
@@ -135,7 +137,7 @@ types, etc.
 ----------------------------------------------------------------------------
 
 
-#### Cycle yank stack
+### Cycle yank stack
 
 Default mappings for cycling the yank stack are `<M-p>` / `<M-P>`.
 
@@ -155,7 +157,7 @@ Simply moving the cursor after a swap resets this command.
 ----------------------------------------------------------------------------
 
 
-#### Register redirection
+### Register redirection
 
 By default, `x`, `X` and `<Del>` redirect to the black hole register ("_"),
 while `c`, `C`, `d` and `D` redirect to a special register (default "x").
@@ -193,7 +195,7 @@ You can redefine the default register for redirection:
 ----------------------------------------------------------------------------
 
 
-#### Redirected stack
+### Redirected stack
 
 Text that is deleted (redirected), even if it doesn't overwrite the unnamed
 register, can still be added to the normal yank stack, so that deleted text
@@ -217,8 +219,24 @@ depend on the key you used for pasting:
 
 ----------------------------------------------------------------------------
 
+### Move operator
 
-#### Replace operator
+You can setup a _move operator_ as in vim-easyclip, if you prefer. Eg:
+
+```
+  let g:yanktools_move_key = 'm'
+  let g:yanktools_black_hole_keys = ['d', 'D', 'c', 'C', 'x', 'X', '<Del>']
+```
+
+Moving text will then overwrite the default register, while all others will be
+redirected to black hole. Moved text will also be pushed in the yank stack, as
+a normal yank.
+
+
+----------------------------------------------------------------------------
+
+
+### Replace operator
 
 Default mapping is `s` for the operator, `ss` to replace whole lines.
 
@@ -250,7 +268,7 @@ The 'replace line' command can have two different behaviours:
 ----------------------------------------------------------------------------
 
 
-#### Zeta mode
+### Zeta mode
 
 By using the `z` prefix, you can create a disposable yank stack, from which
 elements are taken from the bottom when pasting, and immediately removed.
@@ -279,7 +297,7 @@ See also g:yanktools_convenient_remaps.
 ----------------------------------------------------------------------------
 
 
-#### Repeat.vim
+### Repeat.vim
 
 This plugin supporrs `repeat-vim` for most paste operations. This means that
 you can press `dot` to repeat the last paste command while keeping the same
@@ -296,7 +314,7 @@ The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
 ----------------------------------------------------------------------------
 
 
-#### Autoformat
+### Autoformat
 
 `g:yanktools_format_prefix` controls autoformat for single pastes, while
 `g:yanktools_auto_format_all` controls the global behaviour. If the latter is
@@ -319,7 +337,7 @@ Some commands (replace operator, zeta paste) use this method by default.
 ----------------------------------------------------------------------------
 
 
-#### Interactive paste
+### Interactive paste
 
 This function is taken as-is from vim-easyclip, but if you use fzf-vim,
 you'll be able to use it to fuzzy-select the entry.
@@ -334,7 +352,7 @@ Commands are:
 ----------------------------------------------------------------------------
 
 
-#### Other commands
+### Other commands
 
     <C-K><C-P>   yanktools menu
     <C-K>yi      toggle autoindent
@@ -346,7 +364,7 @@ Commands are:
 ----------------------------------------------------------------------------
 
 
-#### Mappings
+### Mappings
 
 A full list of the mappings is impossible to make, because the <Plug> names
 change if you change the default yank/paste/redirect keys.
@@ -406,7 +424,7 @@ changing them individually.
 ----------------------------------------------------------------------------
 
 
-#### Convenient remaps
+### Convenient remaps
 
 By setting this option, you can enable these keymappings, inspired by
 vim-unimpaired. They are optimal for a US keyboard, so you may need to
@@ -449,7 +467,7 @@ Or add:
 ----------------------------------------------------------------------------
 
 
-#### Credits
+### Credits
 
 Braam Moolenaar for Vim  
 Steve Vermeulen for vim-easyclip  
@@ -460,7 +478,7 @@ Max Brunsfeld for vim-yankstack
 ----------------------------------------------------------------------------
 
 
-#### License
+### License
 
 MIT
 

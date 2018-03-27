@@ -9,6 +9,7 @@ function! yanktools#init#maps()
     let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
     let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['c', 'C', 'x','X', '<Del>'])
     let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['d', 'D'])
+    let g:yanktools_move_key                = get(g:, 'yanktools_move_key', '')
     let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
     let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 
@@ -40,6 +41,22 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
     endfor
+    "}}}
+
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Move keys {{{
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    let key = g:yanktools_move_key
+    if !empty(key) && mapcheck(key) == '' && !hasmapto('<Plug>MoveOperator')
+        exec 'nmap <unique> '.key.' <Plug>MoveOperator'
+        exec 'nmap <unique> '.key.key.' <Plug>MoveLine'
+        exec 'xmap <unique> '.key.' <Plug>MoveOperator'
+    endif
+    exec 'nnoremap <silent> <expr> <Plug>Move_'.key.' yanktools#move("\<Plug>MoveOperator", 0)'
+    exec 'nnoremap <silent> <expr> <Plug>MoveLine yanktools#move("\<Plug>MoveLine", 1)'
+    exec 'xnoremap <silent> <expr> <Plug>Move_'.key.' yanktools#move("\<Plug>MoveOperator", 0)'
     "}}}
 
 

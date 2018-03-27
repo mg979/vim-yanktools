@@ -10,6 +10,7 @@ Options                                              |yanktools-options|
 Cycle yank stack                                     |yanktools-cycle|
 Register redirection                                 |yanktools-redirection|
 Redirected stack                                     |yanktools-redirected-stack|
+Move operator                                        |yanktools-move|
 Replace operator                                     |yanktools-replace|
 Zeta mode                                            |yanktools-zeta|
 Interactive paste                                    |yanktools-interactive|
@@ -70,6 +71,7 @@ Black hole redirection                |    yes    |   no      |   yes    |
 Visual paste redirection              |    yes    |   no      |    ?     |
 Register redirection                  |    yes    |   no      |   no     |
 Replace operator                      |    yes    |   no      |   yes    |
+Move operator                         |    yes    |   no      |   yes    |
 Zeta mode                             |    yes    |   no      |   no     |
 Autoformat                            |    yes    |   no      |   yes    |
 Move cursor to the end                |    yes    |   no      |   yes    |
@@ -94,6 +96,8 @@ Common options:
 * Autoindent: you can toggle it, or use a prefix to the normal
   mappings to perform a single indented paste, and this behaviour is inverted
   if autoindent is active (ie. single unindented paste).
+
+* Move operator: included, but disabled by default (replaced by redirection).
 
 * |repeat-vim| support: yanktools supports it for most paste operations.
 
@@ -128,6 +132,7 @@ OPTIONS                                                      *yanktools-options*
 Option                                        | Default            ~
 ----------------------------------------------+------------------------
 |g:yanktools_yank_keys|                         |  ['y', 'Y']
+|g:yanktools_move_key|                          |  []
 |g:yanktools_paste_keys|                        |  ['p', 'P', 'gp', 'gP']
 |g:yanktools_black_hole_keys|                   |  ['c', 'C', 'x', 'X', '<Del>']
 |g:yanktools_redir_paste_prefix|                |  '<leader>'
@@ -237,6 +242,21 @@ depend on the key you used for pasting:
 
 
 
+MOVE OPERATOR                                                   *yanktools-move*
+==============================================================================
+                                                          *g:yanktools_move_key*
+
+You can setup a 'move operator' as in |vim-easyclip|, if you prefer. Eg:
+>
+  let g:yanktools_move_key = 'm'
+  let g:yanktools_black_hole_keys = ['d', 'D', 'c', 'C', 'x', 'X', '<Del>']
+
+Moving text will then overwrite the default register, while all others will be
+redirected to black hole. Moved text will also be pushed in the yank stack, as
+a normal yank.
+
+
+
 REPLACE OPERATOR                           *replace-operator* *yanktools-replace*
 =============================================================================
                                               *g:yanktools_replace_operator_bh*
@@ -246,8 +266,8 @@ Default mapping is 's' for the operator, 'ss' to replace whole lines.
 By default the replaced content is redirected to the black hole, but you can
 have it redirected to the 'x' register (or your redirection register) by
 setting:
-
-  `let g:yanktools_replace_operator_bh = 0`
+>
+  let g:yanktools_replace_operator_bh = 0
 
 Both 's' and 'ss' accept a register from which to paste. You can therefore
 create a mapping such as:

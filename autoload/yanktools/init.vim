@@ -12,6 +12,7 @@ function! yanktools#init#maps()
     let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
     let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 
+    let g:yanktools_use_single_stack        = get(g:, 'yanktools_use_single_stack', 0)
     let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
     let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)

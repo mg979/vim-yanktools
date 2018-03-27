@@ -121,6 +121,7 @@ __*The new features (compared to easyclip) are:*__
 |g:yanktools_zeta_prefix                       | `'z'                   `|
 |g:yanktools_zeta_kill                         | `'K'                   `|
 |                                              |                       |
+|g:yanktools_use_single_stack                  | `0                     `|
 |g:yanktools_replace_operator_bh               | `1                     `|
 |g:yanktools_move_cursor_after_paste           | `0                     `|
 |g:yanktools_auto_format_all                   | `0                     `|
@@ -187,6 +188,31 @@ You can define the keys that redirect to the black hole/alternative register:
 You can redefine the default register for redirection:
 
     let g:yanktools_redirect_register = 'x'
+
+
+----------------------------------------------------------------------------
+
+
+#### Redirected stack
+
+Text that is deleted (redirected), even if it doesn't overwrite the unnamed
+register, can still be added to the normal yank stack, so that deleted text
+will appear when cycling the stack. Otherwise, you can use a dedicated
+stack for deleted items.
+
+    let g:yanktools_use_single_stack = 0
+
+|-|-|
+|true| deleted text is added to the yank stack|
+|false (default)| deleted text is added to its own stack|
+
+In the latter case, the kind of stack you'll be using when cycling, will
+depend on the key you used for pasting:
+
+|-|-|
+|normal paste                  |will use normal stack when cycling|
+|paste from redirected register|will use redirected stack|
+
 
 
 ----------------------------------------------------------------------------
@@ -339,6 +365,7 @@ changing them individually.
     let g:yanktools_replace_operator        = 's'
     let g:yanktools_replace_line            = 'ss'
     let g:yanktools_replace_operator_bh     = 1
+    let g:yanktools_use_single_stack        = 0
 
     let g:yanktools_format_prefix           = '<'
     let g:yanktools_zeta_prefix             = 'z'

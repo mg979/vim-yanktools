@@ -193,7 +193,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
-    call yanktools#update_stack(1)
+    " don't store empty lines
+    if getreg(yanktools#default_reg()) =~ '\w'
+        call yanktools#update_stack(1)
+    endif
     call setreg(s:r[0], s:r[1], s:r[2])
 endfun
 

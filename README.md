@@ -223,14 +223,18 @@ depend on the key you used for pasting:
 
 You can setup a _move operator_ as in vim-easyclip, if you prefer. Eg:
 
-```
-  let g:yanktools_move_key = 'm'
-  let g:yanktools_black_hole_keys = ['d', 'D', 'c', 'C', 'x', 'X', '<Del>']
-```
+    let g:yanktools_move_key = 'm'
 
 Moving text will then overwrite the default register, while all others will be
 redirected to black hole. Moved text will also be pushed in the yank stack, as
 a normal yank.
+
+If you keep the default yanktools behaviour of 'd' key (redirect register), 
+then you can have a 'history' of deleted items that you can still access
+(through the redirected stack). Otherwise add the 'd' key to the 'black hole'
+redirection keys, to mimic vim-easyclip behavoiur in toto.
+
+    let g:yanktools_black_hole_keys = ['d', 'D', 'c', 'C', 'x', 'X', '<Del>']
 
 
 ----------------------------------------------------------------------------

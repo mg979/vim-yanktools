@@ -72,8 +72,10 @@ function! yanktools#extras#select_yank_fzf(yank, before)
     let index = substitute(index, " ", "", "g")
     let r = yanktools#get_reg(0)
     call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
+    call yanktools#offset(0, index)
     if a:before >= 0
-        if a:before | execute "normal P" | else | execute "normal p" | endif
+        let key = a:before ? "P" : "p"
+        call yanktools#swap_paste(1, key, 0)
     endif
 endfunction
 
@@ -162,8 +164,10 @@ function! yanktools#extras#select_yank(before)
         else
             let r = yanktools#get_reg(0)
             call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
+            call yanktools#offset(0, index)
             if a:before >= 0
-                if a:before | execute "normal P" | else | execute "normal p" | endif
+                let key = a:before ? 'P' : 'p'
+                call yanktools#swap_paste(1, key, 0)
             endif
         endif
     endif

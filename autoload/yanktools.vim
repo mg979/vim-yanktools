@@ -116,7 +116,7 @@ function! yanktools#check_yanks()
         " reset swap state if cursor moved after finishing swap
         " g:yanktools_has_changed must be 0 because this must run after on_text_change()
         if getpos('.') != s:post_paste_pos
-            call s:offset()
+            call yanktools#offset(0)
             let s:has_pasted = 0
             let s:post_paste_pos = getpos('.')
             let s:last_paste_tick = b:changedtick
@@ -219,7 +219,7 @@ function! yanktools#paste_redirected_with_key(key, plug, visual, format)
     let s:last_paste_format_this = g:yanktools_auto_format_this
 
     " reset stack offset (unless frozen)
-    call s:offset(1)
+    call yanktools#offset(1)
 
     return '"'.register.a:key
 endfunction
@@ -263,9 +263,10 @@ endfunction
 " Swap paste {{{
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:offset(...)
-    if !s:freeze_offset | let s:offset = 0 | endif
-    let s:using_redir_stack = g:yanktools_use_single_stack ? 0 : a:0
+function! yanktools#offset(redir, ...)
+    if a:0 | let s:offset = a:1
+    elseif !s:freeze_offset | let s:offset = 0 | endif
+    let s:using_redir_stack = g:yanktools_use_single_stack ? 0 : a:redir
 endfunction
 
 function! s:update_reg(stack)

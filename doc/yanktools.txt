@@ -6,6 +6,8 @@ YANKTOOLS - TABLE OF CONTENTS                                    *yanktools-toc*
 Introduction                                         |yanktools-intro|
 Installation                                         |yanktools-installation|
 Features                                             |yanktools-features|
+Basic usage                                          |yanktools-usage|
+Easyclip mode                                        |yanktools-easyclip|
 Options                                              |yanktools-options|
 Cycle yank stack                                     |yanktools-cycle|
 Register redirection                                 |yanktools-redirection|
@@ -125,6 +127,42 @@ The new features (compared to easyclip) are:
 
 
 
+BASIC USAGE                                                    *yanktools-usage*
+==============================================================================
+
+There are many functions available, but you don't need to use them all or even
+know about them. Yank/paste/delete/change commands work as usual, but by
+default:
+
+* |yank| commands add yanked text to the yank stack
+* you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
+
+* |delete| commands redirect the deleted text to register 'x'
+* you can paste from the redirected register with <leader>p/P
+* you can cycle the redirected stack with the 'swap' commands after <leader>p/P
+
+* |change| and |x| commands redirect to the black hole register
+* you can use the |replace-operator| to replace motions ('s') or lines ('ss')
+
+Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
+
+
+
+EASYCLIP MODE                                               *yanktools-easyclip*
+==============================================================================
+                                                     *g:yanktools_easyclip_mode*
+
+If you used |vim-easyclip| and want to use the same behaviours and mappings:
+>
+    let g:yanktools_easyclip_mode           = 1
+
+If you then want to enable the replace operator:
+>
+    let g:yanktools_replace_operator        = 's'
+    let g:yanktools_replace_line            = 'ss'
+
+
+
 OPTIONS                                                      *yanktools-options*
 ==============================================================================
 
@@ -135,20 +173,21 @@ Option                                        | Default            ~
 |g:yanktools_move_key|                          |  []
 |g:yanktools_paste_keys|                        |  ['p', 'P', 'gp', 'gP']
 |g:yanktools_black_hole_keys|                   |  ['c', 'C', 'x', 'X', '<Del>']
-|g:yanktools_redir_paste_prefix|                |  '<leader>'
                                               |
-|g:yanktools_redirect_register|                 |  "x"
+|g:yanktools_redirect_register|                 |  'x'
 |g:yanktools_redirect_keys|                     |  ['d', 'D']
+|g:yanktools_redir_paste_prefix|                |  '<leader>'
                                               |
 |g:yanktools_replace_operator|                  |  's'
 |g:yanktools_replace_line|                      |  'ss'
-                                              |
-|g:yanktools_format_prefix|                     |  "<"
-|g:yanktools_zeta_prefix|                       |  "z"
-|g:yanktools_zeta_kill|                         |  "K"
-                                              |
-|g:yanktools_use_single_stack|                  |  0
 |g:yanktools_replace_operator_Bh|               |  1
+                                              |
+|g:yanktools_format_prefix|                     |  '<'
+|g:yanktools_zeta_prefix|                       |  'z'
+|g:yanktools_zeta_kill|                         |  'K'
+                                              |
+|g:yanktools_easyclip_mode|                     |  0
+|g:yanktools_use_single_stack|                  |  0
 |g:yanktools_move_cursor_after_paste|           |  0
 |g:yanktools_auto_format_all|                   |  0
 |g:yanktools_convenient_remaps|                 |  0
@@ -163,7 +202,7 @@ types, etc.
 CYCLE YANK STACK                                               *yanktools-cycle*
 ==============================================================================
 
-Default mappings for cycling the yank stack are <M-p> / <M-P>.
+Default mappings for cycling the yank stack are <M-p> / <M-P> (forward/back).
 
 If you press one of these keys before doing a paste, it will paste the last
 entry of the stack (the last yanked item), using 'P' (paste before).

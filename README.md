@@ -104,30 +104,69 @@ __*The new features (compared to easyclip) are:*__
 ----------------------------------------------------------------------------
 
 
+### Basic usage
+
+There are many functions available, but you don't need to use them all or even
+know about them. Yank/paste/delete/change commands work as usual, but by
+default:
+
+* yank commands add yanked text to the yank stack
+* you can cycle the yank stack with the 'swap' commands (default `M-p` / `M-P`)
+
+* delete commands redirect the deleted text to register 'x'
+* you can paste from the redirected register with `<leader>p/P`
+* you can cycle the redirected stack with the 'swap' commands after `<leader>p/P`
+
+* change and 'x' commands redirect to the black hole register
+* you can use the replace operator to replace motions ('s') or lines ('ss')
+
+Have a look at the `convenient remaps` section if you want mappings similar to
+`vim-unimpaired`.
+
+----------------------------------------------------------------------------
+
+
+#### Easyclip mode
+
+If you used |vim-easyclip| and want to use the same behaviours and mappings:
+ 
+    let g:yanktools_easyclip_mode           = 1
+
+If you then want to enable the replace operator:
+ 
+    let g:yanktools_replace_operator        = 's'
+    let g:yanktools_replace_line            = 'ss'
+
+
+----------------------------------------------------------------------------
+
+
 ### Options
 
 |Option                                        |Default                |
 |----------------------------------------------|-----------------------|
-|g:yanktools_yank_keys                         | `['y', 'Y']            `|
+|g:yanktools_yank_keys                         | `['y', 'Y']          `|
+|g:yanktools_move_key                          | `[]                  `|
 |g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
 |g:yanktools_black_hole_keys                   | `['c', 'C', 'x', 'X', '<Del>']   `|
-|g:yanktools_redir_paste_prefix                | `'<leader>'            `|
 |                                              |                       |
-|g:yanktools_redirect_register                 | `'x'                   `|
-|g:yanktools_redirect_keys                     | `['d', 'D']  `|
+|g:yanktools_redirect_register                 | `'x'                 `|
+|g:yanktools_redirect_keys                     | `['d', 'D']          `|
+|g:yanktools_redir_paste_prefix                | `'<leader>'          `|
 |                                              |                       |
-|g:yanktools_replace_operator                  | `'s'                   `|
-|g:yanktools_replace_line                      | `'ss'                  `|
+|g:yanktools_replace_operator                  | `'s'                 `|
+|g:yanktools_replace_line                      | `'ss'                `|
+|g:yanktools_replace_operator_bh               | `1                   `|
 |                                              |                       |
-|g:yanktools_format_prefix                     | `'<'                   `|
-|g:yanktools_zeta_prefix                       | `'z'                   `|
-|g:yanktools_zeta_kill                         | `'K'                   `|
+|g:yanktools_format_prefix                     | `'<'                 `|
+|g:yanktools_zeta_prefix                       | `'z'                 `|
+|g:yanktools_zeta_kill                         | `'K'                 `|
 |                                              |                       |
-|g:yanktools_use_single_stack                  | `0                     `|
-|g:yanktools_replace_operator_bh               | `1                     `|
-|g:yanktools_move_cursor_after_paste           | `0                     `|
-|g:yanktools_auto_format_all                   | `0                     `|
-|g:yanktools_convenient_remaps                 | `0                     `|
+|g:yanktools_easyclip_mode                     | `0                   `|
+|g:yanktools_use_single_stack                  | `0                   `|
+|g:yanktools_move_cursor_after_paste           | `0                   `|
+|g:yanktools_auto_format_all                   | `0                   `|
+|g:yanktools_convenient_remaps                 | `0                   `|
 
 You can change these options to control which keys redirect to which register,
 the default register for redirection, the prefixes used for several mapping
@@ -139,7 +178,7 @@ types, etc.
 
 ### Cycle yank stack
 
-Default mappings for cycling the yank stack are `<M-p>` / `<M-P>`.
+Default mappings for cycling the yank stack are `<M-p>`/`<M-P>` (forward/back).
 
 If you press one of these keys before doing a paste, it will paste the last
 entry of the stack (the last yanked item), using 'P' (paste before).
@@ -301,7 +340,7 @@ See also g:yanktools_convenient_remaps.
 ----------------------------------------------------------------------------
 
 
-### Repeat.vim
+#### Repeat.vim
 
 This plugin supporrs `repeat-vim` for most paste operations. This means that
 you can press `dot` to repeat the last paste command while keeping the same
@@ -318,7 +357,7 @@ The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
 ----------------------------------------------------------------------------
 
 
-### Autoformat
+#### Autoformat
 
 `g:yanktools_format_prefix` controls autoformat for single pastes, while
 `g:yanktools_auto_format_all` controls the global behaviour. If the latter is
@@ -341,7 +380,7 @@ Some commands (replace operator, zeta paste) use this method by default.
 ----------------------------------------------------------------------------
 
 
-### Interactive paste
+#### Interactive paste
 
 This function is taken as-is from vim-easyclip, but if you use fzf-vim,
 you'll be able to use it to fuzzy-select the entry.
@@ -356,7 +395,7 @@ Commands are:
 ----------------------------------------------------------------------------
 
 
-### Other commands
+#### Other commands
 
     <C-K><C-P>   yanktools menu
     <C-K>yi      toggle autoindent
@@ -368,7 +407,7 @@ Commands are:
 ----------------------------------------------------------------------------
 
 
-### Mappings
+#### Mappings
 
 A full list of the mappings is impossible to make, because the <Plug> names
 change if you change the default yank/paste/redirect keys.
@@ -396,39 +435,39 @@ changing them individually.
     let g:yanktools_move_cursor_after_paste = 0
     let g:yanktools_auto_format_all         = 0
 
-|Mapping                       |            | Default   |
-|------------------------------|------------|-----------|
-|<Plug>Paste_                  |`(<key>)`   | `<key>`     |
-|<Plug>PasteIndent_            |`(<key>)`   | `< <key>`    |
-|<Plug>PasteRedirected_        |`(<key>)`   | `<key>`     |
-|<Plug>PasteRedirectedIndent_  |`(<key>)`   | `< <key>`    |
-|                              |            |           |
-|<Plug>ReplaceOperator         |            | `s`        |
-|<Plug>ReplaceLine             |            | `ss`        |
-|<Plug>ReplaceLineMulti        |            | `<leader>ss`|
-|                              |            |           |
-|<Plug>ZetaYank_               |`(<key>)`   | `z <key>`   |
-|<Plug>ZetaKillMotion          |            | `K`        |
-|<Plug>ZetaKillLine            |            | `KK`       |
-|<Plug>ZetaPaste_              |`(<key>)`   | `z <key>`   |
-|<Plug>ZetaPasteIndent_        |`(<key>)`   | `<z <key>`  |
-|                              |            |           |
-|<Plug>SwapPasteNext           |            | `<M-p>`     |
-|<Plug>SwapPastePrevious       |            | `<M-P>`     |
-|                              |            |           |
-|<Plug>ToggleAutoIndent        |            | `<C-K>yi` |
-|<Plug>DeleteYanks             |            | `<C-K>yd` |
-|<Plug>ShowYanks               |            | `<C-K>ys` |
-|<Plug>ConvertYank             |            | `<C-K>yc` |
-|<Plug>FreezeYank              |            | `<C-K>yf` |
-|<Plug>IPasteAfter             |            | `<C-K>p` |
-|<Plug>IPasteBefore            |            | `<C-K>P` |
-|<Plug>IPasteSelect            |            | `<C-K>Y` |
+|Plug                    |            | Default   |
+|------------------------|------------|-----------|
+|Paste_                  |(key)   | key     |
+|PasteIndent_            |(key)   | `<` key    |
+|PasteRedirected_        |(key)   | key     |
+|PasteRedirectedIndent_  |(key)   | `<` key    |
+|                        |        |          |
+|ReplaceOperator         |        |`s`        |
+|ReplaceLine             |        |`ss`        |
+|ReplaceLineMulti        |        |`<leader>ss`|
+|                        |        |          |
+|ZetaYank_               |(key)   | z key   |
+|ZetaKillMotion          |        | K        |
+|ZetaKillLine            |        | KK       |
+|ZetaPaste_              |(key)   | z key   |
+|ZetaPasteIndent_        |(key)   | `<`z key  |
+|                        |        |          |
+|SwapPasteNext           |        |`<M-p>`     |
+|SwapPastePrevious       |        |`<M-P>`     |
+|                        |        |         |
+|ToggleAutoIndent        |        |`<C-K>yi` |
+|DeleteYanks             |        |`<C-K>yd` |
+|ShowYanks               |        |`<C-K>ys` |
+|ConvertYank             |        |`<C-K>yc` |
+|FreezeYank              |        |`<C-K>yf` |
+|IPasteAfter             |        |`<C-K>p` |
+|IPasteBefore            |        |`<C-K>P` |
+|IPasteSelect            |        |`<C-K>Y` |
 
 ----------------------------------------------------------------------------
 
 
-### Convenient remaps
+#### Convenient remaps
 
 By setting this option, you can enable these keymappings, inspired by
 vim-unimpaired. They are optimal for a US keyboard, so you may need to

@@ -17,13 +17,14 @@ function! yanktools#init#maps()
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
     let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "K")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
+    let g:yanktools_easyclip_mode           = get(g:, 'yanktools_easyclip_mode', 0)
 
     let redirect                            = g:yanktools_redirect_register
     let zeta                                = g:yanktools_zeta_prefix
     let kill                                = g:yanktools_zeta_kill
     let format                              = g:yanktools_format_prefix
 
-    if get(g:, 'yanktools_easyclip_mode', 0)
+    if g:yanktools_easyclip_mode
         let g:yanktools_move_key                = 'm'
         let g:yanktools_replace_operator        = ''
         let g:yanktools_replace_line            = ''

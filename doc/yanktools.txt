@@ -222,6 +222,10 @@ pasting before, and applying autoformat.
 
 Simply moving the cursor after a swap resets this command.
 
+By default, deleted (redirected) text builds its own stack, so you can cycle
+it by using these commands, after having performed a paste from the redirected
+register (default '<leader>p').
+
 
 
 REGISTER REDIRECTION                                     *yanktools-redirection*
@@ -250,7 +254,7 @@ still specify a register and it will override the default redirection. Eg.:
 Additionally, when you paste in visual mode, the replaced text will not
 overwrite the default register.
 
-You can change the <leader> prefix by changing this setting:
+You can change the default prefix by changing this setting:
 >
   let g:yanktools_redir_paste_prefix = '<leader>'
 

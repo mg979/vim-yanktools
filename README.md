@@ -32,7 +32,7 @@ your .vimrc:
 
     call yanktools#init#maps()
 
-Any option you change, should be put BEFORE you call this function.
+Any option you change, should be put __before__ you call this function.
 
 Only after having initialized the mappings, you should set your own remaps
 (such as `nmap Y y$`), so that they will work with the new functions.
@@ -141,7 +141,7 @@ If you then want to enable the replace operator:
     let g:yanktools_replace_operator        = 's'
     let g:yanktools_replace_line            = 'ss'
 
-Any option you change, should be put BEFORE you initialize the mappings.
+Any option you change, should be put __before__ you initialize the mappings.
 
 
 ----------------------------------------------------------------------------
@@ -197,6 +197,10 @@ Eg. you press `<P` (formatted paste before), cycling the stack will keep
 pasting before, and applying autoformat.
 
 Simply moving the cursor after a swap resets this command.
+
+By default, deleted (redirected) text builds its own stack, so you can cycle
+it by using these commands, after having performed a paste from the redirected
+register (default `<leader>p`).
 
 
 ----------------------------------------------------------------------------

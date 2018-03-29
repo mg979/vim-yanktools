@@ -32,6 +32,8 @@ your .vimrc:
 
     call yanktools#init#maps()
 
+Any option you change, should be put BEFORE you call this function.
+
 Only after having initialized the mappings, you should set your own remaps
 (such as `nmap Y y$`), so that they will work with the new functions.
 See also g:yanktools_convenient_remaps.
@@ -138,6 +140,8 @@ If you then want to enable the replace operator:
  
     let g:yanktools_replace_operator        = 's'
     let g:yanktools_replace_line            = 'ss'
+
+Any option you change, should be put BEFORE you initialize the mappings.
 
 
 ----------------------------------------------------------------------------
@@ -477,6 +481,7 @@ change them anyway (like I did). Either set the option, or paste this into
 your .vimrc and change them according to your needs.
 
 ```
+  { other options here }
   let g:yanktools_convenient_remaps = 1
   call yanktools#init#maps()
 ```
@@ -484,6 +489,7 @@ your .vimrc and change them according to your needs.
 Or add:
 
 ```
+  { other options here }
   call yanktools#init#maps()
 
   nmap Y y$

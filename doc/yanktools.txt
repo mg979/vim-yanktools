@@ -160,8 +160,10 @@ If you used |vim-easyclip| and want to use the same behaviours and mappings:
 >
     let g:yanktools_easyclip_mode           = 1
 
-If you then want to enable the replace operator:
+If you then want to enable the replace operator, remove 's' from black hole
+redirection and setup operators:
 >
+    let g:yanktools_black_hole_keys         = ['d', 'D', 'c', 'C', 'x','X', '<Del>']
     let g:yanktools_replace_operator        = 's'
     let g:yanktools_replace_line            = 'ss'
 

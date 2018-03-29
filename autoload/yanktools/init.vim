@@ -25,15 +25,15 @@ function! yanktools#init#maps()
     let format                              = g:yanktools_format_prefix
 
     if g:yanktools_easyclip_mode
-        let g:yanktools_move_key                = 'm'
-        let g:yanktools_replace_operator        = ''
-        let g:yanktools_replace_line            = ''
-        let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['d', 'D', 'c', 'C', 'x','X', '<Del>'])
+        let g:yanktools_move_key                = get(g:, 'yanktools_move_key', 'm')
+        let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', '')
+        let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', '')
+        let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['d', 'D', 's', 'S', 'c', 'C', 'x','X', '<Del>'])
         let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', [])
     else
-        let g:yanktools_move_key                = ''
-        let g:yanktools_replace_operator        = 's'
-        let g:yanktools_replace_line            = 'ss'
+        let g:yanktools_move_key                = get(g:, 'yanktools_move_key', '')
+        let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
+        let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
         let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['c', 'C', 'x','X', '<Del>'])
         let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['d', 'D'])
     endif
@@ -188,8 +188,8 @@ function! yanktools#init#maps()
 
     if !hasmapto('<Plug>SwapPasteNext')
         if g:yanktools_easyclip_mode
-            nmap <unique> <C-n> <Plug>SwapPasteNext
-            xmap <unique> <C-n> <Plug>SwapPasteNext
+            nmap <unique> <C-p> <Plug>SwapPasteNext
+            xmap <unique> <C-p> <Plug>SwapPasteNext
         else
             nmap <unique> <M-p> <Plug>SwapPasteNext
             xmap <unique> <M-p> <Plug>SwapPasteNext
@@ -197,8 +197,8 @@ function! yanktools#init#maps()
     endif
     if !hasmapto('<Plug>SwapPastePrevious')
         if g:yanktools_easyclip_mode
-            nmap <unique> <C-p> <Plug>SwapPastePrevious
-            xmap <unique> <C-p> <Plug>SwapPastePrevious
+            nmap <unique> <C-n> <Plug>SwapPastePrevious
+            xmap <unique> <C-n> <Plug>SwapPastePrevious
         else
             nmap <unique> <M-P> <Plug>SwapPastePrevious
             xmap <unique> <M-P> <Plug>SwapPastePrevious

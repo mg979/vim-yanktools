@@ -1,26 +1,26 @@
-*yanktools.txt*    yanktools     Version 0.5.0    Last change: March 18 2018
+*yanktools.txt*    yanktools     Version 0.6.0    Last change: March 29 2018
 
 YANKTOOLS - TABLE OF CONTENTS                                    *yanktools-toc*
 ==============================================================================
 
-Introduction                                         |yanktools-intro|
-Installation                                         |yanktools-installation|
-Features                                             |yanktools-features|
-Basic usage                                          |yanktools-usage|
-Easyclip mode                                        |yanktools-easyclip|
-Options                                              |yanktools-options|
-Cycle yank stack                                     |yanktools-cycle|
-Register redirection                                 |yanktools-redirection|
-Redirected stack                                     |yanktools-redirected-stack|
-Move operator                                        |yanktools-move|
-Replace operator                                     |yanktools-replace|
-Zeta mode                                            |yanktools-zeta|
-Interactive paste                                    |yanktools-interactive|
-Other commands                                       |yanktools-misc|
-Mappings                                             |yanktools-mappings|
-Convenient remaps                                    |yanktools-convenient|
-Credits                                              |yanktools-credits|
-License                                              |yanktools-license|
+Introduction.........................................|yanktools-intro|
+Installation.........................................|yanktools-installation|
+Features.............................................|yanktools-features|
+Basic usage..........................................|yanktools-usage|
+Easyclip mode........................................|yanktools-easyclip|
+Options..............................................|yanktools-options|
+Cycle yank stack.....................................|yanktools-cycle|
+Register redirection.................................|yanktools-redirection|
+Redirected stack.....................................|yanktools-redirected-stack|
+Move operator........................................|yanktools-move|
+Replace operator.....................................|yanktools-replace|
+Zeta mode............................................|yanktools-zeta|
+Interactive paste....................................|yanktools-interactive|
+Other commands.......................................|yanktools-misc|
+Mappings.............................................|yanktools-mappings|
+Convenient remaps....................................|yanktools-convenient|
+Credits..............................................|yanktools-credits|
+License..............................................|yanktools-license|
 
 
 
@@ -80,7 +80,7 @@ Move cursor to the end                |    yes    |   no      |   yes    |
 Interactive paste                     |    yes    |   no      |   yes    |
 Interactive paste with fzf-vim        |    yes    |   no      |   no     |
 Convert yank type                     |    yes    |   no      |   no     |
-|repeat-vim| support                    |    yes    |   no      |   yes    |
+repeat-vim support                    |    yes    |   no      |   yes    |
 --------------------------------------+-----------+-----------+----------+--
 
 Common options:
@@ -109,12 +109,14 @@ The new features (compared to easyclip) are:
 
 * Register redirection: instead of redirecting to the black hole register, you
   can redirect the chosen commands to another register (default 'x'), without
-  replacing the unnamed register. By default, paste in visual mode won't
-  overwrite the default register.
+  replacing the unnamed register.
 
-* Alternative paste methods: since register redirection is an option, pasting
-  from that register has its own mapping. This can also be used in combination
-  with the replace operator.
+* By default, paste in visual mode won't change the default register.
+
+* Since register redirection is an option, pasting from that register has its
+  own mapping. This can also be used in combination with the replace operator.
+
+* Redirected text fills its own stack, so that you can cycle/paste from it too.
 
 * |zeta-mode| (by default it uses 'z' as prefix) that fills a parallel yank stack,
   from which items are taken from the back, and pasting them removes them from
@@ -504,19 +506,19 @@ Or add:
 
   nmap Y y$
   nmap S s$
+  nmap zY zy$
+  nmap KL K$
   nmap sx "xs
   nmap sxx "xss
   nmap sX "xs$
-  nmap zY zy$
-  nmap zK zk$
 
-  xmap Y $hy
-  xmap D $hd
-  xmap X $hp
+  xmap Y $y
+  xmap D $d
+  xmap P $p
   xmap sx "xp
-  xmap sX $h"xp
+  xmap sX $"xp
   xmap zY $zy
-  xmap zK $zk
+  xmap KL $K
 
   map [p <Plug>PasteIndent_P
   map ]p <Plug>PasteIndent_p

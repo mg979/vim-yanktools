@@ -84,12 +84,14 @@ __*The new features (compared to easyclip) are:*__
 
 * __Register redirection__: instead of redirecting to the black hole register, you
   can redirect the chosen commands to another register (default 'x'), without
-  replacing the unnamed register. By default, paste in visual mode won't
-  overwrite the default register.
+  replacing the unnamed register.
 
-* __Alternative paste methods__: since register redirection is an option, pasting
-  from that register has its own mapping. This can also be used in combination
-  with the replace operator.
+* By default, paste in visual mode won't change the default register.
+
+* Since register redirection is an option, pasting from that register has its
+  own mapping. This can also be used in combination with the replace operator.
+
+* Redirected text fills its own stack, so that you can cycle/paste from it too.
 
 * __Zeta-mode__: (by default it uses 'z' as prefix) that fills a parallel yank stack,
   from which items are taken from the back, and pasting them removes them from

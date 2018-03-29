@@ -186,12 +186,22 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>SwapPasteNext')
-        nmap <unique> <M-p> <Plug>SwapPasteNext
-        xmap <unique> <M-p> <Plug>SwapPasteNext
+        if g:yanktools_easyclip_mode
+            nmap <unique> <C-n> <Plug>SwapPasteNext
+            xmap <unique> <C-n> <Plug>SwapPasteNext
+        else
+            nmap <unique> <M-p> <Plug>SwapPasteNext
+            xmap <unique> <M-p> <Plug>SwapPasteNext
+        endif
     endif
     if !hasmapto('<Plug>SwapPastePrevious')
-        nmap <unique> <M-P> <Plug>SwapPastePrevious
-        xmap <unique> <M-P> <Plug>SwapPastePrevious
+        if g:yanktools_easyclip_mode
+            nmap <unique> <C-p> <Plug>SwapPastePrevious
+            xmap <unique> <C-p> <Plug>SwapPastePrevious
+        else
+            nmap <unique> <M-P> <Plug>SwapPastePrevious
+            xmap <unique> <M-P> <Plug>SwapPastePrevious
+        endif
     endif
     nnoremap <silent> <Plug>SwapPasteNext     :call yanktools#swap_paste(1, "P", 0)<cr>
     nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P", 0)<cr>
@@ -262,11 +272,11 @@ function! yanktools#init#maps()
         nmap sxx "xss
         nmap sX "xs$
 
-        xmap Y $hy
-        xmap D $hd
-        xmap X $hp
+        xmap Y $y
+        xmap D $d
+        xmap P $p
         xmap sx "xp
-        xmap sX $h"xp
+        xmap sX $"xp
         xmap zY $zy
         xmap KL $K
 

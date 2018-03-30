@@ -44,8 +44,8 @@ function! yanktools#init#maps()
 
     for key in g:yanktools_yank_keys
         if !hasmapto('<Plug>Yank_'.key)
-            exec 'nmap <unique> '.key.' <Plug>Yank_'.key
-            exec 'xmap <unique> '.key.' <Plug>Yank_'.key
+            silent! exec 'nmap <unique> '.key.' <Plug>Yank_'.key
+            silent! exec 'xmap <unique> '.key.' <Plug>Yank_'.key
         endif
         exec 'nnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
@@ -59,9 +59,9 @@ function! yanktools#init#maps()
 
     let key = g:yanktools_move_key
     if !empty(key) && !hasmapto('<Plug>MoveOperator')
-        exec 'nmap <unique> '.key.' <Plug>MoveOperator'
-        exec 'nmap <unique> '.key.key.' <Plug>MoveLine'
-        exec 'xmap <unique> '.key.' <Plug>MoveOperator'
+        silent! exec 'nmap <unique> '.key.' <Plug>MoveOperator'
+        silent! exec 'nmap <unique> '.key.key.' <Plug>MoveLine'
+        silent! exec 'xmap <unique> '.key.' <Plug>MoveOperator'
     endif
     exec 'nnoremap <silent> <expr> <Plug>Move_'.key.' yanktools#move("\<Plug>MoveOperator", 0)'
     exec 'nnoremap <silent> <expr> <Plug>MoveLine yanktools#move("\<Plug>MoveLine", 1)'
@@ -77,8 +77,8 @@ function! yanktools#init#maps()
         if key ==? '<del>' | let map = 'x' | else | let map = key | endif
 
         if !hasmapto('<Plug>Black_Hole_'.key)
-            exec 'nmap <unique> '.key.' <Plug>Black_Hole_'.key
-            exec 'xmap <unique> '.key.' <Plug>Black_Hole_'.key
+            silent! exec 'nmap <unique> '.key.' <Plug>Black_Hole_'.key
+            silent! exec 'xmap <unique> '.key.' <Plug>Black_Hole_'.key
         endif
         exec 'nnoremap <silent> <expr> <Plug>Black_Hole_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register, 1)'
         exec 'xnoremap <silent> <expr> <Plug>Black_Hole_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register, 1)'
@@ -86,8 +86,8 @@ function! yanktools#init#maps()
 
     for key in g:yanktools_redirect_keys
         if !hasmapto('<Plug>RegRedirect_'.key)
-            exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
-            exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
+            silent! exec 'nmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
+            silent! exec 'xmap <unique> '.key.' <Plug>RegRedirect_"'.redirect.'_'.key
         endif
         exec 'nnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
         exec 'xnoremap <silent> <expr> <Plug>RegRedirect_"'.redirect.'_'.key.' yanktools#redirect_reg_with_key("' . key . '", v:register)'
@@ -102,7 +102,7 @@ function! yanktools#init#maps()
     let key = g:yanktools_replace_operator
 
     if !empty(key) && !hasmapto('<Plug>ReplaceOperator')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
+        silent! exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
     endif
     nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
     "}}}
@@ -115,12 +115,12 @@ function! yanktools#init#maps()
     let key = g:yanktools_replace_line
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineSingle')
-        exec 'nmap <unique> '.key.' <Plug>ReplaceLineSingle'
+        silent! exec 'nmap <unique> '.key.' <Plug>ReplaceLineSingle'
     endif
     nmap <silent> <Plug>ReplaceLineSingle :call yanktools#replop#replace_line(v:register, v:count)<cr>
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineMulti')
-        exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
+        silent! exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
     endif
     nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
     "}}}
@@ -137,8 +137,8 @@ function! yanktools#init#maps()
         let plug = 'PasteRedirected_'.key
 
         if !empty(prefix) && !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.prefix.key.' <Plug>'.plug
-            exec 'xmap <unique> '.prefix.key.' <Plug>'.plug
+            silent! exec 'nmap <unique> '.prefix.key.' <Plug>'.plug
+            silent! exec 'xmap <unique> '.prefix.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
@@ -146,8 +146,8 @@ function! yanktools#init#maps()
         let plug = 'PasteRedirectedIndent_'.key
 
         if !empty(prefix) && !empty(format) && !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.format.prefix.key.' <Plug>'.plug
-            exec 'xmap <unique> '.format.prefix.key.' <Plug>'.plug
+            silent! exec 'nmap <unique> '.format.prefix.key.' <Plug>'.plug
+            silent! exec 'xmap <unique> '.format.prefix.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
@@ -165,16 +165,16 @@ function! yanktools#init#maps()
         let plug = "Paste_".key
 
         if !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.key.' <Plug>'.plug
-            exec 'xmap <unique> '.key.' <Plug>'.plug
+            silent! exec 'nmap <unique> '.key.' <Plug>'.plug
+            silent! exec 'xmap <unique> '.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
 
         let plug = "PasteIndent_".key
         if !empty(format) && !hasmapto('<Plug>'.plug)
-            exec 'nmap <unique> '.format.key.' <Plug>'.plug
-            exec 'xmap <unique> '.format.key.' <Plug>'.plug
+            silent! exec 'nmap <unique> '.format.key.' <Plug>'.plug
+            silent! exec 'xmap <unique> '.format.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
@@ -188,20 +188,20 @@ function! yanktools#init#maps()
 
     if !hasmapto('<Plug>SwapPasteNext')
         if g:yanktools_easyclip_mode
-            nmap <unique> <C-p> <Plug>SwapPasteNext
-            xmap <unique> <C-p> <Plug>SwapPasteNext
+            silent! nmap <unique> <C-p> <Plug>SwapPasteNext
+            silent! xmap <unique> <C-p> <Plug>SwapPasteNext
         else
-            nmap <unique> <M-p> <Plug>SwapPasteNext
-            xmap <unique> <M-p> <Plug>SwapPasteNext
+            silent! nmap <unique> <M-p> <Plug>SwapPasteNext
+            silent! xmap <unique> <M-p> <Plug>SwapPasteNext
         endif
     endif
     if !hasmapto('<Plug>SwapPastePrevious')
         if g:yanktools_easyclip_mode
-            nmap <unique> <C-n> <Plug>SwapPastePrevious
-            xmap <unique> <C-n> <Plug>SwapPastePrevious
+            silent! nmap <unique> <C-n> <Plug>SwapPastePrevious
+            silent! xmap <unique> <C-n> <Plug>SwapPastePrevious
         else
-            nmap <unique> <M-P> <Plug>SwapPastePrevious
-            xmap <unique> <M-P> <Plug>SwapPastePrevious
+            silent! nmap <unique> <M-P> <Plug>SwapPastePrevious
+            silent! xmap <unique> <M-P> <Plug>SwapPastePrevious
         endif
     endif
     nnoremap <silent> <Plug>SwapPasteNext     :call yanktools#swap_paste(1, "P", 0)<cr>
@@ -220,17 +220,17 @@ function! yanktools#init#maps()
     if !empty(zeta)
         for key in g:yanktools_yank_keys
             if !hasmapto('<Plug>ZetaYank_'.key)
-                exec 'nmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
-                exec 'xmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
+                silent! exec 'nmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
+                silent! exec 'xmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
             endif
             exec 'nnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
             exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
         endfor
 
         if !hasmapto('<Plug>ZetaKillMotion')
-            exec 'nmap <unique> '.kill.' <Plug>ZetaKillMotion'
-            exec 'xmap <unique> '.kill.' <Plug>ZetaKillMotion'
-            exec 'nmap <unique> '.kill.kill.' <Plug>ZetaKillLine'
+            silent! exec 'nmap <unique> '.kill.' <Plug>ZetaKillMotion'
+            silent! exec 'xmap <unique> '.kill.' <Plug>ZetaKillMotion'
+            silent! exec 'nmap <unique> '.kill.kill.' <Plug>ZetaKillLine'
         endif
         nnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
         nnoremap <silent> <expr> <Plug>ZetaKillLine yanktools#zeta#kill_with_key("dd")
@@ -242,16 +242,16 @@ function! yanktools#init#maps()
             let plug = "ZetaPaste_".key
 
             if !hasmapto('<Plug>'.plug)
-                exec 'nmap <unique> '.zeta.key.' <Plug>'.plug
-                exec 'xmap <unique> '.zeta.key.' <Plug>'.plug
+                silent! exec 'nmap <unique> '.zeta.key.' <Plug>'.plug
+                silent! exec 'xmap <unique> '.zeta.key.' <Plug>'.plug
             endif
             exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'."\<cr>"
             exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'."\<cr>"
 
             let plug = "ZetaPasteIndent_".key
             if !hasmapto('<Plug>'.plug)
-                exec 'nmap <unique> '.format.zeta.key.' <Plug>'.plug
-                exec 'xmap <unique> '.format.zeta.key.' <Plug>'.plug
+                silent! exec 'nmap <unique> '.format.zeta.key.' <Plug>'.plug
+                silent! exec 'xmap <unique> '.format.zeta.key.' <Plug>'.plug
             endif
             exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'."\<cr>"
             exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'."\<cr>"
@@ -293,7 +293,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ToggleAutoIndent')
-        nmap <unique> <C-K>yi <Plug>ToggleAutoIndent
+        silent! nmap <unique> <C-K>yi <Plug>ToggleAutoIndent
     endif
     nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
                 \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
@@ -304,7 +304,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>FreezeYank')
-        nmap <unique> <C-K>yf <Plug>FreezeYank
+        silent! nmap <unique> <C-K>yf <Plug>FreezeYank
     endif
     nnoremap <silent> <Plug>FreezeYank :call yanktools#freeze_offset()<cr>
     "}}}
@@ -314,7 +314,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>DeleteYanks')
-        nmap <unique> <C-K>yd <Plug>DeleteYanks
+        silent! nmap <unique> <C-K>yd <Plug>DeleteYanks
     endif
     nnoremap <silent> <Plug>DeleteYanks :call yanktools#clear_yanks()<cr>
     "}}}
@@ -324,7 +324,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ShowYanks')
-        nmap <unique> <C-K>ys <Plug>ShowYanks
+        silent! nmap <unique> <C-K>ys <Plug>ShowYanks
     endif
     nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
     "}}}
@@ -334,9 +334,9 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>IPaste')
-        map <unique> <C-K>p <Plug>IPasteAfter
-        map <unique> <C-K>P <Plug>IPasteBefore
-        map <unique> <C-K>Y <Plug>IPasteSelect
+        silent! map <unique> <C-K>p <Plug>IPasteAfter
+        silent! map <unique> <C-K>P <Plug>IPasteBefore
+        silent! map <unique> <C-K>Y <Plug>IPasteSelect
     endif
     noremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
     noremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
@@ -348,7 +348,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>ConvertYank')
-        nmap <unique> <C-K>yc <Plug>ConvertYank
+        silent! nmap <unique> <C-K>yc <Plug>ConvertYank
     endif
     nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
     "}}}
@@ -358,7 +358,7 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>YanktoolsMenu')
-        nmap <unique> <C-K><C-P> <Plug>YanktoolsMenu
+        silent! nmap <unique> <C-K><C-P> <Plug>YanktoolsMenu
     endif
     nnoremap <silent> <Plug>YanktoolsMenu :Yanktools<cr>
     "}}}

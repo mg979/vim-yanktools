@@ -298,8 +298,6 @@ function! yanktools#init#maps()
         xmap P $p
         xmap sx "xp
         xmap sX $"xp
-        xmap zY $zy
-        xmap KL $K
 
         map [p <Plug>PasteIndent_P
         map ]p <Plug>PasteIndent_p

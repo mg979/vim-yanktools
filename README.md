@@ -52,6 +52,7 @@ See also g:yanktools_convenient_remaps.
 |Visual paste redirection              |   yes     | no        | ?        |
 |Register redirection                  |   yes     | no        |no        |
 |Replace operator                      |   yes     | no        |yes       |
+|Duplicate text                        |   yes     | no        |no        |
 |Zeta mode                             |   yes     | no        |no        |
 |Autoformat                            |   yes     | no        |yes       |
 |Move cursor to the end                |   yes     | no        |yes       |
@@ -157,6 +158,7 @@ Any option you change, should be put __before__ you initialize the mappings.
 |g:yanktools_move_key                          | `[]                  `|
 |g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
 |g:yanktools_black_hole_keys                   | `['c', 'C', 'x', 'X', '<Del>']   `|
+|g:yanktools_duplicate_key                     | `'<M-d>'`             |
 |                                              |                       |
 |g:yanktools_redirect_register                 | `'x'                 `|
 |g:yanktools_redirect_keys                     | `['d', 'D']          `|
@@ -447,6 +449,7 @@ changing them individually.
     let g:yanktools_yank_keys               = ['y', 'Y']
     let g:yanktools_black_hole_keys         = ['c', 'C', 'x', 'X', '<Del>']
     let g:yanktools_redirect_keys           = ['d', 'D']
+    let g:yanktools_duplicate_key           = '<M-d>'
     let g:yanktools_redir_paste_prefix      = '<leader>'
 
     let g:yanktools_replace_operator        = 's'
@@ -471,6 +474,9 @@ changing them individually.
 |ReplaceOperator         |        |`s`        |
 |ReplaceLine             |        |`ss`        |
 |ReplaceLineMulti        |        |`<leader>ss`|
+|                        |        |            |
+|DuplicateNormal         |        |       `<M-d>`|
+|DuplicateVisual         |        |       `<M-d>`|
 |                        |        |          |
 |ZetaYank_               |(key)   | z key   |
 |ZetaKillMotion          |        | K        |
@@ -514,19 +520,17 @@ Or add:
 
   nmap Y y$
   nmap S s$
+  nmap zY zy$
+  nmap KL K$
   nmap sx "xs
   nmap sxx "xss
   nmap sX "xs$
-  nmap zY zy$
-  nmap zK zk$
 
-  xmap Y $hy
-  xmap D $hd
-  xmap X $hp
+  xmap Y $y
+  xmap D $d
+  xmap P $p
   xmap sx "xp
-  xmap sX $h"xp
-  xmap zY $zy
-  xmap zK $zk
+  xmap sX $"xp
 
   map [p <Plug>PasteIndent_P
   map ]p <Plug>PasteIndent_p

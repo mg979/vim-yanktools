@@ -199,6 +199,9 @@ fun! yanktools#restore_after_redirect()
     " don't store empty lines
     if getreg(yanktools#default_reg()) =~ '\w'
         call yanktools#update_stack(1)
+    else
+        let r = g:yanktools_redir_stack[0]
+        call setreg(g:yanktools_redirect_register, r['text'], r['type'])
     endif
     call setreg(s:r[0], s:r[1], s:r[2])
 endfun

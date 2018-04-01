@@ -14,6 +14,7 @@ Register redirection.................................|yanktools-redirection|
 Redirected stack.....................................|yanktools-redirected-stack|
 Move operator........................................|yanktools-move|
 Replace operator.....................................|yanktools-replace|
+Duplicate text.......................................|yanktools-duplicate|
 Zeta mode............................................|yanktools-zeta|
 Interactive paste....................................|yanktools-interactive|
 Other commands.......................................|yanktools-misc|
@@ -146,7 +147,10 @@ default:
 * you can cycle the redirected stack with the 'swap' commands after <leader>p/P
 
 * |change| and |x| commands redirect to the black hole register
+
 * you can use the |replace-operator| to replace motions ('s') or lines ('ss')
+
+* |duplicate| lines/selected text with <M-d> (not overwriting default register)
 
 Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
 
@@ -343,6 +347,20 @@ The 'replace line' command can have two different behaviours:
 - '<leader>ss' will instead replace each line ine [count] with the register
   content, while keeping the order of multiline entries (improved behaviour
   from easyclip).
+
+
+
+DUPLICATE TEXT                                   *duplicate* *yanktools-duplicate*
+==============================================================================
+                                                     *g:yanktools_duplicate_key*
+
+Duplicate lines with [count], or visually selected text. Duplicated text won't
+overwrite the default register. Repeatable with repeat.vim (not in visual
+mode).
+
+Default mapping is <M-d>. To redefine it:
+>
+  let g:yanktools_duplicate_key = '<M-d>'
 
 
 

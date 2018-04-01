@@ -6,7 +6,8 @@ function! yanktools#init_vars()
     call yanktools#extras#clear_yanks()
     call yanktools#zeta#init_vars()
     call yanktools#replop#init()
-    let s:yanktools_redirected_reg = 0
+    let s:redirected_reg = 0
+    let s:duplicating = 0
     let g:yanktools_auto_format_this = 0
     let g:yanktools_has_changed = 0
     let s:has_yanked = 0
@@ -134,7 +135,7 @@ function! yanktools#on_text_change()
     let g:yanktools_has_changed = 0
 
     " restore register after redirection
-    if s:yanktools_redirected_reg | call yanktools#restore_after_redirect() | endif
+    if s:redirected_reg | call yanktools#restore_after_redirect() | endif
 
     " replace operator: complete replacement and return
     if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | return | endif
@@ -144,7 +145,8 @@ function! yanktools#on_text_change()
     if (g:yanktools_move_cursor_after_paste || g:yanktools_move_this) | execute "keepjump normal `]" | endif
 
     " update repeat.vim
-    if !s:yanktools_redirected_reg && !empty(g:yanktools_plug) | call yanktools#set_repeat() | endif
+    if !empty(g:yanktools_plug) && (!s:redirected_reg || s:duplicating)
+        call yanktools#set_repeat() | endif
 
     " record position and tick
     let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
@@ -152,7 +154,8 @@ function! yanktools#on_text_change()
     " reset vars
     let g:yanktools_auto_format_this = 0
     let g:yanktools_move_this = 0
-    let s:yanktools_redirected_reg = 0
+    let s:redirected_reg = 0
+    let s:duplicating = 0
 endfunction
 "}}}
 
@@ -201,7 +204,7 @@ fun! yanktools#restore_after_redirect()
 endfun
 
 fun! yanktools#redirecting()
-    let s:yanktools_redirected_reg = 1
+    let s:redirected_reg = 1
     call yanktools#get_reg(0)
 endfun
 
@@ -237,6 +240,27 @@ function! yanktools#redirect_reg_with_key(key, register, ...)
     let reg = a:register==s:r[0] ? redir : a:register
 
     return "\"" . reg . a:key
+endfunction
+"}}}
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Duplicate {{{
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#duplicate(plug, visual)
+    let g:yanktools_has_changed = 1
+    if !a:visual
+        let s:duplicating = 1
+        let g:yanktools_plug = [a:plug, v:count, v:register]
+    endif
+    echom string(g:yanktools_plug)
+    call yanktools#redirecting()
+    if a:visual
+        return "yP"
+    else
+        return "yyP"
+    endif
 endfunction
 "}}}
 

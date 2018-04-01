@@ -7,6 +7,7 @@ function! yanktools#init#maps()
     let g:yanktools_paste_keys              = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
     let g:yanktools_redir_paste_prefix      = get(g:, 'yanktools_redir_paste_prefix', '<leader>')
     let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
+    let g:yanktools_duplicate_key           = get(g:, 'yanktools_duplicate_key', '<M-d>')
     let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
     let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 
@@ -123,6 +124,25 @@ function! yanktools#init#maps()
         silent! exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
     endif
     nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
+    "}}}
+
+
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    " Duplicate {{{
+    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+    let key = g:yanktools_duplicate_key
+    let plug = 'DuplicateNormal'
+
+    if !empty(key) && !hasmapto('<Plug>DuplicateNormal')
+        silent! exec 'nmap <unique> '.key.' <Plug>DuplicateNormal'
+    endif
+    exe 'nnoremap <silent> <expr> <Plug>DuplicateNormal yanktools#duplicate("'.plug.'", 0)'
+
+    if !empty(key) && !hasmapto('<Plug>DuplicateVisual')
+        silent! exec 'xmap <unique> '.key.' <Plug>DuplicateVisual'
+    endif
+    exe 'xnoremap <silent> <expr> <Plug>DuplicateVisual yanktools#duplicate("", 1)'
     "}}}
 
 

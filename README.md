@@ -210,8 +210,8 @@ register (default `<leader>p`).
 
 ### Register redirection
 
-By default, `x`, `X` and `<Del>` redirect to the black hole register ("_"),
-while `c`, `C`, `d` and `D` redirect to a special register (default "x").
+By default, `c`, `C`, `x`, `X` and `<Del>` redirect to the black hole register ("_"),
+while `d` and `D` redirect to a special register (default "x").
 You can paste directly from this register with `<leader>p/P`.
 
 Normally, when you yank to a specific register, you overwrite at the same time
@@ -318,6 +318,20 @@ The 'replace line' command can have two different behaviours:
 - `<leader>ss` will instead replace each line ine __*[count]*__ with the register
   content, while keeping the order of multiline entries (improved behaviour
   from easyclip).
+
+
+----------------------------------------------------------------------------
+
+### Duplicate text
+
+Duplicate lines with __*[count]*__, or visually selected text. Duplicated text won't
+overwrite the default register. Repeatable with repeat.vim (not in visual
+mode).
+
+Default mapping is `<M-d>`. To redefine it:
+
+    let g:yanktools_duplicate_key = '<M-d>'
+
 
 
 ----------------------------------------------------------------------------

@@ -117,13 +117,17 @@ function! yanktools#init#maps()
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineSingle')
         silent! exec 'nmap <unique> '.key.' <Plug>ReplaceLineSingle'
+        silent! exec 'nmap <unique> '.format.key.' <Plug>ReplaceLineFormatSingle'
     endif
-    nmap <silent> <Plug>ReplaceLineSingle :call yanktools#replop#replace_line(v:register, v:count)<cr>
+    nmap <silent> <Plug>ReplaceLineSingle :call yanktools#replop#replace_line(v:register, v:count, 0, 0)<cr>
+    nmap <silent> <Plug>ReplaceLineFormatSingle :call yanktools#replop#replace_line(v:register, v:count, 0, 1)<cr>
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineMulti')
         silent! exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
+        silent! exec 'nmap <unique> '.format.g:mapleader.key.' <Plug>ReplaceLineFormatMulti'
     endif
-    nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1)<cr>
+    nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1, 0)<cr>
+    nmap <silent> <Plug>ReplaceLineFormatMulti :call yanktools#replop#replace_line(v:register, v:count, 1, 1)<cr>
     "}}}
 
 

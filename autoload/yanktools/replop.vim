@@ -51,7 +51,7 @@ function! s:reset_vars_after_replace()
     call yanktools#set_repeat()
 endfunction
 
-function! yanktools#replop#replace_line(r, c, ...)
+function! yanktools#replop#replace_line(r, c, multi, format)
 
     " only run in first iteration
     if !s:replace_count
@@ -69,6 +69,7 @@ function! yanktools#replop#replace_line(r, c, ...)
     " no count, single line replacement
     if !a:c && !s:replace_count
         call s:d_before_replace(a:r, reg)
+        let g:yanktools_auto_format_this = a:format
         execute "normal \"".a:r.paste_type
         call s:reset_vars_after_replace()
         return
@@ -82,12 +83,14 @@ function! yanktools#replop#replace_line(r, c, ...)
             call s:d_before_replace(a:r, reg)
         endfor
 
-        if a:0          " multiple replacements
+        if a:multi          " multiple replacements
             for i in range(a:c)
+                let g:yanktools_auto_format_this = a:format
                 execute "normal \"".a:r.paste_type
             endfor
 
         elseif a:c      " single replacement (à la ReplaceWithRegister)
+            let g:yanktools_auto_format_this = a:format
             execute "normal \"".a:r.paste_type
         endif
 

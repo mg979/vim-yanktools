@@ -23,10 +23,10 @@ function! yanktools#replop#replace(type)
     let g:yanktools_is_replacing = 1
     let s:oldvmode = &virtualedit | set virtualedit=onemore
     if a:type == 'line'
-        exe "keepjump normal! `[V`]"
+        exe "keepjumps normal! `[V`]"
         execute "normal! \"".reg."d"
     else
-        exe "keepjump normal! `[v`]"
+        exe "keepjumps normal! `[v`]"
         execute "normal! \"".reg."d"
     endif
 endfunction

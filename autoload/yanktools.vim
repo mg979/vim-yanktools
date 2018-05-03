@@ -3,6 +3,11 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#init_vars()
+
+    if !get(g:, 'yanktools_loaded', 0)
+        call yanktools#init#maps()
+    endif
+
     call yanktools#extras#clear_yanks()
     call yanktools#zeta#init_vars()
     call yanktools#replop#init()
@@ -82,26 +87,13 @@ function! yanktools#update_stack(...)
     let ix = index(stack, {'text': text, 'type': type})
 
     " if yank is duplicate, put it upfront removing the previous one
-    if ix == -1
-        call insert(stack, {'text': text, 'type': type})
-    else
-        call remove(stack, ix)
-        call insert(stack, {'text': text, 'type': type})
-    endif
+    call insert(stack, ix == - 1? {'text': text, 'type': type} : remove(stack, ix))
 endfunction
 "}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommand calls {{{
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! s:is_being_formatted()
-    let all = g:yanktools_auto_format_all
-    let this = g:yanktools_auto_format_this
-    return (all && !this) || (!all && this)
-endfunction
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#check_yanks()
@@ -130,19 +122,19 @@ endfunction
 function! yanktools#on_text_change()
     """This function is called on TextChanged event."""
 
-    if s:has_yanked | call yanktools#check_yanks() | endif
-    if !g:yanktools_has_changed | return | endif
+    if s:has_yanked             | call yanktools#check_yanks() | endif
+    if !g:yanktools_has_changed | return                       | endif
     let g:yanktools_has_changed = 0
 
     " restore register after redirection
-    if s:redirected_reg | call yanktools#restore_after_redirect() | endif
+    if s:redirected_reg         | call yanktools#restore_after_redirect()   | endif
 
     " replace operator: complete replacement and return
     if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | return | endif
 
     " autoformat / move cursor
-    if s:is_being_formatted() | execute "keepjump normal! `[=`]" | endif
-    if (g:yanktools_move_cursor_after_paste || g:yanktools_move_this) | execute "keepjump normal `]" | endif
+    if s:is_being_formatted()   | execute "keepjumps normal! `[=`]"         | endif
+    if s:is_moving_at_end()     | execute "keepjumps normal! `]"            | endif
 
     " update repeat.vim
     if !empty(g:yanktools_plug) && (!s:redirected_reg || s:duplicating)
@@ -178,6 +170,7 @@ function! yanktools#paste_with_key(key, plug, visual, format)
 
     " set paste variables
     let g:yanktools_has_changed = 1 | let s:has_pasted = 1
+    "call yanktools#offset(0)
 
     " set repeat.vim plug
     let g:yanktools_plug = [a:plug, v:count, v:register]
@@ -196,8 +189,8 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
-    " don't store empty lines
-    if getreg(yanktools#default_reg()) =~ '\w'
+    " don't store empty lines/whitespaces only
+    if getreg(yanktools#default_reg()) !~ '^[\s\n]*$'
         call yanktools#update_stack(1)
     else
         let r = g:yanktools_redir_stack[0]
@@ -257,7 +250,6 @@ function! yanktools#duplicate(plug, visual)
         let s:duplicating = 1
         let g:yanktools_plug = [a:plug, v:count, v:register]
     endif
-    echom string(g:yanktools_plug)
     call yanktools#redirecting()
     if a:visual
         return "yP"
@@ -291,26 +283,10 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#offset(redir, ...)
-    if a:0 | let s:offset = a:1
-    elseif !s:freeze_offset | let s:offset = 0 | endif
-    let s:using_redir_stack = g:yanktools_use_single_stack ? 0 : a:redir
-endfunction
-
-function! s:update_reg(stack)
-    let r = yanktools#get_reg(0)
-    let text = a:stack[s:offset]['text']
-    let type = a:stack[s:offset]['type']
-    call setreg(r[0], text, type)
-endfunction
-
-function! s:msg(...)
-    echohl WarningMsg
-    let t = s:using_redir_stack ? 'redirected' : 'yank'
-    if a:1 == 3     | echo a:2
-    elseif a:1 == 1 | echo "Reached the end of the ".t." stack, restarting from the beginning."
-    else            | echo "Reached the beginning of the ".t." stack, restarting from the end."
+    if a:0                  | let s:offset = a:1
+    elseif !s:freeze_offset | let s:offset = 0
     endif
-    echohl None
+    let s:using_redir_stack = g:yanktools_use_single_stack ? 0 : a:redir
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -347,7 +323,7 @@ function! yanktools#swap_paste(forward, key, visual)
         " recursive mapping to trigger yanktools#paste_with_key()
         " if pasting from visual mode, force paste after if last column
         if a:visual && col('.') == col('$')-1
-            execute "normal p"
+            normal p
         else
             execute "normal ".a:key
         endif
@@ -383,7 +359,7 @@ function! yanktools#swap_paste(forward, key, visual)
     let s:has_pasted = 1 | let g:yanktools_has_changed = 1
 
     " perform a non-recursive paste, but reuse last options and key
-    if s:last_paste_format_this | let g:yanktools_auto_format_this = 1 | endif
+    let g:yanktools_auto_format_this = s:last_paste_format_this
     exec 'normal! u'.s:last_paste_key
 
     " update position, because using non recursive paste
@@ -391,7 +367,45 @@ function! yanktools#swap_paste(forward, key, visual)
 
     " restore register (unless frozen)
     if !s:freeze_offset | call setreg(s:r[0], s:r[1], s:r[2]) | endif
-    if msg | call s:msg(msg) | endif
+    if msg              | call s:msg(msg)                     | endif
 endfunction
 "}}}
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Helper fuctions
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:is_being_formatted()
+    let all = g:yanktools_auto_format_all
+    let this = g:yanktools_auto_format_this
+    return (all && !this) || (!all && this)
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:is_moving_at_end()
+    return g:yanktools_move_cursor_after_paste || g:yanktools_move_this
+endfun
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:update_reg(stack)
+    let r = yanktools#get_reg(0)
+    let text = a:stack[s:offset]['text']
+    let type = a:stack[s:offset]['type']
+    call setreg(r[0], text, type)
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! s:msg(...)
+    echohl WarningMsg
+    let t = s:using_redir_stack ? 'redirected' : 'yank'
+    if a:1 == 3     | echo a:2
+    elseif a:1 == 1 | echo "Reached the end of the ".t." stack, restarting from the beginning."
+    else            | echo "Reached the beginning of the ".t." stack, restarting from the end."
+    endif
+    echohl None
+endfunction
+
 

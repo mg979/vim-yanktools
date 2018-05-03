@@ -4,6 +4,8 @@
 
 function! yanktools#init#maps()
 
+    let g:yanktools_loaded = 1
+
     let g:yanktools_paste_keys              = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
     let g:yanktools_redir_paste_prefix      = get(g:, 'yanktools_redir_paste_prefix', '<leader>')
     let g:yanktools_yank_keys               = get(g:, 'yanktools_yank_keys', ['y', 'Y'])
@@ -16,7 +18,7 @@ function! yanktools#init#maps()
 
     let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
-    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "K")
+    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "zK")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
     let g:yanktools_easyclip_mode           = get(g:, 'yanktools_easyclip_mode', 0)
 
@@ -283,32 +285,6 @@ function! yanktools#init#maps()
     endif
     "}}}
 
-
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Convenient remaps {{{
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if get(g:, 'yanktools_convenient_remaps', 0)
-        nmap Y y$
-        nmap S s$
-        nmap zY zy$
-        nmap KL K$
-        nmap sx "xs
-        nmap sxx "xss
-        nmap sX "xs$
-
-        xmap Y $y
-        xmap D $d
-        xmap P $p
-        xmap sx "xp
-        xmap sX $"xp
-
-        map [p <Plug>PasteIndent_P
-        map ]p <Plug>PasteIndent_p
-        map =p <Plug>PasteRedirectedIndent_p
-        map -p <Plug>PasteRedirectedIndent_P
-    endif
-    "}}}
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Toggle Autoindent {{{

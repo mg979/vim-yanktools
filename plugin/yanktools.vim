@@ -4,10 +4,15 @@
 
 augroup plugin-yanktools
     autocmd!
-    autocmd VimEnter * call yanktools#init_vars()
+    autocmd VimEnter    * call yanktools#init_vars()
     autocmd TextChanged * silent! call yanktools#on_text_change()
     autocmd InsertEnter * silent! call yanktools#on_text_change()
-    autocmd CursorMoved * silent! call yanktools#check_yanks()
+
+    if has('nvim') || has('patch1394')
+        autocmd TextYankPost * silent! call yanktools#check_yanks()
+    else
+        autocmd CursorMoved  * silent! call yanktools#check_yanks()
+    endif
 augroup END
 
 

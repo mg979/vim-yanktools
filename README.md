@@ -501,27 +501,14 @@ changing them individually.
 
 #### Convenient remaps
 
-By setting this option, you can enable these keymappings, inspired by
-vim-unimpaired. They are optimal for a US keyboard, so you may need to
-change them anyway (like I did). Either set the option, or paste this into
-your .vimrc and change them according to your needs.
+Some convenient mappings you can add to your vimrc:
 
 ```
-  { other options here }
-  let g:yanktools_convenient_remaps = 1
-  call yanktools#init#maps()
-```
-
-Or add:
-
-```
-  { other options here }
   call yanktools#init#maps()
 
   nmap Y y$
   nmap S s$
   nmap zY zy$
-  nmap KL K$
   nmap sx "xs
   nmap sxx "xss
   nmap sX "xs$

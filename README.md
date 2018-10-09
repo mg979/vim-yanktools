@@ -303,9 +303,9 @@ By postponing the `z` key to a yank/delete command, you can create a disposable
 yank stack, from which elements are taken from the bottom when pasting, and
 immediately removed. Example:
 
-    `text 1`    (yzy)
-    `text 2`    (yzy)
-    `text 3`    (yzy)
+    text 1    (yzy)
+    text 2    (yzy)
+    text 3    (yzy)
 
 the key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack. Note that to paste `zp` or `zp` are used.
@@ -325,8 +325,6 @@ stack, until the stack is consumed.
 The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
 
 
-
-
 ----------------------------------------------------------------------------
 
 
@@ -336,8 +334,7 @@ The `replace-operator` is also repeatable, though it doesn't need `repeat-vim`.
 `g:yanktools_auto_format_all` controls the global behaviour. If the latter is
 false, the former will autoindent the current paste. And viceversa.
 
-The command `ToggleAutoIndent` (`<C-K>yi`) will toggle `yanktools_auto_format_all`
-on and off.
+The command `ToggleAutoIndent` (mapping `cyi`) will toggle it on and off.
 
 ------------------------------------------------------------------------------
 
@@ -353,28 +350,15 @@ Some commands (replace operator, zeta paste) use this method by default.
 ----------------------------------------------------------------------------
 
 
-#### Interactive paste
-
-This function is taken as-is from vim-easyclip, but if you use fzf-vim,
-you'll be able to use it to fuzzy-select the entry.
-
-Commands are:
-
-    <C-K>p    choose and paste after
-    <C-K>P    choose and paste before
-    <C-K>Y    select yank without pasting
-
-
-----------------------------------------------------------------------------
-
-
 #### Other commands
 
-    <C-K><C-P>   yanktools menu
-    <C-K>yi      toggle autoindent
-    <C-K>yd      delete yanks       (reset yank stack)
-    <C-K>ys      show yanks         (same as in vim-easyclip)
-    <C-K>yc      convert yank       (turns a blockwise yank to linewise, and vv.)
+    cym      yanktools menu
+    cyi      toggle autoindent
+    cys      clear yank stacks
+    czs      clear zeta stack
+    cyt      convert yank type  (turns a blockwise yank to linewise, and vv.)
+    yA       show all yanks
+    yI       interactively select a yank
 
 
 ----------------------------------------------------------------------------
@@ -425,17 +409,15 @@ changing them individually.
 |SwapPasteNext           |        |`<M-p>`     |
 |SwapPastePrevious       |        |`<M-P>`     |
 |                        |        |         |
-|ToggleAutoIndent        |        |`<C-K>yi` |
-|DeleteYanks             |        |`<C-K>yd` |
-|ShowYanks               |        |`<C-K>ys` |
-|ConvertYank             |        |`<C-K>yc` |
-|FreezeYank              |        |`<C-K>yf` |
-|IPasteAfter             |        |`<C-K>p` |
-|IPasteBefore            |        |`<C-K>P` |
-|IPasteSelect            |        |`<C-K>Y` |
+|ToggleAutoIndent        |        |`cyi` |
+|ClearYankStack          |        |`cys` |
+|AllYanks                |        |`yA` |
+|FreezeYank              |        |`cyf` |
+|ConvertYankType         |        |`cyt` |
+|YanktoolsMenu           |        |`cym` |
+|ISelectYank             |        |`yI` |
 
 ----------------------------------------------------------------------------
-
 
 #### Convenient remaps
 

@@ -235,72 +235,53 @@ function! yanktools#init#maps()
         endfor
     endif
 
-
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Toggle Autoindent {{{1
+    " Misc commands                                                             {{{1
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+    " Toggle Autoindent                                                         {{{2
     if !hasmapto('<Plug>ToggleAutoIndent')
-        silent! nmap <unique> <C-K>yi <Plug>ToggleAutoIndent
+        silent! nmap <unique> cyi <Plug>ToggleAutoIndent
     endif
     nnoremap <silent> <Plug>ToggleAutoIndent :ToggleAutoIndent<cr>
-                \:echo "Autoindent is now ".(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
+                \:echo "Autoindent is now " .
+                \(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Freeze yank offset {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>FreezeYank')
-        silent! nmap <unique> <C-K>yf <Plug>FreezeYank
+    " Freeze yank offset                                                        {{{2
+    if !hasmapto('<Plug>FreezeYank') && empty(maparg('cyf'))
+        silent! nmap <unique> cyf <Plug>FreezeYank
     endif
     nnoremap <silent> <Plug>FreezeYank :call yanktools#freeze_offset()<cr>
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Clear yanks {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>DeleteYanks')
-        silent! nmap <unique> <C-K>yd <Plug>DeleteYanks
+    " Clear yanks                                                               {{{2
+    if !hasmapto('<Plug>ClearYankStack') && empty(maparg('cys'))
+        silent! nmap <unique> cys <Plug>ClearYankStack
     endif
-    nnoremap <silent> <Plug>DeleteYanks :call yanktools#clear_yanks()<cr>
+    nnoremap <silent> <Plug>ClearYankStack
+          \ :call yanktools#extras#clear_yanks(0, 1)<cr>
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Show yanks {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>ShowYanks')
-        silent! nmap <unique> <C-K>ys <Plug>ShowYanks
+    " Show yanks                                                                {{{2
+    if !hasmapto('<Plug>AllYanks') && empty(maparg('yA'))
+        silent! nmap <unique> yA <Plug>AllYanks
     endif
-    nnoremap <silent> <Plug>ShowYanks :call yanktools#extras#show_yanks()<cr>
+    nnoremap <silent> <Plug>AllYanks :call yanktools#extras#show_yanks()<cr>
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Interactive Paste {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>IPaste')
-        silent! map <unique> <C-K>p <Plug>IPasteAfter
-        silent! map <unique> <C-K>P <Plug>IPasteBefore
-        silent! map <unique> <C-K>Y <Plug>IPasteSelect
+    " Interactive Paste                                                         {{{2
+    if !hasmapto('<Plug>ISelectYank') && empty(maparg('yI'))
+        silent! nmap <unique> yI <Plug>ISelectYank
     endif
-    noremap <silent> <expr> <Plug>IPasteAfter  g:loaded_fzf ? ":FzfPasteAfter\<cr>"  : ":IPaste\<cr>"
-    noremap <silent> <expr> <Plug>IPasteBefore g:loaded_fzf ? ":FzfPasteBefore\<cr>" : ":IPasteBefore\<cr>"
-    noremap <silent> <expr> <Plug>IPasteSelect g:loaded_fzf ? ":FzfSelectYank\<cr>" : ":IPasteSelect\<cr>"
+    noremap <silent> <expr> <Plug>ISelectYank exists('g:loaded_fzf')
+          \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Change yank type {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>ConvertYank')
-        silent! nmap <unique> <C-K>yc <Plug>ConvertYank
+    " Change yank type                                                          {{{2
+    if !hasmapto('<Plug>ConvertYankType') && empty(maparg('cyt'))
+        silent! nmap <unique> cyt <Plug>ConvertYankType
     endif
-    nnoremap <silent> <Plug>ConvertYank :call yanktools#extras#change_yank_type()<cr>
+    nnoremap <silent> <Plug>ConvertYankType :call yanktools#extras#change_yank_type()<cr>
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Menu {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    if !hasmapto('<Plug>YanktoolsMenu')
-        silent! nmap <unique> <C-K><C-P> <Plug>YanktoolsMenu
+    " Menu                                                                      {{{2
+    if !hasmapto('<Plug>YanktoolsMenu') && empty(maparg('cym'))
+        silent! nmap <unique> cym <Plug>YanktoolsMenu
     endif
     nnoremap <silent> <Plug>YanktoolsMenu :Yanktools<cr>
 

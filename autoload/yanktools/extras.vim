@@ -14,12 +14,18 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#clear_yanks(...)
-    let r = yanktools#get_reg(0)
-    let rd = yanktools#get_reg(1)
-    let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
-    let g:yanktools_redir_stack = [{'text': rd[1], 'type': rd[2]}]
-    if a:0 | echo "All yanks in the stack, except the last, have been cleared." | endif
+function! yanktools#extras#clear_yanks(zeta, ...)
+    if a:zeta
+        let g:yanktools_zeta_stack = []
+        echo "Zeta stack has been cleared."
+    else
+        let r = yanktools#get_reg(0)
+        let rd = yanktools#get_reg(1)
+        let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
+        let g:yanktools_redir_stack = [{'text': rd[1], 'type': rd[2]}]
+        let g:yanktools_zeta_stack = []
+        if a:0 | echo "Yank stacks have been cleared." | endif
+    endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -65,7 +71,7 @@ function! yanktools#extras#yanks()
     return yanks
 endfunction
 
-function! yanktools#extras#select_yank_fzf(yank, before)
+function! yanktools#extras#select_yank_fzf(yank)
     let index = a:yank[:4]
     let index = substitute(index, "[", "", "")
     let index = substitute(index, "]", "", "")
@@ -73,22 +79,6 @@ function! yanktools#extras#select_yank_fzf(yank, before)
     let r = yanktools#get_reg(0)
     call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
     call yanktools#offset(0, index)
-    if a:before >= 0
-        let key = a:before ? "P" : "p"
-        call yanktools#swap_paste(1, key, 0)
-    endif
-endfunction
-
-function! yanktools#extras#fzf(yank)
-    call yanktools#extras#select_yank_fzf(a:yank, 0)
-endfunction
-
-function! yanktools#extras#fzf_before(yank)
-    call yanktools#extras#select_yank_fzf(a:yank, 1)
-endfunction
-
-function! yanktools#extras#fzf_select_only(yank)
-    call yanktools#extras#select_yank_fzf(a:yank, -1)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -96,7 +86,9 @@ endfunction
 function! yanktools#extras#fzf_menu(choice)
     if a:choice == 'Toggle Freeze Offset'
         call yanktools#freeze_offset()
-    elseif a:choice == 'Clear Yanks'
+    elseif a:choice == 'Clear Yank Stacks'
+        call yanktools#extras#clear_yanks(0, 1)
+    elseif a:choice == 'Clear Zeta Stack'
         call yanktools#extras#clear_yanks(1)
     elseif a:choice == 'Display Yanks'
         call yanktools#extras#show_yanks()
@@ -141,7 +133,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#select_yank(before)
+function! yanktools#extras#select_yank()
     call yanktools#update_stack()
     echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
     let i = 0
@@ -165,10 +157,6 @@ function! yanktools#extras#select_yank(before)
             let r = yanktools#get_reg(0)
             call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
             call yanktools#offset(0, index)
-            if a:before >= 0
-                let key = a:before ? 'P' : 'p'
-                call yanktools#swap_paste(1, key, 0)
-            endif
         endif
     endif
 endfunction

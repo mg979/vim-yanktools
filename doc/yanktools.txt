@@ -363,14 +363,13 @@ AUTOFORMAT                                                *yanktools-autoformat*
 *g:yanktools_auto_format_all* controls the global behaviour. If the latter is
 `false`, the former will autoindent the current paste. And viceversa.
 
-The command `ToggleAutoIndent` (<C-K>yi) will toggle `yanktools_auto_format_all`
-on and off.
+The command `ToggleAutoIndent` (mapping `cyi`) will toggle it on and off.
 
 ------------------------------------------------------------------------------
                                            *g:yanktools_move_cursor_after_paste*
 
-As in |vim-easyclip|, you can configure an option to always move the cursor at
-the end of the pasted content:
+you can configure an option to always move the cursor at the end of the pasted
+content:
 >
   let g:yanktools_move_cursor_after_paste = 1
 <
@@ -378,28 +377,16 @@ Some commands (replace operator, zeta paste) use this method by default.
 
 
 
-INTERACTIVE PASTE                                        *yanktools-interactive*
-==============================================================================
-
-This function is taken as-is from |vim-easyclip|, but if you use |fzf-vim|,
-you'll be able to use it to fuzzy-select the entry.
-
-Commands are:
-
-  <C-K>p    choose and paste after
-  <C-K>P    choose and paste before
-  <C-K>Y    select yank without pasting
-
-
-
 OTHER COMMANDS                                                  *yanktools-misc*
 ==============================================================================
 
-  <C-K><C-P>   yanktools menu
-  <C-K>yi      toggle autoindent
-  <C-K>yd      delete yanks       (reset yank stack)
-  <C-K>ys      show yanks         (same as in |vim-easyclip|)
-  <C-K>yc      convert yank       (turns a blockwise yank to linewise, and vv.)
+  cym      yanktools menu
+  cyi      toggle autoindent
+  cys      clear yank stacks
+  czs      clear zeta stack
+  cyt      convert yank type  (turns a blockwise yank to linewise, and vv.)
+  yA       show all yanks
+  yI       interactively select a yank
 
 
 
@@ -433,7 +420,7 @@ changing them individually.
     let g:yanktools_auto_format_all         = 0
 >
 --------------------------------------------+------------------------------
-Mapping                                     | Default                    ~
+Plug                                        | Default                    ~
 --------------------------------------------+------------------------------
 <Plug>Paste_                  (<key>)       | <key>
 <Plug>PasteIndent_            (<key>)       | \<key>
@@ -450,14 +437,13 @@ Mapping                                     | Default                    ~
 <Plug>SwapPasteNext                         | <M-p>
 <Plug>SwapPastePrevious                     | <M-P>
                                             |
-<Plug>ToggleAutoIndent                      | <C-K>yi
-<Plug>DeleteYanks                           | <C-K>yd
-<Plug>ShowYanks                             | <C-K>ys
-<Plug>ConvertYank                           | <C-K>yc
-<Plug>FreezeYank                            | <C-K>yf
-<Plug>IPasteAfter                           | <C-K>p
-<Plug>IPasteBefore                          | <C-K>P
-<Plug>IPasteSelect                          | <C-K>Y
+<Plug>ToggleAutoIndent                      | cyi
+<Plug>ClearYankStack                        | cys
+<Plug>FreezeYank                            | cyf
+<Plug>ConvertYankType                       | cyt
+<Plug>YanktoolsMenu                         | cym
+<Plug>AllYanks                              | yA
+<Plug>ISelectYank                           | yI
 
 
 

@@ -8,7 +8,7 @@ function! yanktools#init_vars()
         call yanktools#init#maps()
     endif
 
-    call yanktools#extras#clear_yanks()
+    call yanktools#extras#clear_yanks(0)
     call yanktools#zeta#init_vars()
     call yanktools#replop#init()
     let s:redirected_reg = 0

@@ -22,30 +22,22 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 command! Yanks call yanktools#extras#show_yanks()
-command! ClearYanks call yanktools#extras#clear_yanks() | echo "Yanks cleared."
+command! ClearYankStacks call yanktools#extras#clear_yanks(0, 1)
+command! ClearZetaStack  call yanktools#extras#clear_yanks(1)
 command! ToggleAutoIndent call yanktools#extras#toggle_autoformat()
 
-com! FzfPasteAfter call fzf#run({'source': yanktools#extras#yanks(),
-            \ 'sink': function('yanktools#extras#fzf'), 'down': '30%',
-            \ 'options': '--prompt "Paste After >>>   "'})
-
-com! FzfPasteBefore call fzf#run({'source': yanktools#extras#yanks(),
-            \ 'sink': function('yanktools#extras#fzf_before'), 'down': '30%',
-            \ 'options': '--prompt "Paste Before >>>   "'})
-
 com! FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(),
-            \ 'sink': function('yanktools#extras#fzf_select_only'), 'down': '30%',
+            \ 'sink': function('yanktools#extras#select_yank_fzf'), 'down': '30%',
             \ 'options': '--prompt "Select Yank >>>   "'})
 
-com! IPasteAfter call yanktools#extras#select_yank(0)
-com! IPasteBefore call yanktools#extras#select_yank(1)
-com! IPasteSelect call yanktools#extras#select_yank(-1)
+com! ISelectYank call yanktools#extras#select_yank()
 
 com! Yanktools call fzf#run({'source': [
             \ 'Toggle Freeze Offset',
             \ 'Convert Yank Type',
             \ 'Toggle Auto Indent',
-            \ 'Clear Yanks',
+            \ 'Clear Yank Stacks',
+            \ 'Clear Zeta Stack',
             \ 'Display Yanks',
             \ 'Select Yank',
             \ ],

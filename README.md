@@ -77,8 +77,6 @@ __*Common options:*__
   mappings to perform a single indented paste, and this behaviour is inverted
   if autoindent is active (ie. single unindented paste).
 
-* __Move operator__: included, but disabled by default (replaced by redirection).
-
 * __repeat.vim support__: yanktools supports it for most paste operations.
 
 ----------------------------------------------------------------------------
@@ -338,8 +336,8 @@ The command `ToggleAutoIndent` (mapping `cyi`) will toggle it on and off.
 ------------------------------------------------------------------------------
 
 
-As in vim-easyclip, you can configure an option to always move the cursor at
-the end of the pasted content:
+You can configure an option to always move the cursor at the end of the pasted
+content:
 
     let g:yanktools_move_cursor_after_paste = 1
 
@@ -356,7 +354,9 @@ Some commands (replace operator, zeta paste) use this method by default.
     cys      clear yank stacks
     czs      clear zeta stack
     cyt      convert yank type  (turns a blockwise yank to linewise, and vv.)
-    yA       show all yanks
+    yY       show yanks
+    yX       show redirected yanks
+    yZ       show zeta yanks
     yI       interactively select a yank
 
 
@@ -410,10 +410,12 @@ changing them individually.
 |ToggleAutoIndent        |        |`cyi` |
 |ClearYankStack          |        |`cys` |
 |ClearZetaStack          |        |`czs` |
-|AllYanks                |        |`yA` |
 |FreezeYank              |        |`cyf` |
 |ConvertYankType         |        |`cyt` |
 |YanktoolsMenu           |        |`cym` |
+|Yanks                   |        |`yY` |
+|RedirectedYanks         |        |`yX` |
+|ZetaYanks               |        |`yZ` |
 |ISelectYank             |        |`yI` |
 
 ----------------------------------------------------------------------------

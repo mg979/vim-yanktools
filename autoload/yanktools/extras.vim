@@ -2,11 +2,17 @@
 " Extra functions and commands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#show_yanks()
+function! yanktools#extras#show_yanks(type)
     call yanktools#update_stack()
-    echohl WarningMsg | echo "--- Yanks ---" | echohl None
+    let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
     let i = 0
-    for yank in g:yanktools_stack
+    let stack = a:type == 'x' ? g:yanktools_redir_stack
+          \ :   a:type == 'z' ? g:yanktools_zeta_stack : g:yanktools_stack
+    if empty(stack)
+      return yanktools#msg("Stack is empty")
+    endif
+    echohl WarningMsg | echo "--- ".t."Yanks ---" | echohl None
+    for yank in stack
         call yanktools#extras#show_yank(yank, i)
         let i += 1
     endfor
@@ -91,7 +97,7 @@ function! yanktools#extras#fzf_menu(choice)
     elseif a:choice == 'Clear Zeta Stack'
         call yanktools#extras#clear_yanks(1)
     elseif a:choice == 'Display Yanks'
-        call yanktools#extras#show_yanks()
+        call yanktools#extras#show_yanks('y')
     elseif a:choice == 'Select Yank'
         FzfSelectYank
     elseif a:choice == 'Convert Yank Type'

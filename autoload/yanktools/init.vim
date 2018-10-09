@@ -31,12 +31,12 @@ function! yanktools#init#maps()
     " Yank {{{1
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !hasmapto('<Plug>Yank_y')
-        nmap <unique> y <Plug>Yank_y
-        xmap <unique> y <Plug>Yank_y
+    if !hasmapto('<Plug>YankOperator')
+        nmap <unique> y <Plug>YankOperator
+        xmap <unique> y <Plug>YankOperator
     endif
-    nnoremap <silent> <expr> <Plug>Yank_y yanktools#yank_with_key("y")
-    xnoremap <silent> <expr> <Plug>Yank_y yanktools#yank_with_key("y")
+    nnoremap <silent> <expr> <Plug>YankOperator yanktools#yank_with_key("y")
+    xnoremap <silent> <expr> <Plug>YankOperator yanktools#yank_with_key("y")
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -193,15 +193,15 @@ function! yanktools#init#maps()
 
     if !empty(g:yanktools_zeta)
         let zeta = g:yanktools_zeta
-            if !hasmapto('<Plug>ZetaYank')
-                silent! exec 'nmap <unique> y'.zeta.' <Plug>ZetaYank'
-                silent! exec 'xmap <unique> '.zeta.'y <Plug>ZetaYank'
-            endif
-            exec 'nnoremap <silent> <expr> <Plug>ZetaYank yanktools#zeta#yank_with_key("y")'
-            exec 'xnoremap <silent> <expr> <Plug>ZetaYank yanktools#zeta#yank_with_key("y")'
+        if !hasmapto('<Plug>ZetaYankOperator')
+          silent! exec 'nmap <unique> y'.zeta.' <Plug>ZetaYankOperator'
+          silent! exec 'xmap <unique> '.zeta.'y <Plug>ZetaYankOperator'
+        endif
+        nnoremap <silent> <expr> <Plug>ZetaYankOperator yanktools#zeta#yank_with_key("y")
+        xnoremap <silent> <expr> <Plug>ZetaYankOperator yanktools#zeta#yank_with_key("y")
 
-        if !hasmapto('<Plug>ZetaDeleteMotion')
-            nmap <unique> dz <Plug>ZetaDeleteMotion
+        if !hasmapto('<Plug>ZetaDeleteOperator')
+            nmap <unique> dz <Plug>ZetaDeleteOperator
         endif
         if !hasmapto('<Plug>ZetaDeleteLine')
             nmap <unique> dzd <Plug>ZetaDeleteLine
@@ -209,7 +209,7 @@ function! yanktools#init#maps()
         if !hasmapto('<Plug>ZetaDeleteVisual')
             xmap <unique> zd <Plug>ZetaDeleteVisual
         endif
-        nnoremap <silent> <expr> <Plug>ZetaDeleteMotion yanktools#zeta#kill_with_key("d")
+        nnoremap <silent> <expr> <Plug>ZetaDeleteOperator yanktools#zeta#kill_with_key("d")
         nnoremap <silent> <expr> <Plug>ZetaDeleteVisual yanktools#zeta#kill_with_key("dd")
         xnoremap <silent> <expr> <Plug>ZetaDeleteLine yanktools#zeta#kill_with_key("d")
 
@@ -267,10 +267,22 @@ function! yanktools#init#maps()
           \ :call yanktools#extras#clear_yanks(1)<cr>
 
     " Show yanks                                                                {{{2
-    if !hasmapto('<Plug>AllYanks') && empty(maparg('yA'))
-        silent! nmap <unique> yA <Plug>AllYanks
+    if !hasmapto('<Plug>Yanks') && empty(maparg('yY'))
+        silent! nmap <unique> yY <Plug>Yanks
     endif
-    nnoremap <silent> <Plug>AllYanks :call yanktools#extras#show_yanks()<cr>
+    nnoremap <silent> <Plug>Yanks :call yanktools#extras#show_yanks('y')<cr>
+
+    " Redirected yanks                                                                {{{2
+    if !hasmapto('<Plug>RedirectedYanks') && empty(maparg('yX'))
+        silent! nmap <unique> yX <Plug>RedirectedYanks
+    endif
+    nnoremap <silent> <Plug>RedirectedYanks :call yanktools#extras#show_yanks('x')<cr>
+
+    " Zeta yanks                                                                {{{2
+    if !hasmapto('<Plug>ZetaYanks') && empty(maparg('yZ'))
+        silent! nmap <unique> yZ <Plug>ZetaYanks
+    endif
+    nnoremap <silent> <Plug>ZetaYanks :call yanktools#extras#show_yanks('z')<cr>
 
     " Interactive Paste                                                         {{{2
     if !hasmapto('<Plug>ISelectYank') && empty(maparg('yI'))

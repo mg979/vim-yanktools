@@ -42,6 +42,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#zeta_call()
+    let &updatetime = 100
     let s:zeta = 1 | let s:has_yanked = 1
 endfunction
 

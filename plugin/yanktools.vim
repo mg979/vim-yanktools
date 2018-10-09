@@ -21,7 +21,9 @@ augroup END
 " Commands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-command! Yanks call yanktools#extras#show_yanks()
+command! Yanks call yanktools#extras#show_yanks('y')
+command! RedirectedYanks call yanktools#extras#show_yanks('x')
+command! ZetaYanks call yanktools#extras#show_yanks('z')
 command! ClearYankStacks call yanktools#extras#clear_yanks(0, 1)
 command! ClearZetaStack  call yanktools#extras#clear_yanks(1)
 command! ToggleAutoIndent call yanktools#extras#toggle_autoformat()

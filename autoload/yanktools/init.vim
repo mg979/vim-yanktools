@@ -17,13 +17,10 @@ function! yanktools#init#maps()
     let g:yanktools_replace_operator_bh     = get(g:, 'yanktools_replace_operator_bh', 1)
 
     let g:yanktools_format_prefix           = get(g:, 'yanktools_format_prefix', "<")
-    let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
-    let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "zK")
+    let g:yanktools_zeta                    = get(g:, 'yanktools_zeta', "z")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
 
     let redirect                            = g:yanktools_redirect_register
-    let zeta                                = g:yanktools_zeta_prefix
-    let kill                                = g:yanktools_zeta_kill
     let format                              = g:yanktools_format_prefix
 
     let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
@@ -142,7 +139,6 @@ function! yanktools#init#maps()
 
         if !empty(prefix) && !empty(format) && !hasmapto('<Plug>'.plug)
             silent! exec 'nmap <unique> '.format.prefix.key.' <Plug>'.plug
-            silent! exec 'xmap <unique> '.format.prefix.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
@@ -168,7 +164,6 @@ function! yanktools#init#maps()
         let plug = "PasteIndent_".key
         if !empty(format) && !hasmapto('<Plug>'.plug)
             silent! exec 'nmap <unique> '.format.key.' <Plug>'.plug
-            silent! exec 'xmap <unique> '.format.key.' <Plug>'.plug
         endif
         exec 'nnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
         exec 'xnoremap <silent> <expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'
@@ -199,24 +194,25 @@ function! yanktools#init#maps()
     " z mode {{{1
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-    if !empty(zeta)
+    if !empty(g:yanktools_zeta)
+        let zeta = g:yanktools_zeta
         for key in g:yanktools_yank_keys
             if !hasmapto('<Plug>ZetaYank_'.key)
-                silent! exec 'nmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
+                silent! exec 'nmap <unique> '.key.zeta.' <Plug>ZetaYank_'.key
                 silent! exec 'xmap <unique> '.zeta.key.' <Plug>ZetaYank_'.key
             endif
             exec 'nnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
             exec 'xnoremap <silent> <expr> <Plug>ZetaYank_'.key.' yanktools#zeta#yank_with_key("' . key . '")'
         endfor
 
-        if !hasmapto('<Plug>ZetaKillMotion')
-            silent! exec 'nmap <unique> '.kill.' <Plug>ZetaKillMotion'
-            silent! exec 'xmap <unique> '.kill.' <Plug>ZetaKillMotion'
-            silent! exec 'nmap <unique> '.kill.kill.' <Plug>ZetaKillLine'
+        if !hasmapto('<Plug>ZetaDelete_d')
+            nmap <unique> dz <Plug>ZetaDeleteMotion
+            xmap <unique> zd <Plug>ZetaDeleteVisual
+            nmap <unique> dzd <Plug>ZetaDeleteLine
         endif
-        nnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
-        nnoremap <silent> <expr> <Plug>ZetaKillLine yanktools#zeta#kill_with_key("dd")
-        xnoremap <silent> <expr> <Plug>ZetaKillMotion yanktools#zeta#kill_with_key("d")
+        nnoremap <silent> <expr> <Plug>ZetaDeleteMotion yanktools#zeta#kill_with_key("d")
+        nnoremap <silent> <expr> <Plug>ZetaDeleteVisual yanktools#zeta#kill_with_key("dd")
+        xnoremap <silent> <expr> <Plug>ZetaDeleteLine yanktools#zeta#kill_with_key("d")
 
         let cmd = ' :call yanktools#zeta#paste_with_key'
 
@@ -233,7 +229,6 @@ function! yanktools#init#maps()
             let plug = "ZetaPasteIndent_".key
             if !hasmapto('<Plug>'.plug)
                 silent! exec 'nmap <unique> '.format.zeta.key.' <Plug>'.plug
-                silent! exec 'xmap <unique> '.format.zeta.key.' <Plug>'.plug
             endif
             exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'."\<cr>"
             exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'."\<cr>"

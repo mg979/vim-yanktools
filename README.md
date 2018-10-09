@@ -96,7 +96,7 @@ __*The new features (compared to easyclip) are:*__
 
 * Redirected text fills its own stack, so that you can cycle/paste from it too.
 
-* __Zeta-mode__: (by default it uses 'z' as prefix) that fills a parallel yank stack,
+* __Zeta-mode__: (by default it uses 'z' as key) that fills a disposable yank stack,
   from which items are taken from the back, and pasting them removes them from
   the stack as well. You can populate the stack both by yanking and cutting.
 
@@ -149,8 +149,7 @@ Have a look at the `convenient remaps` section if you want mappings similar to
 |g:yanktools_replace_operator_bh               | `1                   `|
 |                                              |                       |
 |g:yanktools_format_prefix                     | `'<'                 `|
-|g:yanktools_zeta_prefix                       | `'z'                 `|
-|g:yanktools_zeta_kill                         | `'K'                 `|
+|g:yanktools_zeta                              | `'z'                 `|
 |                                              |                       |
 |g:yanktools_use_single_stack                  | `0                   `|
 |g:yanktools_move_cursor_after_paste           | `0                   `|
@@ -300,29 +299,16 @@ Default mapping is `<M-d>`. To redefine it:
 
 ### Zeta mode
 
-By using the `z` prefix, you can create a disposable yank stack, from which
-elements are taken from the bottom when pasting, and immediately removed.
+By postponing the `z` key to a yank/delete command, you can create a disposable
+yank stack, from which elements are taken from the bottom when pasting, and
+immediately removed. Example:
 
-Eg:  
-    `text 1`    (zyy)  
-    `text 2`    (zyy)  
-    `text 3`    (zyy)  
+    `text 1`    (yzy)
+    `text 2`    (yzy)
+    `text 3`    (yzy)
 
-The key sequence `zpzpzp` would then recreate the same sequence and consume the
-stack.
-
-Zeta-killing uses its own mapping (`K` by default), without `z` prefix.
-
-You can add elements both with `zy` (zeta-yanking) and `K` (zeta-killing,
-that is cutting). They behave just like `y` and `d` operators.
-You could add these mappings to make usage easier:
-
-    map zY zy$
-    map zl zyy
-    map zK zk$
-
-See also g:yanktools_convenient_remaps.
-
+the key sequence `zpzpzp` would then recreate the same sequence and consume the
+stack. Note that to paste `zp` or `zp` are used.
 
 ----------------------------------------------------------------------------
 
@@ -417,8 +403,7 @@ changing them individually.
     let g:yanktools_use_single_stack        = 0
 
     let g:yanktools_format_prefix           = '<'
-    let g:yanktools_zeta_prefix             = 'z'
-    let g:yanktools_zeta_kill               = 'K'
+    let g:yanktools_zeta                    = 'z'
     let g:yanktools_redirect_register       = 'x'
     let g:yanktools_move_cursor_after_paste = 0
     let g:yanktools_auto_format_all         = 0
@@ -436,12 +421,6 @@ changing them individually.
 |                        |        |            |
 |DuplicateNormal         |        |       `<M-d>`|
 |DuplicateVisual         |        |       `<M-d>`|
-|                        |        |          |
-|ZetaYank_               |(key)   | z key   |
-|ZetaKillMotion          |        | K        |
-|ZetaKillLine            |        | KK       |
-|ZetaPaste_              |(key)   | z key   |
-|ZetaPasteIndent_        |(key)   | `<`z key  |
 |                        |        |          |
 |SwapPasteNext           |        |`<M-p>`     |
 |SwapPastePrevious       |        |`<M-P>`     |

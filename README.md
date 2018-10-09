@@ -131,31 +131,11 @@ Have a look at the `convenient remaps` section if you want mappings similar to
 ----------------------------------------------------------------------------
 
 
-#### Easyclip mode
-
-If you used |vim-easyclip| and want to use the same behaviours and mappings:
- 
-    let g:yanktools_easyclip_mode           = 1
-
-If you then want to enable the replace operator, remove 's' from black hole
-redirection and setup operators:
-
-    let g:yanktools_black_hole_keys         = ['d', 'D', 'c', 'C', 'x','X', '<Del>']
-    let g:yanktools_replace_operator        = 's'
-    let g:yanktools_replace_line            = 'ss'
-
-Any option you change, should be put __before__ you initialize the mappings.
-
-
-----------------------------------------------------------------------------
-
-
 ### Options
 
 |Option                                        |Default                |
 |----------------------------------------------|-----------------------|
 |g:yanktools_yank_keys                         | `['y', 'Y']          `|
-|g:yanktools_move_key                          | `[]                  `|
 |g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
 |g:yanktools_black_hole_keys                   | `['c', 'C', 'x', 'X', '<Del>']   `|
 |g:yanktools_duplicate_key                     | `'<M-d>'`             |
@@ -172,7 +152,6 @@ Any option you change, should be put __before__ you initialize the mappings.
 |g:yanktools_zeta_prefix                       | `'z'                 `|
 |g:yanktools_zeta_kill                         | `'K'                 `|
 |                                              |                       |
-|g:yanktools_easyclip_mode                     | `0                   `|
 |g:yanktools_use_single_stack                  | `0                   `|
 |g:yanktools_move_cursor_after_paste           | `0                   `|
 |g:yanktools_auto_format_all                   | `0                   `|
@@ -268,26 +247,6 @@ depend on the key you used for pasting:
 |normal paste                  |will use normal stack when cycling|
 |paste from redirected register|will use redirected stack|
 
-
-
-----------------------------------------------------------------------------
-
-### Move operator
-
-You can setup a _move operator_ as in vim-easyclip, if you prefer. Eg:
-
-    let g:yanktools_move_key = 'm'
-
-Moving text will then overwrite the default register, while all others will be
-redirected to black hole. Moved text will also be pushed in the yank stack, as
-a normal yank.
-
-If you keep the default yanktools behaviour of 'd' key (redirect register), 
-then you can have a 'history' of deleted items that you can still access
-(through the redirected stack). Otherwise add the 'd' key to the 'black hole'
-redirection keys, to mimic vim-easyclip behavoiur in toto.
-
-    let g:yanktools_black_hole_keys = ['d', 'D', 'c', 'C', 'x', 'X', '<Del>']
 
 
 ----------------------------------------------------------------------------

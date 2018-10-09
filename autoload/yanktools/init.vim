@@ -20,26 +20,16 @@ function! yanktools#init#maps()
     let g:yanktools_zeta_prefix             = get(g:, 'yanktools_zeta_prefix', "z")
     let g:yanktools_zeta_kill               = get(g:, 'yanktools_zeta_kill', "zK")
     let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
-    let g:yanktools_easyclip_mode           = get(g:, 'yanktools_easyclip_mode', 0)
 
     let redirect                            = g:yanktools_redirect_register
     let zeta                                = g:yanktools_zeta_prefix
     let kill                                = g:yanktools_zeta_kill
     let format                              = g:yanktools_format_prefix
 
-    if g:yanktools_easyclip_mode
-        let g:yanktools_move_key                = get(g:, 'yanktools_move_key', 'm')
-        let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', '')
-        let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', '')
-        let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['d', 'D', 's', 'S', 'c', 'C', 'x','X', '<Del>'])
-        let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', [])
-    else
-        let g:yanktools_move_key                = get(g:, 'yanktools_move_key', '')
-        let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
-        let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
-        let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['c', 'C', 'x','X', '<Del>'])
-        let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['d', 'D'])
-    endif
+    let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
+    let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
+    let g:yanktools_black_hole_keys         = get(g:, 'yanktools_black_hole_keys', ['c', 'C', 'x','X', '<Del>'])
+    let g:yanktools_redirect_keys           = get(g:, 'yanktools_redirect_keys', ['d', 'D'])
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     " Yank keys {{{1
@@ -53,21 +43,6 @@ function! yanktools#init#maps()
         exec 'nnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
         exec 'xnoremap <silent> <expr> <Plug>Yank_'.key.' yanktools#yank_with_key("' . key . '")'
     endfor
-
-
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Move keys {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    let key = g:yanktools_move_key
-    if !empty(key) && !hasmapto('<Plug>MoveOperator')
-        silent! exec 'nmap <unique> '.key.' <Plug>MoveOperator'
-        silent! exec 'nmap <unique> '.key.key.' <Plug>MoveLine'
-        silent! exec 'xmap <unique> '.key.' <Plug>MoveOperator'
-    endif
-    exec 'nnoremap <silent> <expr> <Plug>Move_'.key.' yanktools#move("\<Plug>MoveOperator", 0)'
-    exec 'nnoremap <silent> <expr> <Plug>MoveLine yanktools#move("\<Plug>MoveLine", 1)'
-    exec 'xnoremap <silent> <expr> <Plug>Move_'.key.' yanktools#move("\<Plug>MoveOperator", 0)'
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -205,22 +180,12 @@ function! yanktools#init#maps()
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
     if !hasmapto('<Plug>SwapPasteNext')
-        if g:yanktools_easyclip_mode
-            silent! nmap <unique> <C-p> <Plug>SwapPasteNext
-            silent! xmap <unique> <C-p> <Plug>SwapPasteNext
-        else
-            silent! nmap <unique> <M-p> <Plug>SwapPasteNext
-            silent! xmap <unique> <M-p> <Plug>SwapPasteNext
-        endif
+        silent! nmap <unique> <M-p> <Plug>SwapPasteNext
+        silent! xmap <unique> <M-p> <Plug>SwapPasteNext
     endif
     if !hasmapto('<Plug>SwapPastePrevious')
-        if g:yanktools_easyclip_mode
-            silent! nmap <unique> <C-n> <Plug>SwapPastePrevious
-            silent! xmap <unique> <C-n> <Plug>SwapPastePrevious
-        else
-            silent! nmap <unique> <M-P> <Plug>SwapPastePrevious
-            silent! xmap <unique> <M-P> <Plug>SwapPastePrevious
-        endif
+        silent! nmap <unique> <M-P> <Plug>SwapPastePrevious
+        silent! xmap <unique> <M-P> <Plug>SwapPastePrevious
     endif
     nnoremap <silent> <Plug>SwapPasteNext     :call yanktools#swap_paste(1, "P", 0)<cr>
     nnoremap <silent> <Plug>SwapPastePrevious :call yanktools#swap_paste(0, "P", 0)<cr>

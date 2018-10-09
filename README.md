@@ -135,7 +135,6 @@ Have a look at the `convenient remaps` section if you want mappings similar to
 
 |Option                                        |Default                |
 |----------------------------------------------|-----------------------|
-|g:yanktools_yank_keys                         | `['y', 'Y']          `|
 |g:yanktools_paste_keys                        | `['p', 'P', 'gp', 'gP']`|
 |g:yanktools_black_hole_keys                   | `['c', 'C', 'x', 'X', '<Del>']   `|
 |g:yanktools_duplicate_key                     | `'<M-d>'`             |
@@ -375,7 +374,6 @@ changing them individually.
 
 
     let g:yanktools_paste_keys              = ['p', 'P', 'gp', 'gP']
-    let g:yanktools_yank_keys               = ['y', 'Y']
     let g:yanktools_black_hole_keys         = ['c', 'C', 'x', 'X', '<Del>']
     let g:yanktools_redirect_keys           = ['d', 'D']
     let g:yanktools_duplicate_key           = '<M-d>'
@@ -411,6 +409,7 @@ changing them individually.
 |                        |        |         |
 |ToggleAutoIndent        |        |`cyi` |
 |ClearYankStack          |        |`cys` |
+|ClearZetaStack          |        |`czs` |
 |AllYanks                |        |`yA` |
 |FreezeYank              |        |`cyf` |
 |ConvertYankType         |        |`cyt` |

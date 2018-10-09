@@ -21,12 +21,6 @@ function! yanktools#zeta#update_stack(redirected)
     call add(g:yanktools_zeta_stack, {'text': r[1], 'type': r[2]})
 endfunction
 
-function! s:msg()
-    echohl WarningMsg
-    echo "There are ".len(g:yanktools_zeta_stack)." entries left in the zeta stack."
-    echohl None
-endfunction
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#zeta#yank_with_key(key)
@@ -50,7 +44,7 @@ endfunction
 
 function! yanktools#zeta#paste_with_key(key, plug, visual, format)
     call yanktools#zeta#check_stack()
-    if !len(g:yanktools_zeta_stack) | echo "Empty zeta stack." | return | endif
+    if !len(g:yanktools_zeta_stack) | return yanktools#msg("Empty zeta stack.") | endif
 
     " set vars
     let g:yanktools_has_changed = 1
@@ -74,6 +68,6 @@ function! yanktools#zeta#paste_with_key(key, plug, visual, format)
 
     " restore register
     call setreg(r[0], r[1], r[2])
-    call s:msg()
+    call yanktools#msg("There are ".len(g:yanktools_zeta_stack)." entries left in the zeta stack.")
 endfunction
 

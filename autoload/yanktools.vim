@@ -405,4 +405,9 @@ function! s:msg(...)
     echohl None
 endfunction
 
+function! yanktools#msg(txt, ...)
+  exe "echohl" ( !a:0 ? "WarningMsg" : "StorageClass" )
+  echo a:txt
+  echohl None
+endfunction
 

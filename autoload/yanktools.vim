@@ -28,6 +28,7 @@ function! yanktools#init_vars()
     let s:offset = 0
     let s:last_paste_key = 0
     let s:last_paste_tick = -1
+    let s:old_ut = &updatetime
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -101,6 +102,7 @@ function! yanktools#check_yanks()
     if s:has_yanked
         if s:zeta  | call yanktools#zeta#check_stack() | endif
         let s:zeta = 0 | let s:has_yanked = 0
+        let &updatetime = s:old_ut
         call yanktools#update_stack()
     endif
 
@@ -158,6 +160,7 @@ function! yanktools#yank_with_key(key)
     if exists('g:VM') && g:VM.is_active | return a:key | endif
     if s:has_yanked | call yanktools#check_yanks() | endif
     let s:has_yanked = 1
+    let &updatetime = 100
     return a:key
 endfunction
 

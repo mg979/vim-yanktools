@@ -12,6 +12,7 @@ augroup plugin-yanktools
         autocmd TextYankPost * silent! call yanktools#check_yanks()
     else
         autocmd CursorMoved  * silent! call yanktools#check_yanks()
+        autocmd CursorHold   * silent! call yanktools#check_yanks()
     endif
 augroup END
 

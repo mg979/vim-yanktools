@@ -455,7 +455,7 @@ Some convenient mappings you can add to your vimrc:
 
   nmap Y y$
   nmap S s$
-  nmap zY zy$
+  nmap zY yz$
   nmap sx "xs
   nmap sxx "xss
   nmap sX "xs$

@@ -232,6 +232,7 @@ stack for deleted items.
 
     let g:yanktools_use_single_stack = 0
 
+|||
 |-|-|
 |true| deleted text is added to the yank stack|
 |false (default)| deleted text is added to its own stack|
@@ -239,6 +240,7 @@ stack for deleted items.
 In the latter case, the kind of stack you'll be using when cycling, will
 depend on the key you used for pasting:
 
+|||
 |-|-|
 |normal paste                  |will use normal stack when cycling|
 |paste from redirected register|will use redirected stack|
@@ -390,33 +392,22 @@ changing them individually.
     let g:yanktools_move_cursor_after_paste = 0
     let g:yanktools_auto_format_all         = 0
 
-|Plug                    |            | Default   |
-|------------------------|------------|-----------|
-|Paste_                  |(key)   | key     |
-|PasteIndent_            |(key)   | `<` key    |
-|PasteRedirected_        |(key)   | key     |
-|PasteRedirectedIndent_  |(key)   | `<` key    |
-|                        |        |          |
-|ReplaceOperator         |        |`s`        |
-|ReplaceLine             |        |`ss`        |
-|ReplaceLineMulti        |        |`<leader>ss`|
-|                        |        |            |
-|DuplicateNormal         |        |       `<M-d>`|
-|DuplicateVisual         |        |       `<M-d>`|
-|                        |        |          |
-|SwapPasteNext           |        |`<M-p>`     |
-|SwapPastePrevious       |        |`<M-P>`     |
-|                        |        |         |
-|ToggleAutoIndent        |        |`cyi` |
-|ClearYankStack          |        |`cys` |
-|ClearZetaStack          |        |`czs` |
-|FreezeYank              |        |`cyf` |
-|ConvertYankType         |        |`cyt` |
-|YanktoolsMenu           |        |`cym` |
-|Yanks                   |        |`yY` |
-|RedirectedYanks         |        |`yX` |
-|ZetaYanks               |        |`yZ` |
-|ISelectYank             |        |`yI` |
+|Plug                         | Default      |Plug                         | Default      |
+|-----------------------------|--------------|-----------------------------|--------------|
+|Paste_(key)                  | key          |ToggleAutoIndent             |`cyi`         |
+|PasteIndent_(key)            | `<` key      |ClearYankStack               |`cys`         |
+|PasteRedirected_(key)        | key          |ClearZetaStack               |`czs`         |
+|PasteRedirectedIndent_(key)  | `<` key      |FreezeYank                   |`cyf`         |
+|                             |              |ConvertYankType              |`cyt`         |
+|ReplaceOperator              |`s`           |YanktoolsMenu                |`cym`         |
+|ReplaceLine                  |`ss`          |Yanks                        |`yY`          |
+|ReplaceLineMulti             |`<leader>ss`  |RedirectedYanks              |`yX`          |
+|                             |              |ZetaYanks                    |`yZ`          |
+|DuplicateNormal              |       `<M-d>`|ISelectYank                  |`yI`          |
+|DuplicateVisual              |       `<M-d>`|||
+|                             |              |||
+|SwapPasteNext                |`<M-p>`       |||
+|SwapPastePrevious            |`<M-P>`       |||
 
 ----------------------------------------------------------------------------
 
@@ -429,7 +420,7 @@ Some convenient mappings you can add to your vimrc:
 
   nmap Y y$
   nmap S s$
-  nmap zY zy$
+  nmap zY yz$
   nmap sx "xs
   nmap sxx "xss
   nmap sX "xs$

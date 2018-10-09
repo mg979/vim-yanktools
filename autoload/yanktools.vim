@@ -42,7 +42,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#zeta_call()
-    let &updatetime = 100
+    call s:updatetime(1)
     let s:zeta = 1 | let s:has_yanked = 1
 endfunction
 
@@ -103,7 +103,7 @@ function! yanktools#check_yanks()
     if s:has_yanked
         if s:zeta  | call yanktools#zeta#check_stack() | endif
         let s:zeta = 0 | let s:has_yanked = 0
-        let &updatetime = s:old_ut
+        call s:updatetime(0)
         call yanktools#update_stack()
     endif
 
@@ -161,7 +161,7 @@ function! yanktools#yank_with_key(key)
     if exists('g:VM') && g:VM.is_active | return a:key | endif
     if s:has_yanked | call yanktools#check_yanks() | endif
     let s:has_yanked = 1
-    let &updatetime = 100
+    call s:updatetime(1)
     return a:key
 endfunction
 
@@ -405,6 +405,15 @@ function! s:msg(...)
     endif
     echohl None
 endfunction
+
+"------------------------------------------------------------------------------
+
+fun! s:updatetime(set)
+    if exists("#TextYankPost") || has('patch-8.0.1394') | return | endif
+    if a:set | let &updatetime = 100
+    else     | let &updatetime = s:old_ut
+    endif
+endfun
 
 function! yanktools#msg(txt, ...)
   exe "echohl" ( !a:0 ? "WarningMsg" : "StorageClass" )

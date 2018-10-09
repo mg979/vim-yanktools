@@ -1,5 +1,5 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Functions {{{
+" Functions {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#init_vars()
@@ -89,11 +89,10 @@ function! yanktools#update_stack(...)
     " if yank is duplicate, put it upfront removing the previous one
     call insert(stack, ix == - 1? {'text': text, 'type': type} : remove(stack, ix))
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Autocommand calls {{{
+" Autocommand calls {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#check_yanks()
@@ -149,14 +148,14 @@ function! yanktools#on_text_change()
     let s:redirected_reg = 0
     let s:duplicating = 0
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Yank/paste {{{
+" Yank/paste {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#yank_with_key(key)
+    if exists('g:VM') && g:VM.is_active | return a:key | endif
     if s:has_yanked | call yanktools#check_yanks() | endif
     let s:has_yanked = 1
     return a:key
@@ -181,11 +180,10 @@ function! yanktools#paste_with_key(key, plug, visual, format)
 
     return a:key
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirect {{{
+" Redirect {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
@@ -237,11 +235,10 @@ function! yanktools#redirect_reg_with_key(key, register, ...)
 
     return "\"" . reg . a:key
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Duplicate {{{
+" Duplicate {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#duplicate(plug, visual)
@@ -257,11 +254,10 @@ function! yanktools#duplicate(plug, visual)
         return "yyP"
     endif
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Move operator {{{
+" Move operator {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#move(plug, line)
@@ -275,11 +271,10 @@ function! yanktools#move(plug, line)
 
     return a:line ? 'dd' : 'd'
 endfunction
-"}}}
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Swap paste {{{
+" Swap paste {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#offset(redir, ...)
@@ -369,10 +364,9 @@ function! yanktools#swap_paste(forward, key, visual)
     if !s:freeze_offset | call setreg(s:r[0], s:r[1], s:r[2]) | endif
     if msg              | call s:msg(msg)                     | endif
 endfunction
-"}}}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Helper fuctions
+" Helper fuctions {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:is_being_formatted()

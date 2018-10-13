@@ -10,7 +10,6 @@ function! yanktools#init_vars()
 
     call yanktools#extras#clear_yanks(0)
     call yanktools#zeta#init_vars()
-    call yanktools#replop#init()
     let s:redirected_reg = 0
     let s:duplicating = 0
     let g:yanktools_auto_format_this = 0
@@ -131,12 +130,15 @@ function! yanktools#on_text_change()
     " restore register after redirection
     if s:redirected_reg         | call yanktools#restore_after_redirect()   | endif
 
-    " replace operator: complete replacement and return
-    if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | return | endif
+    " replace operator: complete replacement
+    if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | endif
 
     " autoformat / move cursor
     if s:is_being_formatted()   | execute "keepjumps normal! `[=`]"         | endif
     if s:is_moving_at_end()     | execute "keepjumps normal! `]"            | endif
+
+    " replace operator: return now
+    if g:yanktools_is_replacing | call s:reset_vars() | return | endif
 
     " update repeat.vim
     if !empty(g:yanktools_plug) && (!s:redirected_reg || s:duplicating)
@@ -145,11 +147,7 @@ function! yanktools#on_text_change()
     " record position and tick
     let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
 
-    " reset vars
-    let g:yanktools_auto_format_this = 0
-    let g:yanktools_move_this = 0
-    let s:redirected_reg = 0
-    let s:duplicating = 0
+    call s:reset_vars()
 endfunction
 
 
@@ -420,4 +418,15 @@ function! yanktools#msg(txt, ...)
   echo a:txt
   echohl None
 endfunction
+
+"------------------------------------------------------------------------------
+
+fun! s:reset_vars()
+    " reset vars
+    let g:yanktools_auto_format_this = 0
+    let g:yanktools_move_this = 0
+    let s:redirected_reg = 0
+    let s:duplicating = 0
+endfun
+
 

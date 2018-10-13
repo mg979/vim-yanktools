@@ -21,6 +21,7 @@ function! yanktools#init#maps()
 
     let redirect                            = g:yanktools_redirect_register
     let format                              = g:yanktools_format_prefix
+    let leader                              = get(g:, 'mapleader', '\')
 
     let g:yanktools_replace_operator        = get(g:, 'yanktools_replace_operator', 's')
     let g:yanktools_replace_line            = get(g:, 'yanktools_replace_line', 'ss')
@@ -72,29 +73,26 @@ function! yanktools#init#maps()
 
     if !empty(key) && !hasmapto('<Plug>ReplaceOperator')
         silent! exec 'nmap <unique> '.key.' <Plug>ReplaceOperator'
+        silent! exec 'nmap <unique> '.format.key.' <Plug>ReplaceFormatOperator'
     endif
-    nmap <silent> <Plug>ReplaceOperator :call yanktools#replop#replace_get_reg()<cr>:set opfunc=yanktools#replop#replace<cr>g@
-
-
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    " Replace line {{{1
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-    let key = g:yanktools_replace_line
+    nnoremap <silent> <Plug>ReplaceOperator :call yanktools#replop#opts(v:register, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
+    nnoremap <silent> <Plug>ReplaceFormatOperator :call yanktools#replop#opts(v:register, 1)<cr>:set opfunc=yanktools#replop#replace<cr>g@
+    " nnoremap <silent><expr> <Plug>ReplaceOperator yanktools#replop#replace(v:register, 0)
+    " nnoremap <silent><expr> <Plug>ReplaceFormatOperator yanktools#replop#replace(v:register, 1)
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineSingle')
-        silent! exec 'nmap <unique> '.key.' <Plug>ReplaceLineSingle'
-        silent! exec 'nmap <unique> '.format.key.' <Plug>ReplaceLineFormatSingle'
+        silent! exec 'nmap <unique> '.key.key.' <Plug>ReplaceLineSingle'
+        silent! exec 'nmap <unique> '.format.key.key.' <Plug>ReplaceLineFormatSingle'
     endif
-    nmap <silent> <Plug>ReplaceLineSingle :call yanktools#replop#replace_line(v:register, v:count, 0, 0)<cr>
-    nmap <silent> <Plug>ReplaceLineFormatSingle :call yanktools#replop#replace_line(v:register, v:count, 0, 1)<cr>
+    nnoremap <silent> <Plug>ReplaceLineSingle       :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 0)<cr>
+    nnoremap <silent> <Plug>ReplaceLineFormatSingle :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 1)<cr>
 
     if !empty(key) && !hasmapto('<Plug>ReplaceLineMulti')
-        silent! exec 'nmap <unique> '.g:mapleader.key.' <Plug>ReplaceLineMulti'
-        silent! exec 'nmap <unique> '.format.g:mapleader.key.' <Plug>ReplaceLineFormatMulti'
+        silent! exec 'nmap <unique> '.leader.key.key.' <Plug>ReplaceLineMulti'
+        silent! exec 'nmap <unique> '.leader.format.key.key.' <Plug>ReplaceLineFormatMulti'
     endif
-    nmap <silent> <Plug>ReplaceLineMulti :call yanktools#replop#replace_line(v:register, v:count, 1, 0)<cr>
-    nmap <silent> <Plug>ReplaceLineFormatMulti :call yanktools#replop#replace_line(v:register, v:count, 1, 1)<cr>
+    nnoremap <silent> <Plug>ReplaceLineMulti        :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
+    nnoremap <silent> <Plug>ReplaceLineFormatMulti  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 1)<cr>
 
 
     """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

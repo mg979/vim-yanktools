@@ -85,18 +85,20 @@ function! yanktools#init#maps()
   " Replace operator {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+  nnoremap <silent> <Plug>(ReplaceOperator)         :call yanktools#replop#opts(v:register, 0, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
+  nnoremap <silent> <Plug>(ReplaceOperatorR)        :call yanktools#replop#opts(v:register, 0, 1)<cr>:set opfunc=yanktools#replop#replace<cr>g@
+  nnoremap <silent> <Plug>(ReplaceFormatOperator)   :call yanktools#replop#opts(v:register, 1, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
+  nnoremap <silent> <Plug>(ReplaceLineSingle)       :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 0)<cr>
+  nnoremap <silent> <Plug>(ReplaceLineFormatSingle) :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 1)<cr>
+  nnoremap <silent> <Plug>(ReplaceLineMulti)        :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
+  nnoremap <silent> <Plug>(ReplaceLineFormatMulti)  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 1)<cr>
+
   if !empty(get(g:, 'yanktools_replace_operator', ''))
     let key = get(g:, 'yanktools_replace_operator', '')
 
-    nnoremap <silent> <Plug>(ReplaceOperator)         :call yanktools#replop#opts(v:register, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
-    nnoremap <silent> <Plug>(ReplaceFormatOperator)   :call yanktools#replop#opts(v:register, 1)<cr>:set opfunc=yanktools#replop#replace<cr>g@
-    nnoremap <silent> <Plug>(ReplaceLineSingle)       :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 0)<cr>
-    nnoremap <silent> <Plug>(ReplaceLineFormatSingle) :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 1)<cr>
-    nnoremap <silent> <Plug>(ReplaceLineMulti)        :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
-    nnoremap <silent> <Plug>(ReplaceLineFormatMulti)  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 1)<cr>
-
     if !empty(key) && !hasmapto('<Plug>(ReplaceOperator)')
       exec 'nmap' key        '<Plug>(ReplaceOperator)'
+      exec 'nmap' key.     'r <Plug>(ReplaceOperatorR)'
       exec 'nmap' format.key '<Plug>(ReplaceFormatOperator)'
     endif
 
@@ -116,17 +118,20 @@ function! yanktools#init#maps()
   " Duplicate {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  let key = get(g:, 'yanktools_duplicate_key', '<M-d>')
+  nnoremap <silent> <Plug>(DuplicateOperator)         :set opfunc=yanktools#duplicate<cr>g@
+  nnoremap <silent><expr> <Plug>(DuplicateLines)      yanktools#duplicate_lines()
+  xnoremap <silent><expr> <Plug>(DuplicateVisual)     yanktools#duplicate_visual()
 
-  nnoremap <silent><expr> <Plug>(DuplicateNormal) yanktools#duplicate("(DuplicateNormal)", 0)
-  xnoremap <silent><expr> <Plug>(DuplicateVisual) yanktools#duplicate("", 1)
-
-  if !empty(key) && !hasmapto('<Plug>(DuplicateNormal)')
-    exec 'nmap' key '<Plug>(DuplicateNormal)'
+  if !hasmapto('<Plug>(DuplicateOperator)')
+    nmap yd <Plug>(DuplicateOperator)
   endif
 
-  if !empty(key) && !hasmapto('<Plug>(DuplicateVisual)')
-    exec 'xmap' key '<Plug>(DuplicateVisual)'
+  if !hasmapto('<Plug>(DuplicateLines)')
+    nmap ydd   <Plug>(DuplicateLines)
+  endif
+
+  if !hasmapto('<Plug>(DuplicateVisual)')
+    xmap D     <Plug>(DuplicateVisual)
   endif
 
 

@@ -131,18 +131,18 @@ function! yanktools#on_text_change()
     if s:redirected_reg         | call yanktools#restore_after_redirect()   | endif
 
     " replace operator: complete replacement
-    if g:yanktools_is_replacing | call yanktools#replop#paste_replacement() | endif
+    if yanktools#replop#paste_replacement() | return s:reset_vars() | endif
 
     " autoformat / move cursor
     if s:is_being_formatted()   | execute "keepjumps normal! `[=`]"         | endif
     if s:is_moving_at_end()     | execute "keepjumps normal! `]"            | endif
 
-    " replace operator: return now
-    if g:yanktools_is_replacing | call s:reset_vars() | return | endif
-
-    " update repeat.vim
-    if !empty(g:yanktools_plug) && (!s:redirected_reg || s:duplicating)
-        call yanktools#set_repeat() | endif
+    " update repeat.vim, duplicating also redirects reg but can be repeated
+    if !empty(g:yanktools_plug)
+      if !s:redirected_reg || s:duplicating
+        call yanktools#set_repeat()
+      endif
+    endif
 
     " record position and tick
     let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
@@ -242,19 +242,32 @@ endfunction
 " Duplicate {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#duplicate(plug, visual)
+function! yanktools#duplicate_visual()
     let g:yanktools_has_changed = 1
-    if !a:visual
-        let s:duplicating = 1
-        let g:yanktools_plug = [a:plug, v:count, v:register]
-    endif
     call yanktools#redirecting()
-    if a:visual
-        return "yP"
-    else
-        return "yyP"
-    endif
+    return "yP"
 endfunction
+
+function! yanktools#duplicate_lines()
+    let g:yanktools_has_changed = 1
+    let s:duplicating = 1
+    let g:yanktools_plug = ['(DuplicateLines)', v:count, v:register]
+    call yanktools#redirecting()
+    return "yyP"
+endfunction
+
+fun! yanktools#duplicate(type)
+  " let s:duplicating = 1
+  let g:yanktools_has_changed = 1
+  let s:oldvmode = &virtualedit | set virtualedit=onemore
+  call yanktools#redirecting()
+  if a:type == 'line'
+    keepjumps normal! `[V`]yP
+  else
+    keepjumps normal! `[v`]yP
+  endif
+  let &virtualedit = s:oldvmode
+endfun
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -422,10 +435,12 @@ endfunction
 
 fun! s:reset_vars()
     " reset vars
+    let g:yanktools_is_replacing = 0
     let g:yanktools_auto_format_this = 0
     let g:yanktools_move_this = 0
     let s:redirected_reg = 0
     let s:duplicating = 0
+    let g:yanktools_plug = []
 endfun
 
 

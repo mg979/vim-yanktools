@@ -3,32 +3,38 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#replop#paste_replacement()
-  let g:yanktools_is_replacing = 0
+  if !g:yanktools_is_replacing
+    return
+  endif
   let g:yanktools_auto_format_this = s:format_this
-  execute "normal \"".s:repl_reg."P`]"
+  execute "normal \"".s:repl_reg."P"
+  normal! `]
   let &virtualedit = s:oldvmode
+  return g:yanktools_is_replacing == 2
 endfun
 
 fun! yanktools#replop#replace(type)
   let reg = get(g:, 'yanktools_replace_operator_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
   let g:yanktools_has_changed = 1
-  let g:yanktools_is_replacing = 1
+  let g:yanktools_is_replacing = 1 + s:repeatable
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   if a:type == 'line'
     execute "keepjumps normal! `[V`]"
-    execute "normal! \"".reg."d"
-    let &undolevels = &undolevels
   else
     execute "keepjumps normal! `[v`]"
-    execute "normal! \"".reg."d"
+  endif
+  execute "normal! \"".reg."d"
+  if !s:repeatable
     let &undolevels = &undolevels
   endif
 endfun
 
-fun! yanktools#replop#opts(register, format)
-  let s:repl_reg = a:register
+fun! yanktools#replop#opts(register, format, repeat)
+  " prevent black hole register bug
+  let s:repl_reg = a:register == "_" ? yanktools#default_reg() : a:register
   let s:format_this = a:format
+  let s:repeatable = a:repeat
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

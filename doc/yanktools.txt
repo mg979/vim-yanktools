@@ -68,6 +68,8 @@ FEATURES LIST                                               *yanktools-features*
 
 * Replace operator: replace text objects with register. Works with cycling too.
 
+* Duplicate operator: lines and text objects (repeatable), visual (non-rep.)
+
 * |zeta-mode| (by default it uses `z` as key) that fills a disposable yank stack,
   from which items are taken from the back, and pasting them removes them from
   the stack as well. You can populate the stack both by yanking and cutting.
@@ -104,7 +106,7 @@ default:
 
 * you can use the |replace-operator| to replace motions or lines.
 
-* `duplicate` lines/selected text with <M-d> (not overwriting default register)
+* `duplicate` with operator `yd`, or `D` from visual mode.
 
 Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
 
@@ -226,20 +228,15 @@ depend on the key you used for pasting:
 
 REPLACE OPERATOR                  *replace-operator* *yanktools-replace-operator*
 =============================================================================
-                                              *g:yanktools_replace_operator_bh*
 
 Here assuming that mapping is `s` for the operator, `ss` to replace whole lines.
+Both `s` and `ss` accept a register from which to paste.
 
-Both `s` and `ss` accept a register from which to paste. You can therefore
-create a mapping such as:
->
-  map sx "xs
-  map sxx "xss
-<
-That is, a mapping for an operator that replaces from the redirected register,
-to complement the normal replacement mode.
+The operator `s` can make use of the swap commands, but this makes it
+not repeatable with `dot`. If you need a repeatable (but non-swappable)
+version, you can use the variant `sr` instead.
 
-The 'replace line' command can have two different behaviours:
+The `replace line` command can have two different behaviours:
 
 - `ss` will replace [count] lines with a single instance of the register
   (this behaviour is the same as in ReplaceWithRegister plugin).
@@ -250,21 +247,22 @@ The 'replace line' command can have two different behaviours:
 
 
 
-DUPLICATE TEXT                                   *duplicate* *yanktools-duplicate*
+DUPLICATE OPERATOR                                         *yanktools-duplicate*
 ==============================================================================
-                                                     *g:yanktools_duplicate_key*
 
-Duplicate lines with [count], or visually selected text. Duplicated text won't
-overwrite the default register. Repeatable with repeat.vim (not in visual
-mode).
+Duplicate lines, text object, or visually selected text. Duplicated text won't
+overwrite the default register. `DuplicateLines` is repeatable with repeat.vim, 
+the operator version doesn't need it.
 
-Default mapping is <M-d>. To redefine it:
+Plugs and default mappings:
 >
-  let g:yanktools_duplicate_key = '<M-d>'
+  nmap yd  <Plug>(DuplicateOperator)
+  nmap ydd <Plug>(DuplicateLines)
+  xmap D   <Plug>(DuplicateVisual)
 
 
 
-ZETA MODE                                             *zeta-mode* *yanktools-zeta*
+ZETA MODE                                                         *yanktools-zeta*
 ==============================================================================
                                  *g:yanktools_zeta_prefix* *g:yanktools_zeta_kill*
 
@@ -337,26 +335,25 @@ OPTIONS SUMMARY                                              *yanktools-options*
 ----------------------------------------------+------------------------
 Option                                        | Default            ~
 ----------------------------------------------+------------------------
-|g:yanktools_paste_keys|                        |  ['p', 'P']
+g:yanktools_paste_keys                        |  ['p', 'P']
                                               |
-|g:yanktools_redirect_delete|                   |  1
-|g:yanktools_redirect_register|                 |  'x'
-|g:yanktools_redir_paste_prefix|                |  '<leader>'
+g:yanktools_redirect_delete                   |  1
+g:yanktools_redirect_register                 |  'x'
+g:yanktools_redir_paste_prefix                |  '<leader>'
                                               |
-|g:yanktools_black_hole_c|                      |  1
-|g:yanktools_black_hole_x|                      |  1
-|g:yanktools_black_hole_del|                    |  1
+g:yanktools_black_hole_c                      |  1
+g:yanktools_black_hole_x                      |  1
+g:yanktools_black_hole_del                    |  1
                                               |
-|g:yanktools_replace_operator|                  |  's'
-|g:yanktools_replace_operator_bh|               |  1
-|g:yanktools_duplicate_key|                     |  '<M-d>'
+g:yanktools_replace_operator                  |  's'
+g:yanktools_replace_operator_bh               |  1
                                               |
-|g:yanktools_format_prefix|                     |  '<'
-|g:yanktools_zeta|                              |  'z'
+g:yanktools_format_prefix                     |  '<'
+g:yanktools_zeta                              |  'z'
                                               |
-|g:yanktools_use_single_stack|                  |  0
-|g:yanktools_move_cursor_after_paste|           |  0
-|g:yanktools_auto_format_all|                   |  0
+g:yanktools_use_single_stack                  |  0
+g:yanktools_move_cursor_after_paste           |  0
+g:yanktools_auto_format_all                   |  0
 ----------------------------------------------+------------------------
 
 You can change these options to control which keys redirect to which register,
@@ -378,9 +375,6 @@ Plug                                        | Default                    ~
 <Plug>(ReplaceOperator)                     | s
 <Plug>(ReplaceLineSingle)                   | ss
 <Plug>(ReplaceLineMulti)                    | <leader>ss
-                                            |
-<Plug>(DuplicateNormal)                     | <M-d>
-<Plug>(DuplicateVisual)                     | <M-d>
                                             |
 <Plug>(SwapPasteNext)                       | <M-p>
 <Plug>(SwapPastePrevious)                   | <M-P>

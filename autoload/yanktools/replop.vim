@@ -10,7 +10,8 @@ fun! yanktools#replop#paste_replacement()
 endfun
 
 fun! yanktools#replop#replace(type)
-  let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
+  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
+        \ ? "_" : g:yanktools_redirect_register
   let g:yanktools_has_changed = 1
   let g:yanktools_is_replacing = 1
   let s:oldvmode = &virtualedit | set virtualedit=onemore
@@ -41,7 +42,8 @@ fun! s:d_before_replace(r1, r2)
 endfun
 
 fun! yanktools#replop#replace_line(r, c, multi, format)
-  let reg = g:yanktools_replace_operator_bh ? "_" : g:yanktools_redirect_register
+  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
+        \ ? "_" : g:yanktools_redirect_register
   let s:repl_reg = a:r
   let s:oldvmode = &virtualedit | set virtualedit=onemore
 

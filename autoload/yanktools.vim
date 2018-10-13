@@ -171,7 +171,6 @@ function! yanktools#paste_with_key(key, plug, visual, format)
 
     " set paste variables
     let g:yanktools_has_changed = 1 | let s:has_pasted = 1
-    "call yanktools#offset(0)
 
     " set repeat.vim plug
     let g:yanktools_plug = [a:plug, v:count, v:register]

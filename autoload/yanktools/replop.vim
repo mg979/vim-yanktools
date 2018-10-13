@@ -5,7 +5,7 @@
 fun! yanktools#replop#paste_replacement()
   let g:yanktools_is_replacing = 0
   let g:yanktools_auto_format_this = s:format_this
-  execute "normal! \"".s:repl_reg."P`]"
+  execute "normal \"".s:repl_reg."P`]"
   let &virtualedit = s:oldvmode
 endfun
 
@@ -16,11 +16,13 @@ fun! yanktools#replop#replace(type)
   let g:yanktools_is_replacing = 1
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   if a:type == 'line'
-    exe "keepjumps normal! `[V`]"
+    execute "keepjumps normal! `[V`]"
     execute "normal! \"".reg."d"
+    let &undolevels = &undolevels
   else
-    exe "keepjumps normal! `[v`]"
+    execute "keepjumps normal! `[v`]"
     execute "normal! \"".reg."d"
+    let &undolevels = &undolevels
   endif
 endfun
 
@@ -33,17 +35,27 @@ endfun
 " Replace lines
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:d_before_replace(r1, r2)
-  if getreg(a:r1) !~ '\n'
-    execute "normal 0\"".a:r2."d$"
+fun! s:del_before_replace(r, c)
+  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
+        \ ? "_" : g:yanktools_redirect_register
+
+  if getregtype(a:r) ==# 'V'
+    for i in range(a:c)
+      execute "normal! \"".reg."dd"
+    endfor
+    let &undolevels = &undolevels
+    return
   else
-    execute "normal \"".a:r2."dd"
+    execute "normal! \"".reg."d$j"
+    for i in range(a:c - 1)
+      execute "normal! \"".reg."dd"
+    endfor
+    let &undolevels = &undolevels
+    normal! k$l
   endif
 endfun
 
 fun! yanktools#replop#replace_line(r, c, multi, format)
-  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
-        \ ? "_" : g:yanktools_redirect_register
   let s:repl_reg = a:r
   let s:oldvmode = &virtualedit | set virtualedit=onemore
 
@@ -51,9 +63,7 @@ fun! yanktools#replop#replace_line(r, c, multi, format)
   let paste_type = (line(".") == line("$")) ? "p" : "P"
 
   " delete lines to replace first
-  for i in range(a:c)
-    call s:d_before_replace(a:r, reg)
-  endfor
+  call s:del_before_replace(a:r, a:c)
 
   " multiple or single replacement
   let N = a:multi ? range(a:c) : [0]
@@ -63,8 +73,8 @@ fun! yanktools#replop#replace_line(r, c, multi, format)
   endfor
 
   let &virtualedit = s:oldvmode
-  let plug = "ReplaceOperatorLine"
-        \ . (a:format ? 'Format' : '') . (a:multi ? 'Multi' : 'Single')
-  let g:yanktools_plug = [plug, 1, a:r]
+  let plug = "(ReplaceLine"
+        \ . (a:format ? 'Format' : '') . (a:multi ? 'Multi' : 'Single') . ')'
+  let g:yanktools_plug = [plug, a:c, a:r]
   call yanktools#set_repeat()
 endfun

@@ -173,7 +173,7 @@ function! yanktools#paste_with_key(key, plug, visual, format)
     let g:yanktools_has_changed = 1 | let s:has_pasted = 1
 
     " set repeat.vim plug
-    let g:yanktools_plug = [a:plug, v:count, v:register]
+    let g:yanktools_plug = [a:plug, v:count1, v:register]
 
     " set last_paste_key and remember format_this option (used by swap)
     let s:last_paste_key = a:key

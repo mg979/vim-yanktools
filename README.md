@@ -37,7 +37,7 @@ With vim-plug:
 * __Register redirection__: `d` and `D` are redirected to another register
   (default 'x'), without replacing the unnamed register.
 
-* __Replace operator__: replace text objects with register.
+* __Replace operator__: replace text objects with register. Works with cycling too.
 
 * __Zeta mode__ (by default it uses `z` as key) that fills a disposable yank stack,
   from which items are taken from the back, and pasting them removes them from

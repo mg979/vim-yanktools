@@ -66,7 +66,7 @@ FEATURES LIST                                               *yanktools-features*
 
 * Redirected text fills its own stack, so that you can cycle/paste from it too.
 
-* Replace operator: replace text objects with register.
+* Replace operator: replace text objects with register. Works with cycling too.
 
 * |zeta-mode| (by default it uses `z` as key) that fills a disposable yank stack,
   from which items are taken from the back, and pasting them removes them from
@@ -291,7 +291,7 @@ formatting options of the last command.
 |zeta-mode| is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
 
-The |replace-operator| is also repeatable, though it doesn't need |repeat-vim|.
+The |replace-operator| is also repeatable, but only the `replace line(s)` variant.
 
 
 

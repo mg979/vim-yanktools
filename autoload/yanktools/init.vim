@@ -11,7 +11,7 @@ function! yanktools#init#maps()
   let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
   let g:yanktools_use_single_stack        = get(g:, 'yanktools_use_single_stack', !empty(g:yanktools_redirect_register))
 
-  let paste_keys                          = get(g:, 'yanktools_paste_keys', ['p', 'P', 'gp', 'gP'])
+  let paste_keys                          = get(g:, 'yanktools_paste_keys', ['p', 'P'])
   let format                              = get(g:, 'yanktools_format_prefix', "<")
   let leader                              = get(g:, 'mapleader', '\')
   let zeta                                = get(g:, 'yanktools_zeta', "z")

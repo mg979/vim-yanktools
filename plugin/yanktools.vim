@@ -1,3 +1,16 @@
+
+let g:yanktools = {'vars': {}}
+let g:yanktools.vars.redirecting = 0
+let g:yanktools.vars.format_this = 0
+let g:yanktools.vars.has_changed = 0
+let g:yanktools.vars.is_replacing = 0
+let g:yanktools.vars.plug = []
+let g:yanktools.vars.move_this = 0
+let g:yanktools.vars.zeta = 0
+let g:yanktools.vars.has_yanked = 0
+
+let g:yanktools.Funcs = yanktools#funcs#init()
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -5,15 +18,15 @@
 augroup plugin-yanktools
     autocmd!
     autocmd VimEnter    * call yanktools#init_vars()
-    autocmd TextChanged * silent! call yanktools#on_text_change()
-    autocmd InsertEnter * silent! call yanktools#on_text_change()
+    autocmd TextChanged * call yanktools#on_text_change()
+    autocmd InsertEnter * call yanktools#on_text_change()
 
     if exists("#TextYankPost") || has('patch-8.0.1394')
-        autocmd TextYankPost * silent! call yanktools#check_yanks()
-        autocmd CursorMoved  * silent! call yanktools#check_yanks()
+        autocmd TextYankPost * call yanktools#check_yanks()
+        autocmd CursorMoved  * call yanktools#check_yanks()
     else
-        autocmd CursorMoved  * silent! call yanktools#check_yanks()
-        autocmd CursorHold   * silent! call yanktools#check_yanks()
+        autocmd CursorMoved  * call yanktools#check_yanks()
+        autocmd CursorHold   * call yanktools#check_yanks()
     endif
 augroup END
 

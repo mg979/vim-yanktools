@@ -1,23 +1,25 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Replace operator
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:v = g:yanktools.vars
+let s:F = g:yanktools.Funcs
 
 fun! yanktools#replop#paste_replacement()
-  if !g:yanktools_is_replacing
+  if !s:v.is_replacing
     return
   endif
-  let g:yanktools_auto_format_this = s:format_this
+  let s:v.format_this = s:format_this
   execute "normal \"".s:repl_reg."P"
   normal! `]
   let &virtualedit = s:oldvmode
-  return g:yanktools_is_replacing == 2
+  return s:v.is_replacing == 2
 endfun
 
 fun! yanktools#replop#replace(type)
   let reg = get(g:, 'yanktools_replace_operator_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
-  let g:yanktools_has_changed = 1
-  let g:yanktools_is_replacing = 1 + s:repeatable
+  let s:v.has_changed = 1
+  let s:v.is_replacing = 1 + s:repeatable
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   if a:type == 'line'
     execute "keepjumps normal! `[V`]"
@@ -32,7 +34,7 @@ endfun
 
 fun! yanktools#replop#opts(register, format, repeat)
   " prevent black hole register bug
-  let s:repl_reg = a:register == "_" ? yanktools#default_reg() : a:register
+  let s:repl_reg = a:register == "_" ? s:F.default_reg() : a:register
   let s:format_this = a:format
   let s:repeatable = a:repeat
 endfun
@@ -74,13 +76,13 @@ fun! yanktools#replop#replace_line(r, c, multi, format)
   " multiple or single replacement
   let N = a:multi ? range(a:c) : [0]
   for i in N
-    let g:yanktools_auto_format_this = a:format
+    let s:v.format_this = a:format
     execute "normal \"".a:r.paste_type
   endfor
 
   let &virtualedit = s:oldvmode
   let plug = "(ReplaceLine"
         \ . (a:format ? 'Format' : '') . (a:multi ? 'Multi' : 'Single') . ')'
-  let g:yanktools_plug = [plug, a:c, a:r]
-  call yanktools#set_repeat()
+  let s:v.plug = [plug, a:c, a:r]
+  call s:F.set_repeat()
 endfun

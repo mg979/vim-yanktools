@@ -1,16 +1,20 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Extra functions and commands
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let s:v = g:yanktools.vars
+let s:F = g:yanktools.Funcs
+let s:Y = g:yanktools.yank
+let s:R = g:yanktools.redir
 
 function! yanktools#extras#show_yanks(type)
-    call yanktools#update_stack()
+    call s:Y.update_stack()
     let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
     let i = 0
-    let stack = a:type == 'x' ? g:yanktools_redir_stack
-          \ :   a:type == 'z' ? g:yanktools_zeta_stack : g:yanktools_stack
+    let stack = a:type == 'x' ? g:yanktools.redir.stack
+          \ :   a:type == 'z' ? g:yanktools.zeta.stack : g:yanktools.yank.stack
     redraw!
     if empty(stack)
-      return yanktools#msg("Stack is empty")
+      return s:F.msg("Stack is empty")
     endif
     echohl WarningMsg | echo "--- ".t."Yanks ---" | echohl None
     for yank in stack
@@ -23,15 +27,13 @@ endfunction
 
 function! yanktools#extras#clear_yanks(zeta, ...)
     if a:zeta
-        let g:yanktools_zeta_stack = []
+        call g:yanktools.zeta.clear()
         echo "Zeta stack has been cleared."
     else
-        let r = yanktools#get_reg(0)
-        let rd = yanktools#get_reg(1)
-        let g:yanktools_stack = [{'text': r[1], 'type': r[2]}]
-        let g:yanktools_redir_stack = [{'text': rd[1], 'type': rd[2]}]
-        let g:yanktools_zeta_stack = []
-        if a:0 | echo "Yank stacks have been cleared." | endif
+        call g:yanktools.yank.clear()
+        call g:yanktools.redir.clear()
+        call g:yanktools.zeta.clear()
+        echo "Yank stacks have been cleared."
     endif
 endfunction
 
@@ -52,9 +54,9 @@ endfunction
 fun! yanktools#extras#toggle_redirection()
   let g:yanktools_use_redirection = !g:yanktools_use_redirection
   if g:yanktools_use_redirection
-    call yanktools#msg("Redirection has been enabled, using two stacks", 1)
+    call s:F.msg("Redirection has been enabled, using two stacks", 1)
   else
-    call yanktools#msg("Redirection has been disabled, using a single stack")
+    call s:F.msg("Redirection has been disabled, using a single stack")
   endif
 endfun
 
@@ -76,9 +78,9 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#extras#yanks()
-    call yanktools#update_stack()
+    call s:Y.update_stack()
     let yanks = [] | let i = 0
-    for yank in g:yanktools_stack
+    for yank in g:yanktools.yank.stack
         let line = substitute(yank.text, '\V\n', '^M', 'g')
         if len(line) > 80 | let line = line[:80] . '…' | endif
         if i < 10 | let spaces = "    " | else | let spaces = "   " | endif
@@ -94,16 +96,16 @@ function! yanktools#extras#select_yank_fzf(yank)
     let index = substitute(index, "[", "", "")
     let index = substitute(index, "]", "", "")
     let index = substitute(index, " ", "", "g")
-    let r = yanktools#get_reg(0)
-    call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
-    call yanktools#offset(0, index)
+    let r = s:F.get_register()
+    call setreg(r[0], g:yanktools.yank.stack[index]['text'], g:yanktools.yank.stack[index]['type'])
+    call yanktools#stack#set_offset(index)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#extras#fzf_menu(choice)
     if a:choice == 'Toggle Freeze Offset'
-        call yanktools#freeze_offset()
+        call yanktools#stack#freeze()
     elseif a:choice == 'Toggle Single Stack'
         call yanktools#extras#toggle_redirection()
     elseif a:choice == 'Clear Yank Stacks'
@@ -130,9 +132,9 @@ function! yanktools#extras#change_yank_type()
     if type[:0] ==# ""
         call setreg(r, text, "V")
         echo "Register ".r." converted to linewise yank."
-        if r ==# yanktools#default_reg()
-            call remove(g:yanktools_stack, 0)
-            call yanktools#update_stack()
+        if r ==# s:F.default_reg()
+            call remove(g:yanktools.yank.stack, 0)
+            call s:Y.update_stack()
         endif
         return
     endif
@@ -145,19 +147,19 @@ function! yanktools#extras#change_yank_type()
 
     call setreg(r, text, "".maxl)
     echo "Register ".r." converted to blockwise yank."
-    if r ==# yanktools#default_reg()
-        call remove(g:yanktools_stack, 0)
-        call yanktools#update_stack()
+    if r ==# s:F.default_reg()
+        call remove(g:yanktools.yank.stack, 0)
+        call s:Y.update_stack()
     endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#extras#select_yank()
-    call yanktools#update_stack()
+    call s:Y.update_stack()
     echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
     let i = 0
-    for yank in g:yanktools_stack
+    for yank in g:yanktools.yank.stack
         call yanktools#extras#show_yank(yank, i)
         let i += 1
     endfor
@@ -171,12 +173,12 @@ function! yanktools#extras#select_yank()
     else
         let index = str2nr(indexStr)
 
-        if index < 0 || index > len(g:yanktools_stack)
+        if index < 0 || index > len(g:yanktools.yank.stack)
             echo "\n" | echoerr "Yank index out of bounds"
         else
-            let r = yanktools#get_reg(0)
-            call setreg(r[0], g:yanktools_stack[index]['text'], g:yanktools_stack[index]['type'])
-            call yanktools#offset(0, index)
+            let r = s:F.get_register()
+            call setreg(r[0], g:yanktools.yank.stack[index]['text'], g:yanktools.yank.stack[index]['type'])
+            call yanktools#stack#set_offset(index)
         endif
     endif
 endfunction

@@ -42,12 +42,12 @@ function! yanktools#init#maps()
   " Black Hole {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_reg_with_key("c", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_C) yanktools#redirect_reg_with_key("C", v:register, 1)
-  xnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_reg_with_key("c", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_x) yanktools#redirect_reg_with_key("x", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_X) yanktools#redirect_reg_with_key("X", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_reg_with_key("x", v:register, 1)
+  nnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_with_key("c", v:register, 1)
+  nnoremap <silent><expr> <Plug>(Black_Hole_C) yanktools#redirect_with_key("C", v:register, 1)
+  xnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_with_key("c", v:register, 1)
+  nnoremap <silent><expr> <Plug>(Black_Hole_x) yanktools#redirect_with_key("x", v:register, 1)
+  nnoremap <silent><expr> <Plug>(Black_Hole_X) yanktools#redirect_with_key("X", v:register, 1)
+  nnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_with_key("x", v:register, 1)
 
   if get(g:, 'yanktools_black_hole_c', 1)
     if !hasmapto('<Plug>(Black_Hole_c)')
@@ -74,9 +74,9 @@ function! yanktools#init#maps()
   " Redirection {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(RegRedirect_d) yanktools#redirect_reg_with_key("d", v:register)
-  xnoremap <silent><expr> <Plug>(RegRedirect_d) yanktools#redirect_reg_with_key("d", v:register)
-  nnoremap <silent><expr> <Plug>(RegRedirect_D) yanktools#redirect_reg_with_key("D", v:register)
+  nnoremap <silent><expr> <Plug>(RegRedirect_d) yanktools#redirect_with_key("d", v:register, 0)
+  xnoremap <silent><expr> <Plug>(RegRedirect_d) yanktools#redirect_with_key("d", v:register, 0)
+  nnoremap <silent><expr> <Plug>(RegRedirect_D) yanktools#redirect_with_key("D", v:register, 0)
 
   if !hasmapto('<Plug>(RegRedirect_d)')
     nmap d <Plug>(RegRedirect_d)
@@ -294,7 +294,7 @@ function! yanktools#init#maps()
   if !hasmapto('<Plug>(FreezeYank)') && empty(maparg('cyf'))
     nmap cyf <Plug>(FreezeYank)
   endif
-  nnoremap <silent> <Plug>(FreezeYank) :call yanktools#freeze_offset()<cr>
+  nnoremap <silent> <Plug>(FreezeYank) :call yanktools#stack#freeze()<cr>
 
   " Clear yanks                                                               {{{2
   if !hasmapto('<Plug>(ClearYankStack)') && empty(maparg('cys'))

@@ -9,7 +9,7 @@ function! yanktools#init#maps()
   let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
   let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
   let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
-  let g:yanktools_use_single_stack        = get(g:, 'yanktools_use_single_stack', !empty(g:yanktools_redirect_register))
+  let g:yanktools_use_redirection         = get(g:, 'yanktools_use_redirection', !empty(g:yanktools_redirect_register))
 
   let paste_keys                          = get(g:, 'yanktools_paste_keys', ['p', 'P'])
   let format                              = get(g:, 'yanktools_format_prefix', "<")
@@ -28,6 +28,14 @@ function! yanktools#init#maps()
   endif
   nnoremap <silent><expr> <Plug>(YankOperator) yanktools#yank_with_key("y")
   xnoremap <silent><expr> <Plug>(YankOperator) yanktools#yank_with_key("y")
+
+  if !hasmapto('<Plug>(CutOperator)')
+    nmap yx  <Plug>(CutOperator)
+    nmap yxx <Plug>(CutOperator)d
+    xmap x   <Plug>(CutOperator)
+  endif
+  nnoremap <silent><expr> <Plug>(CutOperator) yanktools#yank_with_key("d")
+  xnoremap <silent><expr> <Plug>(CutOperator) yanktools#yank_with_key("d")
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -70,14 +78,12 @@ function! yanktools#init#maps()
   xnoremap <silent><expr> <Plug>(RegRedirect_d) yanktools#redirect_reg_with_key("d", v:register)
   nnoremap <silent><expr> <Plug>(RegRedirect_D) yanktools#redirect_reg_with_key("D", v:register)
 
-  if get(g:, 'yanktools_redirect_delete', 1)
-    if !hasmapto('<Plug>(RegRedirect_d)')
-      nmap d <Plug>(RegRedirect_d)
-      xmap d <Plug>(RegRedirect_d)
-    endif
-    if !hasmapto('<Plug>(RegRedirect_D)')
-      nmap D <Plug>(RegRedirect_D)
-    endif
+  if !hasmapto('<Plug>(RegRedirect_d)')
+    nmap d <Plug>(RegRedirect_d)
+    xmap d <Plug>(RegRedirect_d)
+  endif
+  if !hasmapto('<Plug>(RegRedirect_D)')
+    nmap D <Plug>(RegRedirect_D)
   endif
 
 
@@ -262,8 +268,12 @@ function! yanktools#init#maps()
     nmap cyi <Plug>(ToggleAutoIndent)
   endif
   nnoremap <silent> <Plug>(ToggleAutoIndent) :ToggleAutoIndent<cr>
-        \:echo "Autoindent is now " .
-        \(g:yanktools_auto_format_all ? 'enabled.' : 'disabled.')<cr>
+
+  " Toggle Single Stack
+  if !hasmapto('<Plug>(ToggleRedirection)')
+    nmap cur <Plug>(ToggleRedirection)
+  endif
+  nnoremap <silent> <Plug>(ToggleRedirection) :ToggleRedirection<cr>
 
   " Freeze yank offset                                                        {{{2
   if !hasmapto('<Plug>(FreezeYank)') && empty(maparg('cyf'))

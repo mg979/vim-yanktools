@@ -78,13 +78,20 @@ endfunction
 function! yanktools#update_stack(...)
     """Update the yank or redirected stack."""
 
-    if a:0 && !g:yanktools_use_single_stack
+    if a:0 && g:yanktools_use_redirection
         let stack = g:yanktools_redir_stack
     else
         let stack = g:yanktools_stack
     endif
 
     let r = yanktools#get_reg(a:0) | let text = r[1] | let type = r[2]
+
+    " hitting text size limit
+    let max = get(g:, 'yanktools_max_text_size', 1000)
+    if strchars(text) > max
+      return
+    endif
+
     let ix = index(stack, {'text': text, 'type': type})
 
     " if yank is duplicate, put it upfront removing the previous one
@@ -226,6 +233,10 @@ endfunction
 
 function! yanktools#redirect_reg_with_key(key, register, ...)
 
+    if !g:yanktools_use_redirection
+      return yanktools#yank_with_key(a:key)
+    endif
+
     call yanktools#redirecting()
     let g:yanktools_has_changed = 1
 
@@ -295,7 +306,7 @@ function! yanktools#offset(redir, ...)
     if a:0                  | let s:offset = a:1
     elseif !s:freeze_offset | let s:offset = 0
     endif
-    let s:using_redir_stack = g:yanktools_use_single_stack ? 0 : a:redir
+    let s:using_redir_stack = g:yanktools_use_redirection ? a:redir : 0
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

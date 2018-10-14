@@ -39,12 +39,23 @@ endfunction
 function! yanktools#extras#toggle_autoformat()
     if g:yanktools_auto_format_all
         let g:yanktools_auto_format_all = 0
-        echo "Autoindent disabled."
+        echo "Autoindent is now disabled."
     else
         let g:yanktools_auto_format_all = 1
-        echo "Autoindent enabled."
+        echo "Autoindent is now enabled."
     endif
 endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! yanktools#extras#toggle_redirection()
+  let g:yanktools_use_redirection = !g:yanktools_use_redirection
+  if g:yanktools_use_redirection
+    call yanktools#msg("Redirection has been enabled, using two stacks", 1)
+  else
+    call yanktools#msg("Redirection has been disabled, using a single stack")
+  endif
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -92,6 +103,8 @@ endfunction
 function! yanktools#extras#fzf_menu(choice)
     if a:choice == 'Toggle Freeze Offset'
         call yanktools#freeze_offset()
+    elseif a:choice == 'Toggle Single Stack'
+        call yanktools#extras#toggle_redirection()
     elseif a:choice == 'Clear Yank Stacks'
         call yanktools#extras#clear_yanks(0, 1)
     elseif a:choice == 'Clear Zeta Stack'

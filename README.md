@@ -68,21 +68,27 @@ With vim-plug:
 ### Basic usage
 
 There are many functions available, but you don't need to use them all or even
-know about them. Yank/paste/delete/change commands work as usual, but by
-default:
+know about them.
 
-* `yank` commands add yanked text to the yank stack
-* you can cycle the yank stack with the 'swap' commands (default `M-p` / `M-P`)
+Defined operators and their default behaviour:
 
-* delete commands redirect the deleted text to register 'x'
-* you can paste from the redirected register with `<leader>p/P`
-* you can cycle the redirected stack with the 'swap' commands after `<leader>p/P`
+||||
+|-|-|-|
+| `y`  |	yank        |add yanked text to the yank stack|
+| `d`  |	delete      |redirect the deleted text to register 'x'|
+| `s`  |	substitute  |replace text object with register (disabled by default)|
+| `yd` |	duplicate   |text objects/lines/visual|
+| `yx` |	cut         |deletes, but doesn't redirect to register 'x'|
 
-* change and `x` commands redirect to the black hole register
+Further notes:
 
-* you can use the replace operator to replace motions or lines.
-
-* duplicate lines/selected text with <M-d> (not overwriting default register)
+- yank commands add the yanked text to the yank stack
+- you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
+- delete commands add the deleted text to the redirected stack
+- you can paste from the redirected register with <leader>p/P
+- you can cycle the redirected stack with the 'swap' commands after <leader>p/P
+- `change` and `x` commands redirect to the black hole register
+- visual mode mapping for `duplicate` is `D`
 
 
 
@@ -93,14 +99,19 @@ default:
 
 The most important options, with their defaults:
 
-	let g:yanktools_use_single_stack = 0
+	let g:yanktools_use_redirection = 0
 
 Set to 1 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
+This will disable redirection, but can be toggled with mapping `cur`.
 
 	let g:yanktools_replace_operator = ''
 
 Set to `s` or another character if you want to use the replace operator.
+
+	let g:yanktools_format_prefix = '<'
+
+Perform an autoindented paste/replacement by preponing this prefix.
 
 
 Full documentation with `:help yanktools.txt`

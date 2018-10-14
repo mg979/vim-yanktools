@@ -70,7 +70,7 @@ FEATURES LIST                                               *yanktools-features*
 
 * Duplicate operator: lines and text objects (repeatable), visual (non-rep.)
 
-* |zeta-mode| (by default it uses `z` as key) that fills a disposable yank stack,
+* Zeta mode (by default it uses `z` as key) that fills a disposable yank stack,
   from which items are taken from the back, and pasting them removes them from
   the stack as well. You can populate the stack both by yanking and cutting.
 
@@ -92,21 +92,27 @@ BASIC USAGE                                                    *yanktools-usage*
 ==============================================================================
 
 There are many functions available, but you don't need to use them all or even
-know about them. Yank/paste/delete/change commands work as usual, but by
-default:
+know about them.
 
-* `yank` commands add yanked text to the yank stack
-* you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
+Defined operators and their default behaviour:
 
-* `delete` commands redirect the deleted text to register 'x'
-* you can paste from the redirected register with <leader>p/P
-* you can cycle the redirected stack with the 'swap' commands after <leader>p/P
+* `y`  	(yank)        add yanked text to the yank stack
+* `d`  	(delete)      redirect the deleted text to register 'x'
+* `s`  	(substitute)  replace text object with register (disabled by default)
+* `yd` 	(duplicate)   text objects/lines/visual
+* `yx` 	(cut)         deletes, but doesn't redirect to register 'x'
 
-* `change` and `x` commands redirect to the black hole register
+Further notes:
 
-* you can use the |replace-operator| to replace motions or lines.
+- yank commands add the yanked text to the yank stack
+- you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
 
-* `duplicate` with operator `yd`, or `D` from visual mode.
+- delete commands add the deleted text to the redirected stack
+- you can paste from the redirected register with <leader>p/P
+- you can cycle the redirected stack with the 'swap' commands after <leader>p/P
+
+- `change` and `x` commands redirect to the black hole register
+- visual mode mapping for `duplicate` is `D`
 
 Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
 
@@ -115,15 +121,14 @@ Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpair
 
 BASIC OPTIONS                                                  *yanktools-basic*
 ==============================================================================
-																								*g:yanktools_use_single_stack*
-																								*g:yanktools_replace_operator*
 
 The most important options, with their defaults:
 >
-	let g:yanktools_use_single_stack = 0
+	let g:yanktools_use_redirection = 1
 
-Set to 1 if you want a single stack for both yank and delete operations, so
+Set to 0 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
+This will disable redirection, but can be toggled with mapping `cur`.
 >
 	let g:yanktools_replace_operator = ''
 
@@ -174,7 +179,7 @@ while `d` and `D` redirect to a special register (default "x").  You
 can paste directly from this register with <leader>p/P.
 
 Normally, when you yank to a specific register, you overwrite at the same time
-the unnamed register, but this won-t happen here, since it is restored to its
+the unnamed register, but this won't happen here, since it is restored to its
 previous content after each delete/change operation.
 
 In visual mode, the pasted text will not overwrite the default register.
@@ -186,12 +191,11 @@ You can still specify a register and it will override the default redirection:
   cc     will change the line while redirecting to black hole register
   "xcc   will change the line while redirecting to register "x"
 
-You can define the keys that redirect to the black hole/alternative register:
+You can define the keys that redirect to the black hole register:
 >
   let g:yanktools_black_hole_c    = 1
   let g:yanktools_black_hole_x    = 1
   let g:yanktools_black_hole_del  = 1
-  let g:yanktools_redirect_delete = 1
 
 You can change the default prefix for redirected paste:
 >
@@ -203,31 +207,43 @@ You can redefine the default register for redirection:
 
 
 
-REDIRECTED STACK                                   *yanktools-redirected-stack*
+SINGLE VS DOUBLE STACK                             *yanktools-redirected-stack*
 =============================================================================
-                                                 *g:yanktools_use_single_stack*
+                                                 *g:yanktools_use_redirection*
 
-Text that is deleted (redirected), even if it doesn't overwrite the unnamed
-register, can still be added to the normal yank stack, so that deleted text
-will appear when cycling the stack. Otherwise, you will use a dedicated
-stack for deleted items.
+If register redirection is active, text that is deleted is redirected to its
+own separate stack. If you prefer using a single stack for both yank and
+delete operations, set:
 >
-  let g:yanktools_use_single_stack = 0
+  let g:yanktools_use_redirection = 0
 
-- true: deleted text is added to the yank stack.
-- false (default): deleted text is added to its own stack.
+- `true` (default): deleted text is redirected and added to its own stack.
+- `false`: deleted text is not redirected and is added to the yank stack.
 
-In the latter case, the kind of stack you'll be using when cycling, will
+In the first case, the kind of stack you'll be using when cycling will
 depend on the key you used for pasting:
 
 - normal paste                   -> will use normal stack when cycling
 - paste from redirected register -> will use redirected stack
 
+Setting this option to false will effectively disable register redirection,
+but it can be toggled with mapping `cur` ('change use redirection').
 
 
 
-REPLACE OPERATOR                  *replace-operator* *yanktools-replace-operator*
+CUT OPERATOR                                           *yanktools-cut-operator*
 =============================================================================
+
+If you want to 'cut' a single text object (delete but not redirect), you can
+use the `yx` operator ('yank and delete'). It will then be added to the normal
+yank stack, and be pasted with `p` or `P`.
+
+
+
+
+REPLACE OPERATOR                                   *yanktools-replace-operator*
+=============================================================================
+																								*g:yanktools_replace_operator*
 
 Here assuming that mapping is `s` for the operator, `ss` to replace whole lines.
 Both `s` and `ss` accept a register from which to paste.
@@ -286,10 +302,10 @@ This plugin supports |repeat-vim| for most paste operations. This means that
 you can press |dot| to repeat the last paste command while keeping the same
 formatting options of the last command.
 
-|zeta-mode| is also supported: press "|.|" (dot) to continue pasting from the zeta
+Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
 
-The |replace-operator| is also repeatable, but only the `replace line(s)` variant.
+The replace operator is also repeatable, but only the `replace line(s)` variant.
 
 
 
@@ -337,7 +353,7 @@ Option                                        | Default            ~
 ----------------------------------------------+------------------------
 g:yanktools_paste_keys                        |  ['p', 'P']
                                               |
-g:yanktools_redirect_delete                   |  1
+g:yanktools_use_redirection                   |  1
 g:yanktools_redirect_register                 |  'x'
 g:yanktools_redir_paste_prefix                |  '<leader>'
                                               |
@@ -351,7 +367,6 @@ g:yanktools_replace_operator_bh               |  1
 g:yanktools_format_prefix                     |  '<'
 g:yanktools_zeta                              |  'z'
                                               |
-g:yanktools_use_single_stack                  |  0
 g:yanktools_move_cursor_after_paste           |  0
 g:yanktools_auto_format_all                   |  0
 ----------------------------------------------+------------------------

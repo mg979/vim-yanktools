@@ -99,23 +99,38 @@ function! yanktools#init#maps()
   nnoremap <silent> <Plug>(ReplaceLineMulti)        :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
   nnoremap <silent> <Plug>(ReplaceLineFormatMulti)  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 1)<cr>
 
-  if !empty(get(g:, 'yanktools_replace_operator', ''))
-    let key = get(g:, 'yanktools_replace_operator', '')
-
-    if !empty(key) && !hasmapto('<Plug>(ReplaceOperator)')
-      exec 'nmap' key        '<Plug>(ReplaceOperator)'
-      exec 'nmap' key.     'r <Plug>(ReplaceOperatorR)'
+  let key = get(g:, 'yanktools_replace_operator', '')
+  if !empty(key)
+    if !hasmapto('<Plug>(ReplaceOperator)')
+      exec 'nmap' key        '<Plug>(ReplaceOperatorR)'
+      exec 'nmap' key.     'r <Plug>(ReplaceOperator)'
       exec 'nmap' format.key '<Plug>(ReplaceFormatOperator)'
     endif
 
-    if !empty(key) && !hasmapto('<Plug>(ReplaceLineSingle)')
+    if !hasmapto('<Plug>(ReplaceLineSingle)')
       exec 'nmap' key.key        '<Plug>(ReplaceLineSingle)'
       exec 'nmap' format.key.key '<Plug>(ReplaceLineFormatSingle)'
     endif
 
-    if !empty(key) && !hasmapto('<Plug>(ReplaceLineMulti)')
+    if !hasmapto('<Plug>(ReplaceLineMulti)')
       exec 'nmap' leader.key.key        '<Plug>(ReplaceLineMulti)'
       exec 'nmap' leader.format.key.key '<Plug>(ReplaceLineFormatMulti)'
+    endif
+  else
+    if !hasmapto('<Plug>(ReplaceOperator)')
+      nmap yR <Plug>(ReplaceOperator)
+      nmap yr <Plug>(ReplaceOperatorR)
+      exec 'nmap' format.'yr <Plug>(ReplaceFormatOperator)'
+    endif
+
+    if !hasmapto('<Plug>(ReplaceLineSingle)')
+      nmap yrr <Plug>(ReplaceLineSingle)
+      exec 'nmap' format.'yrr <Plug>(ReplaceLineFormatSingle)'
+    endif
+
+    if !hasmapto('<Plug>(ReplaceLineMulti)')
+      nmap <Plug>(ReplaceLineMulti)
+      exec 'nmap' leader.format.'yrr <Plug>(ReplaceLineFormatMulti)'
     endif
   endif
 

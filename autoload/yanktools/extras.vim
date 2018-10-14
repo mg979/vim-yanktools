@@ -8,6 +8,7 @@ function! yanktools#extras#show_yanks(type)
     let i = 0
     let stack = a:type == 'x' ? g:yanktools_redir_stack
           \ :   a:type == 'z' ? g:yanktools_zeta_stack : g:yanktools_stack
+    redraw!
     if empty(stack)
       return yanktools#msg("Stack is empty")
     endif

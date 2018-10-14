@@ -98,6 +98,23 @@ function! yanktools#update_stack(...)
     call insert(stack, ix == - 1? {'text': text, 'type': type} : remove(stack, ix))
 endfunction
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#freeze_offset()
+    """Stop resetting the offset, if toggled on. When toggled off, restore the last register."""
+
+    if s:freeze_offset
+        let s:freeze_offset = 0
+        let r = s:frozenreg
+        call setreg(r[0], r[1], r[2])
+        call s:msg(3, "Yank offset will be reset normally.")
+    else
+        let s:frozenreg = yanktools#get_reg(0)
+        let s:freeze_offset = 1
+        call s:msg(3, "Yank offset won't be reset.")
+    endif
+endfunction
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommand calls {{{1
@@ -311,33 +328,16 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#freeze_offset()
-    """Stop resetting the offset, if toggled on. When toggled off, restore the last register."""
-
-    if s:freeze_offset
-        let s:freeze_offset = 0
-        let r = s:frozenreg
-        call setreg(r[0], r[1], r[2])
-        call s:msg(3, "Yank offset will be reset normally.")
-    else
-        let s:frozenreg = yanktools#get_reg(0)
-        let s:freeze_offset = 1
-        call s:msg(3, "Yank offset won't be reset.")
-    endif
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 function! yanktools#swap_paste(forward, key, visual)
     let msg = 0
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    "---------------------------------------------------------------------------
 
     if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
 
         if s:has_yanked | call yanktools#check_yanks() | endif
 
-        "fetch item to paste directly from the stack
+        "fetch text to paste directly from the stack
         call s:update_reg(g:yanktools_stack)
 
         " recursive mapping to trigger yanktools#paste_with_key()
@@ -354,7 +354,7 @@ function! yanktools#swap_paste(forward, key, visual)
         return
     endif
 
-    """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    "---------------------------------------------------------------------------
 
     if s:using_redir_stack
         let stack = g:yanktools_redir_stack

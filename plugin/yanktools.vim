@@ -10,6 +10,7 @@ augroup plugin-yanktools
 
     if exists("#TextYankPost") || has('patch-8.0.1394')
         autocmd TextYankPost * silent! call yanktools#check_yanks()
+        autocmd CursorMoved  * silent! call yanktools#check_yanks()
     else
         autocmd CursorMoved  * silent! call yanktools#check_yanks()
         autocmd CursorHold   * silent! call yanktools#check_yanks()

@@ -330,10 +330,16 @@ function! yanktools#init#maps()
 
   " Interactive Paste                                                         {{{2
   if !hasmapto('<Plug>(ISelectYank)') && empty(maparg('yI'))
-    nmap yI <Plug>(ISelectYank)
+    nmap yiy <Plug>(ISelectYank)
   endif
   noremap <silent> <expr> <Plug>(ISelectYank) exists('g:loaded_fzf')
         \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"
+
+  if !hasmapto('<Plug>(ISelectYankR)') && empty(maparg('yI'))
+    nmap yir <Plug>(ISelectYank!)
+  endif
+  noremap <silent> <expr> <Plug>(ISelectYank!) exists('g:loaded_fzf')
+        \ ? ":FzfSelectYank!\<cr>" : ":ISelectYank!\<cr>"
 
   " Change yank type                                                          {{{2
   if !hasmapto('<Plug>(ConvertYankType)') && empty(maparg('cyt'))

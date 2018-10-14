@@ -43,11 +43,11 @@ command! ClearZetaStack    call yanktools#extras#clear_yanks(1)
 command! ToggleAutoIndent  call yanktools#extras#toggle_autoformat()
 command! ToggleRedirection call yanktools#extras#toggle_redirection()
 
-com! FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(),
+com! -bang FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(<bang>0),
             \ 'sink': function('yanktools#extras#select_yank_fzf'), 'down': '30%',
             \ 'options': '--prompt "Select Yank >>>   "'})
 
-com! ISelectYank call yanktools#extras#select_yank()
+com! -bang ISelectYank call yanktools#extras#select_yank(<bang>0)
 
 com! Yanktools call fzf#run({'source': [
             \ 'Toggle Freeze Offset',
@@ -58,6 +58,7 @@ com! Yanktools call fzf#run({'source': [
             \ 'Clear Zeta Stack',
             \ 'Display Yanks',
             \ 'Select Yank',
+            \ 'Select Redirected Yank',
             \ ],
             \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
             \ 'options': '--prompt "Yanktools Menu >>>   "'})

@@ -77,10 +77,10 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#yanks()
-    call s:Y.update_stack()
+function! yanktools#extras#yanks(redirected)
+    let s:fzf_stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
     let yanks = [] | let i = 0
-    for yank in g:yanktools.yank.stack
+    for yank in s:fzf_stack.stack
         let line = substitute(yank.text, '\V\n', '^M', 'g')
         if len(line) > 80 | let line = line[:80] . '…' | endif
         if i < 10 | let spaces = "    " | else | let spaces = "   " | endif
@@ -96,9 +96,7 @@ function! yanktools#extras#select_yank_fzf(yank)
     let index = substitute(index, "[", "", "")
     let index = substitute(index, "]", "", "")
     let index = substitute(index, " ", "", "g")
-    let r = s:F.get_register()
-    call setreg(r[0], g:yanktools.yank.stack[index]['text'], g:yanktools.yank.stack[index]['type'])
-    call yanktools#stack#set_offset(index)
+    call s:fzf_stack.set_at_offset(index)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -116,6 +114,8 @@ function! yanktools#extras#fzf_menu(choice)
         call yanktools#extras#show_yanks('y')
     elseif a:choice == 'Select Yank'
         FzfSelectYank
+    elseif a:choice == 'Select Redirected Yank'
+        FzfSelectYank!
     elseif a:choice == 'Convert Yank Type'
         call yanktools#extras#change_yank_type()
     elseif a:choice == 'Toggle Auto Indent'
@@ -155,11 +155,11 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#select_yank()
-    call s:Y.update_stack()
+function! yanktools#extras#select_yank(redirected)
     echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
+    let stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
     let i = 0
-    for yank in g:yanktools.yank.stack
+    for yank in stack.stack
         call yanktools#extras#show_yank(yank, i)
         let i += 1
     endfor
@@ -173,12 +173,10 @@ function! yanktools#extras#select_yank()
     else
         let index = str2nr(indexStr)
 
-        if index < 0 || index > len(g:yanktools.yank.stack)
+        if index < 0 || index > len(stack)
             echo "\n" | echoerr "Yank index out of bounds"
         else
-            let r = s:F.get_register()
-            call setreg(r[0], g:yanktools.yank.stack[index]['text'], g:yanktools.yank.stack[index]['type'])
-            call yanktools#stack#set_offset(index)
+          call stack.set_at_offset(index)
         endif
     endif
 endfunction

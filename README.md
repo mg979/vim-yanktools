@@ -103,7 +103,7 @@ The most important options, with their defaults:
 
 Set to 1 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, but can be toggled with mapping `cur`.
+This will disable redirection, but can be toggled with mapping `cyr`.
 
 	let g:yanktools_replace_operator = ''
 

@@ -124,9 +124,10 @@ endfunction
 " Redirect {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#redirect_with_key(key, register, black_hole)
+function! yanktools#redirect_with_key(key, register, black_hole, ...)
 
-    if !g:yanktools_use_redirection
+    " a:1 can be given by cut command, to force redirection
+    if !g:yanktools_use_redirection && !a:0
       return yanktools#yank_with_key(a:key)
     endif
 
@@ -186,6 +187,18 @@ fun! yanktools#redirecting()
     call s:F.get_register()
 endfun
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Cut {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#cut_with_key(key, register)
+    if g:yanktools_use_redirection
+      return yanktools#yank_with_key(a:key)
+    else
+      return yanktools#redirect_with_key(a:key, a:register, 0, 1)
+    endif
+endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Duplicate {{{1

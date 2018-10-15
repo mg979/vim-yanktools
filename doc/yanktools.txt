@@ -128,7 +128,7 @@ The most important options, with their defaults:
 
 Set to 0 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, but can be toggled with mapping `cur`.
+This will disable redirection, but can be toggled with mapping `cyr`.
 >
 	let g:yanktools_replace_operator = ''
 
@@ -228,18 +228,29 @@ depend on the key you used for pasting:
 - paste from redirected register -> will use redirected stack
 
 Setting this option to false will effectively disable register redirection,
-but it can be toggled with mapping `cur` ('change use redirection').
+but it can be toggled with mapping `cyr` ('change use redirection').
 
 
 
 CUT OPERATOR                                           *yanktools-cut-operator*
 =============================================================================
 
-If you want to 'cut' a single text object (delete but not redirect), you can
-use the `yx` operator ('yank and delete'). It will then be added to the normal
-yank stack, and be pasted with `p` or `P`.
+The `cut` operator is the inverse of the delete operator.
 
-Plugs is 			<Plug>(CutOperator)
+If redirection is active, it will delete but not redirect, and the deleted
+text will be added to the normal yank stack. On the contrary, if redirection
+is disabled, the deleted text will be forcibly redirected, and added to the
+redirected stack.
+
+Note that in visual mode the key `x` is assigned to this command, so that `d`
+and `x` have different behaviours. <del> in visual mode redirects to the black
+hole register.
+
+Plugs and default mappings:
+
+		<Plug>(CutOperator) yx
+		<Plug>(CutLine)     yxx
+		<Plug>(CutVisual)   x
 
 
 
@@ -250,9 +261,10 @@ REPLACE OPERATOR                                   *yanktools-replace-operator*
 By default it's mapped to `yr` (`yrr` to replace lines), and it accepts a
 register from which to paste.
 
-The operator `yr` can make use of the swap commands, but this makes it
-not repeatable with `dot`. If you need a repeatable (but non-swappable)
-version, you can use the variant `yR` instead.
+There are two variants:
+
+-	`yr` repeatable with dot, but not swappable
+-	`yR` swappable, but not repeatable with dot
 
 The `replace line` command can have two different behaviours:
 
@@ -261,6 +273,8 @@ The `replace line` command can have two different behaviours:
 
 - `<leader>yrr` will instead replace each line in [count] with the register
   content, while keeping the order of multiline entries.
+
+The `replace line` command is both swappable and repeatable (with `vim-repeat`).
 
 Plugs and default mappings:
 
@@ -272,7 +286,7 @@ Plugs and default mappings:
 	<Plug>(ReplaceLineMulti)					\yrr		replace each of [count] lines
 	<Plug>(ReplaceLineFormatMulti)		\<yrr		,, ,, and indent
 
-If you set, for example:
+For easier mappings, set for example:
 >
 	let g:yanktools_replace_operator = 's'
 
@@ -318,6 +332,7 @@ immediately removed. Example:
 the key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack. Note that to paste `zp` or `zp` are used.
 
+Note: that visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
 
 
 REPEAT.VIM                                                *yanktools-repeat-vim*
@@ -359,15 +374,19 @@ Some commands (replace operator, zeta paste) use this method by default.
 OTHER COMMANDS                                                  *yanktools-misc*
 ==============================================================================
 
-  cym      yanktools menu
   cyi      toggle autoindent
+  cyr      toggle redirection
   cys      clear yank stacks
   czs      clear zeta stack
   cyt      convert yank type  (turns a blockwise yank to linewise, and vv.)
+	cym      yanktools menu (fzf only)
+
+	yiy      interactively select a yank
+	yir      interactively select a redirected yank
+
   yY       show yanks
   yX       show redirected yanks
   yZ       show zeta yanks
-  yI       interactively select a yank
 
 
 
@@ -386,11 +405,10 @@ g:yanktools_black_hole_c                      |  1
 g:yanktools_black_hole_x                      |  1
 g:yanktools_black_hole_del                    |  1
                                               |
-g:yanktools_replace_operator                  |  's'
+g:yanktools_replace_operator                  |  ''
 g:yanktools_replace_operator_bh               |  1
                                               |
 g:yanktools_format_prefix                     |  '<'
-g:yanktools_zeta                              |  'z'
                                               |
 g:yanktools_move_cursor_after_paste           |  0
 g:yanktools_auto_format_all                   |  0

@@ -31,11 +31,12 @@ function! yanktools#init#maps()
 
   if !hasmapto('<Plug>(CutOperator)')
     nmap yx  <Plug>(CutOperator)
-    nmap yxx <Plug>(CutOperator)d
-    xmap x   <Plug>(CutOperator)
+    nmap yxx <Plug>(CutLine)
+    xmap x   <Plug>(CutVisual)
   endif
-  nnoremap <silent><expr> <Plug>(CutOperator) yanktools#yank_with_key("d")
-  xnoremap <silent><expr> <Plug>(CutOperator) yanktools#yank_with_key("d")
+  nnoremap <silent><expr> <Plug>(CutOperator) yanktools#cut_with_key("d", v:register)
+  nnoremap <silent><expr> <Plug>(CutLine)     yanktools#cut_with_key("dd", v:register)
+  xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#cut_with_key("d", v:register)
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -48,6 +49,7 @@ function! yanktools#init#maps()
   nnoremap <silent><expr> <Plug>(Black_Hole_x) yanktools#redirect_with_key("x", v:register, 1)
   nnoremap <silent><expr> <Plug>(Black_Hole_X) yanktools#redirect_with_key("X", v:register, 1)
   nnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_with_key("x", v:register, 1)
+  xnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_with_key("x", v:register, 1)
 
   if get(g:, 'yanktools_black_hole_c', 1)
     if !hasmapto('<Plug>(Black_Hole_c)')
@@ -67,6 +69,7 @@ function! yanktools#init#maps()
   if get(g:, 'yanktools_black_hole_del', 1)
     if !hasmapto('<Plug>(Black_Hole_del)')
       nmap <del> <Plug>(Black_Hole_del)
+      xmap <del> <Plug>(Black_Hole_del)
     endif
   endif
 
@@ -234,8 +237,8 @@ function! yanktools#init#maps()
 
   if !empty(zeta)
     if !hasmapto('<Plug>(ZetaYankOperator)')
-      exec 'nmap y'.zeta '<Plug>(ZetaYankOperator)'
-      exec 'xmap' zeta.'y <Plug>(ZetaYankOperator)'
+      nmap yz <Plug>(ZetaYankOperator)
+      xmap Zy <Plug>(ZetaYankOperator)
     endif
     nnoremap <silent><expr> <Plug>(ZetaYankOperator) yanktools#zeta#yank_with_key("y")
     xnoremap <silent><expr> <Plug>(ZetaYankOperator) yanktools#zeta#yank_with_key("y")
@@ -247,31 +250,36 @@ function! yanktools#init#maps()
       nmap dzd <Plug>(ZetaDeleteLine)
     endif
     if !hasmapto('<Plug>(ZetaDeleteVisual)')
-      xmap zd <Plug>(ZetaDeleteVisual)
+      xmap Zd <Plug>(ZetaDeleteVisual)
     endif
-    nnoremap <silent><expr> <Plug>(ZetaDeleteOperator) yanktools#zeta#kill_with_key("d")
-    nnoremap <silent><expr> <Plug>(ZetaDeleteLine)     yanktools#zeta#kill_with_key("dd")
-    xnoremap <silent><expr> <Plug>(ZetaDeleteVisual)   yanktools#zeta#kill_with_key("d")
+    nnoremap <silent><expr> <Plug>(ZetaDeleteOperator) yanktools#zeta#del_with_key("d")
+    nnoremap <silent><expr> <Plug>(ZetaDeleteLine)     yanktools#zeta#del_with_key("dd")
+    xnoremap <silent><expr> <Plug>(ZetaDeleteVisual)   yanktools#zeta#del_with_key("d")
+
+    if !hasmapto('<Plug>(ZetaPaste_p)')
+      nmap zp <Plug>(ZetaPaste_p)
+      xmap Zp <Plug>(ZetaPaste_p)
+    endif
+    if !hasmapto('<Plug>(ZetaPaste_P)')
+      nmap zP <Plug>(ZetaPaste_P)
+    endif
+    nnoremap <silent> <Plug>(ZetaPaste_p) :call yanktools#zeta#paste_with_key('p', '(ZetaPaste_p)', 0 , 0)<cr>
+    nnoremap <silent> <Plug>(ZetaPaste_P) :call yanktools#zeta#paste_with_key('P', '(ZetaPaste_P)', 0 , 0)<cr>
+    xnoremap <silent> <Plug>(ZetaPaste_p) :call yanktools#zeta#paste_with_key('p', '(ZetaPaste_p)', 1 , 0)<cr>
 
     let cmd = ' :call yanktools#zeta#paste_with_key'
 
-    for key in ['p', 'P']
-      let plug = '(ZetaPaste_'.key.')'
+    let plug = '(ZetaPasteIndent_p)'
+    if !hasmapto('<Plug>'.plug)
+      exec 'nmap' format.'zp <Plug>'.plug
+    endif
+    exec 'nnoremap <silent> <Plug>'.plug.cmd.'("p", "'.plug.'", 0, 1)'."\<cr>"
 
-      if !hasmapto('<Plug>'.plug)
-        exec 'nmap' zeta.key '<Plug>'.plug
-        exec 'xmap' zeta.key '<Plug>'.plug
-      endif
-      exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'."\<cr>"
-      exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'."\<cr>"
-
-      let plug = '(ZetaPasteIndent_'.key.')'
-      if !hasmapto('<Plug>'.plug)
-        exec 'nmap' format.zeta.key '<Plug>'.plug
-      endif
-      exec 'nnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'."\<cr>"
-      exec 'xnoremap <silent> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 1)'."\<cr>"
-    endfor
+    let plug = '(ZetaPasteIndent_P)'
+    if !hasmapto('<Plug>'.plug)
+      exec 'nmap' format.'zP <Plug>'.plug
+    endif
+    exec 'nnoremap <silent> <Plug>'.plug.cmd.'("P", "'.plug.'", 0, 1)'."\<cr>"
   endif
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -286,7 +294,7 @@ function! yanktools#init#maps()
 
   " Toggle Single Stack
   if !hasmapto('<Plug>(ToggleRedirection)')
-    nmap cur <Plug>(ToggleRedirection)
+    nmap cyr <Plug>(ToggleRedirection)
   endif
   nnoremap <silent> <Plug>(ToggleRedirection) :ToggleRedirection<cr>
 

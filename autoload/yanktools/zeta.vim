@@ -13,7 +13,7 @@ function! yanktools#zeta#yank_with_key(key)
     return a:key
 endfunction
 
-function! yanktools#zeta#kill_with_key(key)
+function! yanktools#zeta#del_with_key(key)
     if !g:yanktools_use_redirection
       return yanktools#zeta#yank_with_key(a:key)
     endif

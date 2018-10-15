@@ -7,6 +7,7 @@ let g:yanktools.redir = s:Redir
 let g:yanktools.zeta = s:Zeta
 let g:yanktools.current_stack = s:Yank
 let s:current = g:yanktools.current_stack
+let s:frozen = 0
 
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
@@ -17,6 +18,24 @@ fun! yanktools#stack#init()
   call g:yanktools.redir.clear()
   call g:yanktools.zeta.clear()
 endfun
+
+fun! yanktools#stack#freeze()
+  if s:frozen
+    let g:yanktools.yank.frozen = 0
+    let g:yanktools.redir.frozen = 0
+    let g:yanktools.yank.offset = 0
+    let g:yanktools.redir.offset = 0
+    echo "Stacks offset will be reset normally."
+  else
+    let g:yanktools.yank.frozen = 1
+    let g:yanktools.redir.frozen = 1
+    echo "Stacks offset won't be reset."
+  endif
+  call g:yanktools.yank.update_register()
+  let s:frozen = !s:frozen
+endfun
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -73,7 +92,7 @@ fun! s:Redir.update_stack() dict
 endfun
 
 fun! s:Redir.toggle_freeze() dict
-  call s:toggle_freeze(self, 'Redir')
+  call s:toggle_freeze(self, 'Redirected')
 endfun
 
 fun! s:Redir.move_offset(forward) dict
@@ -140,8 +159,10 @@ fun! s:toggle_freeze(self, str)
   if a:self.frozen
     echo a:str "stack offset won't be reset."
   else
+    let a:self.offset = 0
     echo a:str "stack offset will be reset normally."
   endif
+  call self.update_register()
 endfun
 
 fun! s:move_offset(self, forward)

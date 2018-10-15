@@ -48,10 +48,6 @@ fun! s:Yank.update_stack() dict
   call s:update_stack(self)
 endfun
 
-fun! s:Yank.toggle_freeze() dict
-  call s:toggle_freeze(self, 'Yank')
-endfun
-
 fun! s:Yank.move_offset(forward) dict
   return s:move_offset(self, a:forward)
 endfun
@@ -89,10 +85,6 @@ endfun
 fun! s:Redir.update_stack() dict
   call s:update_stack(self)
   call s:F.restore_register()
-endfun
-
-fun! s:Redir.toggle_freeze() dict
-  call s:toggle_freeze(self, 'Redirected')
 endfun
 
 fun! s:Redir.move_offset(forward) dict
@@ -152,17 +144,6 @@ fun! s:update_stack(self)
           \ ? {'text': text, 'type': type}
           \ : remove(a:self.stack, ix))
   endif
-endfun
-
-fun! s:toggle_freeze(self, str)
-  let a:self.frozen = !a:self.frozen
-  if a:self.frozen
-    echo a:str "stack offset won't be reset."
-  else
-    let a:self.offset = 0
-    echo a:str "stack offset will be reset normally."
-  endif
-  call self.update_register()
 endfun
 
 fun! s:move_offset(self, forward)

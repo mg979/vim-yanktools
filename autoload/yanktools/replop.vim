@@ -16,7 +16,7 @@ fun! yanktools#replop#paste_replacement()
 endfun
 
 fun! yanktools#replop#replace(type)
-  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
+  let reg = get(g:, 'yanktools_replace_to_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
   let s:v.has_changed = 1
   let s:v.is_replacing = 1 + s:repeatable
@@ -44,7 +44,7 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:del_before_replace(r, c)
-  let reg = get(g:, 'yanktools_replace_operator_bh', 1)
+  let reg = get(g:, 'yanktools_replace_to_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
 
   if getregtype(a:r) ==# 'V'

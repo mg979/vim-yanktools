@@ -102,7 +102,7 @@ function! yanktools#init#maps()
   nnoremap <silent> <Plug>(ReplaceLineMulti)        :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
   nnoremap <silent> <Plug>(ReplaceLineFormatMulti)  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 1)<cr>
 
-  let key = get(g:, 'yanktools_replace_operator', '')
+  let key = get(g:, 'yanktools_replace_key', '')
   if !empty(key)
     if !hasmapto('<Plug>(ReplaceOperator)')
       exec 'nmap' key        '<Plug>(ReplaceOperatorR)'

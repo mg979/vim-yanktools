@@ -283,7 +283,7 @@ The `replace line` command is both swappable and repeatable (with `vim-repeat`).
 Plugs and default mappings:
 
   <Plug>(ReplaceOperatorR)          yr      repeatable, non-swappable
-  <Plug>(ReplaceOperator)           yR      swappable, non-repeatable
+  <Plug>(ReplaceOperatorS)           yR      swappable, non-repeatable
   <Plug>(ReplaceFormatOperator)     <yr     replace and indent, non-repeatable
   <Plug>(ReplaceLineSingle)         yrr     replace [count] lines
   <Plug>(ReplaceLineFormatSingle)   <yrr    ,, ,, and indent
@@ -336,6 +336,23 @@ the key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack. Note that to paste `zp` or `zp` are used.
 
 Note: that visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
+
+Plugs, if you want to remap them:
+
+	<Plug>(ZetaYank)					 yz
+	<Plug>(ZetaYankVisual)     Zy
+	<Plug>(ZetaDelete)         dz
+	<Plug>(ZetaDeleteLine)     dzd
+	<Plug>(ZetaDeleteVisual)   Zd
+	<Plug>(ZetaPaste_p)        zp
+	<Plug>(ZetaPaste_P)        zP
+	<Plug>(ZetaPasteVisual)    Zp
+	<Plug>(ZetaPasteIndent_p)  <zp
+	<Plug>(ZetaPasteIndent_P)  <zP
+
+To disable the defaul `zeta` mappings:
+>
+  let g:yanktools_zeta = 0
 
 
 VISUAL MODE                                                   *yanktools-visual*

@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:post_paste_pos = getpos('.')
-let s:duplicating = 0
+let s:force_plug = 0
 let s:has_pasted = 0
 let s:last_paste_format_this = 0
 let s:last_paste_key = 0
@@ -139,6 +139,14 @@ function! yanktools#redirect_with_key(key, register, ...)
     return "\"" . reg . a:key
 endfunction
 
+function! yanktools#redirect_line(register, ...)
+    let reg = a:register == s:F.default_reg() ?
+                \ g:yanktools_redirect_register : a:register
+    let s:v.plug = ['(RedirectLine)', v:count, reg]
+    let s:force_plug = 1
+    return yanktools#redirect_with_key('dd', a:register)
+endfunction
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#paste_redirected_with_key(key, plug, visual, format)
@@ -199,7 +207,7 @@ function! yanktools#duplicate_visual()
 endfunction
 
 function! yanktools#duplicate_lines()
-    let s:duplicating = 1
+    let s:force_plug = 1
     let s:v.plug = ['(DuplicateLines)', v:count, v:register]
     call yanktools#redirecting()
     return "yyP"
@@ -297,8 +305,8 @@ fun! s:reset_vars()
     let s:v.redirecting = 0
     let s:v.zeta = 0
     let s:v.has_yanked = 0
-    let s:duplicating = 0
     let s:v.plug = []
+    let s:force_plug = 0
     let &updatetime = s:old_ut
 endfun
 
@@ -307,7 +315,7 @@ endfun
 fun! s:repeat()
     " update repeat.vim, duplicating also redirects reg but can be repeated
     if !empty(s:v.plug)
-      if !s:v.redirecting || s:duplicating
+      if !s:v.redirecting || s:force_plug
         call s:F.set_repeat()
       endif
     endif

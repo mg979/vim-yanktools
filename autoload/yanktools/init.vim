@@ -98,9 +98,11 @@ function! yanktools#init#maps()
   nnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
   xnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
   nnoremap <silent><expr> <Plug>(Redirect_D) yanktools#redirect_with_key("D", v:register)
+  nnoremap <silent><expr> <Plug>(RedirectLine) yanktools#redirect_line(v:register)
 
   call s:nxmap('d', '<Plug>(Redirect_d)')
   call s:nmap('D',  '<Plug>(Redirect_D)')
+  call s:nmap('dd',  '<Plug>(RedirectLine)')
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

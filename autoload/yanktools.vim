@@ -61,6 +61,7 @@ endfun
 
 function! yanktools#on_text_change()
     """This function is called on TextChanged event."""
+    if s:v.has_yanked     | call s:update_yanks() | endif
     if !s:v.has_changed   | return                | endif
     let s:v.has_changed = 0
 
@@ -119,34 +120,53 @@ endfunction
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirect {{{1
+" Redirect / Cut {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" The 'cut' argument and the current g:yanktools_use_redirection variable
+" will define if the deletion will be redirected or not
 
-function! yanktools#redirect_with_key(key, register, ...)
+function! yanktools#redir_opts(register)
+    let s:register = a:register
+endfunction
 
-    " a:1 can be given by cut command, to force redirection
-    if !g:yanktools_use_redirection && !a:0
-      return yanktools#yank_with_key(a:key)
+function! yanktools#cut(type)
+    let s:register = s:rreg(s:register, 1)
+    call yanktools#delete(a:type)
+endfunction
+
+function! yanktools#redirect(type)
+    let s:register = s:rreg(s:register, 0)
+    call yanktools#delete(a:type)
+endfunction
+
+function! yanktools#delete(type)
+    call s:redir_vars()
+
+    if a:type == 'line' | execute "keepjumps normal! `[V`]"
+    else                | execute "keepjumps normal! `[v`]"
     endif
-
-    " register will be restored in any case, even if specifying a register
-    call yanktools#redirecting()
-
-    " really redirect or a register has been specified?
-    let reg = a:register == s:F.default_reg() ?
-                \ g:yanktools_redirect_register : a:register
-
-    return "\"" . reg . a:key
+    execute "normal! \"".s:register."d"
 endfunction
 
-function! yanktools#redirect_line(register, ...)
-    let reg = a:register == s:F.default_reg() ?
-                \ g:yanktools_redirect_register : a:register
-    let s:v.plug = ['(RedirectLine)', v:count, reg]
+function! yanktools#delete_visual(register, cut)
+    let reg = s:rreg(a:register, a:cut)
+    call s:redir_vars()
+    return "\"" . reg . 'd'
+endfunction
+
+function! yanktools#delete_line(register, count, cut)
+    let reg = s:rreg(a:register, a:cut)
+    call s:redir_vars()
+    let pl = a:cut ? '(CutLine)' : '(RedirectLine)'
+    let s:v.plug = [pl, a:count, reg]
     let s:force_plug = 1
-    return yanktools#redirect_with_key('dd', a:register)
+    let n = a:count ? a:count : ''
+    execute "normal! \"".reg.n."dd"
 endfunction
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Redirected paste {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#paste_redirected_with_key(key, plug, visual, format)
@@ -179,23 +199,12 @@ fun! yanktools#restore_after_redirect()
 endfun
 
 fun! yanktools#redirecting()
+    " register will be restored in any case, even if specifying a register
     let s:v.has_changed = 1
     let s:v.redirecting = 1
     call s:F.get_register()
 endfun
 
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Cut {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#cut_with_key(key, register)
-    if g:yanktools_use_redirection
-      return yanktools#yank_with_key(a:key)
-    else
-      return yanktools#redirect_with_key(a:key, a:register, 0, 1)
-    endif
-endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Duplicate {{{1
@@ -318,6 +327,29 @@ fun! s:repeat()
       if !s:v.redirecting || s:force_plug
         call s:F.set_repeat()
       endif
+    endif
+endfun
+
+"------------------------------------------------------------------------------
+
+fun! s:rreg(reg, cut)
+    " redirect, cut, or a register has been specified?
+    let s:cutting = g:yanktools_use_redirection && a:cut ||
+                \ !a:cut && !g:yanktools_use_redirection
+    return s:cutting ? a:reg
+                \ : a:reg == s:F.default_reg()
+                \ ? g:yanktools_redirect_register : a:reg
+endfun
+
+"------------------------------------------------------------------------------
+
+fun! s:redir_vars()
+    if s:cutting
+        let s:v.has_changed = 1
+        let s:v.has_yanked = 1
+        let s:cutting = 0
+    else
+        call yanktools#redirecting()
     endif
 endfun
 

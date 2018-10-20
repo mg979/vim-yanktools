@@ -115,7 +115,7 @@ Further notes:
 
 - `change` and `x` commands redirect to the black hole register
 - visual `x` cuts instead of doing black hole deletion
-- visual mode mapping for `duplicate` is `D`
+- visual mode mapping for `duplicate` is `<'d>'`
 
 Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
 
@@ -241,6 +241,8 @@ CUT OPERATOR                                                    *yanktools-cut*
 
 The `cut` operator is the inverse of the delete operator.
 
+To put it simply, the cut operator behaves like Vim default `delete` operator.
+
 If redirection is active, it will delete but not redirect, and the deleted
 text will be added to the normal yank stack. On the contrary, if redirection
 is disabled, the deleted text will be forcibly redirected, and added to the
@@ -317,7 +319,7 @@ Plugs and default mappings:
 
   <Plug>(DuplicateOperator)    yd
   <Plug>(DuplicateLines)       ydd
-  <Plug>(DuplicateVisual)      D
+  <Plug>(DuplicateVisual)      <c-d>
 
 
 
@@ -526,7 +528,7 @@ leasure.
 CREDITS                                                      *yanktools-credits*
 ==============================================================================
 
-Braam Moolenaar for Vim
+Bram Moolenaar for Vim
 Steve Vermeulen for |vim-easyclip|
 Max Brunsfeld for |vim-yankstack|
 

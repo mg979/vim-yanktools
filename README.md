@@ -89,8 +89,7 @@ Further notes:
 - you can paste from the redirected register with `<leader>p/P`
 - you can cycle the redirected stack with the 'swap' commands after `<leader>p/P`
 - `change` and `x` commands redirect to the black hole register
-- visual `x` cuts instead of doing black hole deletion
-- visual mode mapping for `duplicate` is `D`
+- some visual mode mappings have different behaviours, check the docs
 
 
 
@@ -124,7 +123,7 @@ Full documentation with `:help yanktools.txt`
 
 ### Credits
 
-Braam Moolenaar for Vim  
+Bram Moolenaar for Vim  
 Steve Vermeulen for vim-easyclip  
 Max Brunsfeld for vim-yankstack  
 

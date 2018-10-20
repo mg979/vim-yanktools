@@ -95,23 +95,24 @@ function! yanktools#init#maps()
   " Redirection {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
-  xnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
-  nnoremap <silent><expr> <Plug>(Redirect_D) yanktools#redirect_with_key("D", v:register)
-  nnoremap <silent><expr> <Plug>(RedirectLine) yanktools#redirect_line(v:register)
-
-  call s:nxmap('d', '<Plug>(Redirect_d)')
+  call s:nmap('d', '<Plug>(Redirect_d)')
   call s:nmap('D',  '<Plug>(Redirect_D)')
-  call s:nmap('dd',  '<Plug>(RedirectLine)')
+  call s:nmap('dd', '<Plug>(RedirectLine)')
+  call s:xmap('d', '<Plug>(RedirectVisual)')
+
+  nnoremap <silent>       <Plug>(Redirect_d) :call yanktools#redir_opts(v:register)<cr>:set opfunc=yanktools#redirect<cr>g@
+  nmap     <silent>       <Plug>(Redirect_D) <Plug>(Redirect_d)$
+  nnoremap <silent>       <Plug>(RedirectLine) :<c-u>call yanktools#delete_line(v:register, v:count, 0)<cr>
+  xnoremap <silent><expr> <Plug>(RedirectVisual) yanktools#delete_visual(v:register, 0)
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
   " Cut {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(Cut)         yanktools#cut_with_key("d", v:register)
-  nnoremap <silent><expr> <Plug>(CutLine)     yanktools#cut_with_key("dd", v:register)
-  xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#cut_with_key("d", v:register)
+  nnoremap <silent>       <Plug>(Cut)         :call yanktools#redir_opts(v:register)<cr>:set opfunc=yanktools#cut<cr>g@
+  nnoremap <silent>       <Plug>(CutLine)     :<c-u>call yanktools#delete_line(v:register, v:count, 1)<cr>
+  xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#delete_visual(v:register, 1)
 
   call s:nmap('yx',  '<Plug>(Cut)')
   call s:nmap('yxx', '<Plug>(CutLine)')

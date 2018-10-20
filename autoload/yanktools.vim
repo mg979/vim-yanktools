@@ -124,7 +124,7 @@ endfunction
 " Redirect {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#redirect_with_key(key, register, black_hole, ...)
+function! yanktools#redirect_with_key(key, register, ...)
 
     " a:1 can be given by cut command, to force redirection
     if !g:yanktools_use_redirection && !a:0
@@ -134,15 +134,9 @@ function! yanktools#redirect_with_key(key, register, black_hole, ...)
     " register will be restored in any case, even if specifying a register
     call yanktools#redirecting()
 
-    " key uses black hole or register redirection?
-    if a:black_hole
-      let reg = "_"
-    else
-      " really redirect or a register has been specified?
-      let reg = a:register == s:F.default_reg() ?
-            \ g:yanktools_redirect_register : a:register
-      " let s:v.has_yanked = 1
-    endif
+    " really redirect or a register has been specified?
+    let reg = a:register == s:F.default_reg() ?
+                \ g:yanktools_redirect_register : a:register
 
     return "\"" . reg . a:key
 endfunction

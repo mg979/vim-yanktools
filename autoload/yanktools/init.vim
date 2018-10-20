@@ -64,26 +64,18 @@ function! yanktools#init#maps()
   nnoremap <silent><expr> <Plug>(Yank) yanktools#yank_with_key("y")
   xnoremap <silent><expr> <Plug>(Yank) yanktools#yank_with_key("y")
 
-  call s:nmap('yx',  '<Plug>(CutOperator)')
-  call s:nmap('yxx', '<Plug>(CutLine)')
-  call s:xmap('x',   '<Plug>(CutVisual)')
-
-  nnoremap <silent><expr> <Plug>(Cut)         yanktools#cut_with_key("d", v:register)
-  nnoremap <silent><expr> <Plug>(CutLine)     yanktools#cut_with_key("dd", v:register)
-  xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#cut_with_key("d", v:register)
-
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
   " Black Hole {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_with_key("c", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_C) yanktools#redirect_with_key("C", v:register, 1)
-  xnoremap <silent><expr> <Plug>(Black_Hole_c) yanktools#redirect_with_key("c", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_x) yanktools#redirect_with_key("x", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_X) yanktools#redirect_with_key("X", v:register, 1)
-  nnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_with_key("x", v:register, 1)
-  xnoremap <silent><expr> <Plug>(Black_Hole_del) yanktools#redirect_with_key("x", v:register, 1)
+  nnoremap <silent> <Plug>(Black_Hole_c)   "_c
+  nnoremap <silent> <Plug>(Black_Hole_C)   "_C
+  xnoremap <silent> <Plug>(Black_Hole_c)   "_c
+  nnoremap <silent> <Plug>(Black_Hole_x)   "_x
+  nnoremap <silent> <Plug>(Black_Hole_X)   "_X
+  nnoremap <silent> <Plug>(Black_Hole_del) "_x
+  xnoremap <silent> <Plug>(Black_Hole_del) "_x
 
   if get(g:, 'yanktools_black_hole_c', 1)
     call s:nxmap('c', '<Plug>(Black_Hole_c)')
@@ -103,12 +95,25 @@ function! yanktools#init#maps()
   " Redirection {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register, 0)
-  xnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register, 0)
-  nnoremap <silent><expr> <Plug>(Redirect_D) yanktools#redirect_with_key("D", v:register, 0)
+  nnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
+  xnoremap <silent><expr> <Plug>(Redirect_d) yanktools#redirect_with_key("d", v:register)
+  nnoremap <silent><expr> <Plug>(Redirect_D) yanktools#redirect_with_key("D", v:register)
 
   call s:nxmap('d', '<Plug>(Redirect_d)')
   call s:nmap('D',  '<Plug>(Redirect_D)')
+
+
+  """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  " Cut {{{1
+  """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+  nnoremap <silent><expr> <Plug>(Cut)         yanktools#cut_with_key("d", v:register)
+  nnoremap <silent><expr> <Plug>(CutLine)     yanktools#cut_with_key("dd", v:register)
+  xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#cut_with_key("d", v:register)
+
+  call s:nmap('yx',  '<Plug>(Cut)')
+  call s:nmap('yxx', '<Plug>(CutLine)')
+  call s:xmap('x',   '<Plug>(CutVisual)')
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -147,7 +152,7 @@ function! yanktools#init#maps()
   " Duplicate {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent> <Plug>(DuplicateOperator)         :set opfunc=yanktools#duplicate<cr>g@
+  nnoremap <silent>       <Plug>(DuplicateOperator)   :set opfunc=yanktools#duplicate<cr>g@
   nnoremap <silent><expr> <Plug>(DuplicateLines)      yanktools#duplicate_lines()
   xnoremap <silent><expr> <Plug>(DuplicateVisual)     yanktools#duplicate_visual()
 

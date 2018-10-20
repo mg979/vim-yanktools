@@ -210,8 +210,8 @@ function! yanktools#init#maps()
 
   call s:nmap('<M-p>', '<Plug>(SwapPasteNext)')
   call s:nmap('<M-P>', '<Plug>(SwapPastePrevious)')
-  nnoremap <silent> <Plug>(SwapPasteNext)     :call yanktools#swap_paste(1, "P", 0)<cr>
-  nnoremap <silent> <Plug>(SwapPastePrevious) :call yanktools#swap_paste(0, "P", 0)<cr>
+  nnoremap <silent> <Plug>(SwapPasteNext)     :call yanktools#swap_paste(1, "P")<cr>
+  nnoremap <silent> <Plug>(SwapPastePrevious) :call yanktools#swap_paste(0, "P")<cr>
 
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

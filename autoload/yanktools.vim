@@ -48,7 +48,6 @@ endfun
 fun! s:check_swap()
   " reset swap state if cursor moved after finishing swap
   " s:v.has_changed must be 0 because this must run after on_text_change()
-  " echom s:has_pasted !s:v.has_changed getpos('.') != s:post_paste_pos
   if s:has_pasted && !s:v.has_changed
         \ && getpos('.') != s:post_paste_pos
     call s:current_stack.reset_offset()
@@ -62,7 +61,6 @@ endfun
 
 function! yanktools#on_text_change()
     """This function is called on TextChanged event."""
-    " if s:v.has_yanked     | call s:update_yanks() | endif
     if !s:v.has_changed   | return                | endif
     let s:v.has_changed = 0
 
@@ -156,9 +154,6 @@ function! yanktools#paste_redirected_with_key(key, plug, visual, format)
     let s:last_paste_key = a:key
     let s:last_paste_format_this = s:v.format_this
 
-    " reset stack offset (unless frozen)
-    " let s:R.offset = 0
-
     return '"'.g:yanktools_redirect_register.a:key
 endfunction
 
@@ -211,7 +206,6 @@ function! yanktools#duplicate_lines()
 endfunction
 
 fun! yanktools#duplicate(type)
-  " let s:duplicating = 1
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   call yanktools#redirecting()
   if a:type == 'line'
@@ -227,26 +221,10 @@ endfun
 " Swap paste {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#swap_paste(forward, key, visual)
+function! yanktools#swap_paste(forward, key)
 
     if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
-
-        " if s:v.has_yanked | call yanktools#check_yanks() | endif
-
-        "fetch text to paste directly from the stack
-        " call s:current_stack.update_register()
-
-        " recursive mapping to trigger yanktools#paste_with_key()
-        " if pasting from visual mode, force paste after if last column
-        if a:visual && col('.') == col('$')-1
-            normal p
-        else
-            execute "normal ".a:key
-        endif
-
-        "pasted text is taken from the stack, that could contain redirected
-        "items, restore previous register in any case
-        " call setreg(s:r[0], s:r[1], s:r[2])
+        execute "normal ".a:key
         return
     endif
 

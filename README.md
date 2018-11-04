@@ -104,7 +104,9 @@ The most important options, with their defaults:
 
 Set to 0 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, but can be toggled with mapping `cyr`.
+This will disable redirection, and make `delete` work as in vim, but the
+deleted text will be added to the yank stack as well.
+It can be toggled with mapping `cyr`.
 
 	let g:yanktools_replace_key = ''
 

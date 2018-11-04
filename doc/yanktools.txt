@@ -131,9 +131,9 @@ The most important options, with their defaults:
 
 Set to 0 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, but can be toggled with mapping `cyr`.
->
-  let g:yanktools_replace_key = ''
+This will disable redirection, and make `delete` work as in vim, but the
+deleted text will be added to the yank stack as well.
+It can be toggled with mapping `cyr`.
 
 Set to `s` or another character if you want an easy mapping for the replace
 operator. Otherwise it will default to `yr`.
@@ -262,7 +262,7 @@ Plugs and default mappings:
 
 REPLACE OPERATOR                                            *yanktools-replace*
 =============================================================================
-                                                *g:yanktools_replace_key*
+																										 *g:yanktools_replace_key*
 
 By default it's mapped to `yr` (`yrr` to replace lines), and it accepts a
 register from which to paste.
@@ -335,9 +335,10 @@ immediately removed. Example:
     `text 3`    (yzy)
 
 the key sequence `zpzpzp` would then recreate the same sequence and consume the
-stack. Note that to paste `zp` or `zp` are used.
+stack.
 
-Note: that visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
+Note: to paste `zp` or `zP` are used.
+Note: visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
 
 Plugs, if you want to remap them:
 
@@ -352,7 +353,7 @@ Plugs, if you want to remap them:
 	<Plug>(ZetaPasteIndent_p)  <zp
 	<Plug>(ZetaPasteIndent_P)  <zP
 
-To disable the defaul `zeta` mappings:
+To disable the default `zeta` mappings:
 >
   let g:yanktools_zeta = 0
 
@@ -365,7 +366,7 @@ A summary of the default mappings for visual mode:
 p             paste from default register
 <leader>p     paste from redirected register
 d             delete and redirect
-D             duplicate
+<c-d>         duplicate
 x             cut (doesn't redirect if redirection is active and vv.)
 <del>         black hole deletion
 Zy            zeta yank
@@ -542,6 +543,6 @@ MIT
 
 
 ==============================================================================
-vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:
+vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:expandtab
 
 

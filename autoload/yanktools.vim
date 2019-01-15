@@ -8,7 +8,6 @@ let s:has_pasted = 0
 let s:last_paste_format_this = 0
 let s:last_paste_key = 0
 let s:last_paste_tick = -1
-let s:old_ut = &updatetime
 
 function! yanktools#init_vars()
 
@@ -24,6 +23,7 @@ function! yanktools#init_vars()
   let s:F = g:yanktools.Funcs
 
   let s:current_stack = g:yanktools.current_stack
+  let s:v.updatetime = &updatetime
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -98,7 +98,7 @@ function! yanktools#yank_with_key(key)
     return a:key
   endif
   let s:v.has_yanked = 1
-  call s:F.updatetime()
+  call s:F.updatetime(0)
   return a:key
 endfunction
 
@@ -329,7 +329,7 @@ fun! s:reset_vars()
   let s:v.has_yanked = 0
   let s:v.plug = []
   let s:force_plug = 0
-  let &updatetime = s:old_ut
+  call s:F.updatetime(1)
 endfun
 
 "------------------------------------------------------------------------------

@@ -16,18 +16,18 @@ let g:yanktools.Funcs = yanktools#funcs#init()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 augroup plugin-yanktools
-    autocmd!
-    autocmd VimEnter    * call yanktools#init_vars()
-    autocmd TextChanged * call yanktools#on_text_change()
-    autocmd InsertEnter * call yanktools#on_text_change()
+  autocmd!
+  autocmd VimEnter    * call yanktools#init_vars()
+  autocmd TextChanged * call yanktools#on_text_change()
+  autocmd InsertEnter * call yanktools#on_text_change()
 
-    if exists("#TextYankPost") || has('patch-8.0.1394')
-        autocmd TextYankPost * call yanktools#check_yanks()
-        autocmd CursorMoved  * call yanktools#check_yanks()
-    else
-        autocmd CursorMoved  * call yanktools#check_yanks()
-        autocmd CursorHold   * call yanktools#check_yanks()
-    endif
+  if exists("#TextYankPost") || has('nvim')
+    autocmd TextYankPost * call yanktools#check_yanks()
+    autocmd CursorMoved  * call yanktools#check_yanks()
+  else
+    autocmd CursorMoved  * call yanktools#check_yanks()
+    autocmd CursorHold   * call yanktools#check_yanks()
+  endif
 augroup END
 
 
@@ -44,22 +44,22 @@ command! ToggleAutoIndent  call yanktools#extras#toggle_autoformat()
 command! ToggleRedirection call yanktools#extras#toggle_redirection()
 
 com! -bang FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(<bang>0),
-            \ 'sink': function('yanktools#extras#select_yank_fzf'), 'down': '30%',
-            \ 'options': '--prompt "Select Yank >>>   "'})
+      \ 'sink': function('yanktools#extras#select_yank_fzf'), 'down': '30%',
+      \ 'options': '--prompt "Select Yank >>>   "'})
 
 com! -bang ISelectYank call yanktools#extras#select_yank(<bang>0)
 
 com! Yanktools call fzf#run({'source': [
-            \ 'Toggle Freeze Offset',
-            \ 'Convert Yank Type',
-            \ 'Toggle Auto Indent',
-            \ 'Toggle Single Stack',
-            \ 'Clear Yank Stacks',
-            \ 'Clear Zeta Stack',
-            \ 'Display Yanks',
-            \ 'Select Yank',
-            \ 'Select Redirected Yank',
-            \ ],
-            \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
-            \ 'options': '--prompt "Yanktools Menu >>>   "'})
+      \ 'Toggle Freeze Offset',
+      \ 'Convert Yank Type',
+      \ 'Toggle Auto Indent',
+      \ 'Toggle Single Stack',
+      \ 'Clear Yank Stacks',
+      \ 'Clear Zeta Stack',
+      \ 'Display Yanks',
+      \ 'Select Yank',
+      \ 'Select Redirected Yank',
+      \ ],
+      \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
+      \ 'options': '--prompt "Yanktools Menu >>>   "'})
 

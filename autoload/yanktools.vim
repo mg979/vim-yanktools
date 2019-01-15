@@ -12,18 +12,18 @@ let s:old_ut = &updatetime
 
 function! yanktools#init_vars()
 
-    if !get(g:, 'yanktools_loaded', 0)
-        call yanktools#init#maps()
-    endif
+  if !get(g:, 'yanktools_loaded', 0)
+    call yanktools#init#maps()
+  endif
 
-    call yanktools#stack#init()
-    let s:Y = g:yanktools.yank
-    let s:R = g:yanktools.redir
-    let s:Z = g:yanktools.zeta
-    let s:v = g:yanktools.vars
-    let s:F = g:yanktools.Funcs
+  call yanktools#stack#init()
+  let s:Y = g:yanktools.yank
+  let s:R = g:yanktools.redir
+  let s:Z = g:yanktools.zeta
+  let s:v = g:yanktools.vars
+  let s:F = g:yanktools.Funcs
 
-    let s:current_stack = g:yanktools.current_stack
+  let s:current_stack = g:yanktools.current_stack
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -31,11 +31,11 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#check_yanks()
-    """This function is called on CursorMoved/CursorHold/TextYankPost.
-    if s:v.has_yanked
-      call s:update_yanks()
-    endif
-    call s:check_swap()
+  """This function is called on CursorMoved/CursorHold/TextYankPost.
+  if s:v.has_yanked
+    call s:update_yanks()
+  endif
+  call s:check_swap()
 endfunction
 
 fun! s:update_yanks()
@@ -60,29 +60,32 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#on_text_change()
-    """This function is called on TextChanged event."""
-    if s:v.has_yanked     | call s:update_yanks() | endif
-    if !s:v.has_changed   | return                | endif
-    let s:v.has_changed = 0
+  """This function is called on TextChanged event."""
+  if exists('g:VM') && g:VM.is_active
+    return s:reset_vars()
+  endif
+  if s:v.has_yanked     | call s:update_yanks() | endif
+  if !s:v.has_changed   | return                | endif
+  let s:v.has_changed = 0
 
-    " restore register after redirection
-    if s:v.redirecting         | call s:R.update_stack()        | endif
+  " restore register after redirection
+  if s:v.redirecting         | call s:R.update_stack()        | endif
 
-    " replace operator: complete replacement
-    if yanktools#replop#paste_replacement() | return s:reset_vars() | endif
+  " replace operator: complete replacement
+  if yanktools#replop#paste_replacement() | return s:reset_vars() | endif
 
-    " autoformat / move cursor, ensure CursorMoved runs
-    if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
-    if s:is_moving_at_end()     | execute "keepjumps normal! `]"
-    else                        | execute "normal! hl"              | endif
+  " autoformat / move cursor, ensure CursorMoved runs
+  if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
+  if s:is_moving_at_end()     | execute "keepjumps normal! `]"
+  else                        | execute "normal! hl"              | endif
 
-    " update repeat.vim
-    call s:repeat()
+  " update repeat.vim
+  call s:repeat()
 
-    " record position and tick
-    let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
+  " record position and tick
+  let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
 
-    call s:reset_vars()
+  call s:reset_vars()
 endfunction
 
 
@@ -91,31 +94,34 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#yank_with_key(key)
-    let s:v.has_yanked = 1
-    call s:F.updatetime()
+  if exists('g:VM') && g:VM.is_active
     return a:key
+  endif
+  let s:v.has_yanked = 1
+  call s:F.updatetime()
+  return a:key
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#paste_with_key(key, plug, visual, format)
-    if a:visual | call yanktools#redirecting() | endif
-    if a:format | let s:v.format_this = 1 | endif
+  if a:visual | call yanktools#redirecting() | endif
+  if a:format | let s:v.format_this = 1 | endif
 
-    " set current stack
-    let s:current_stack = s:Y
+  " set current stack
+  let s:current_stack = s:Y
 
-    " set paste variables
-    let s:v.has_changed = 1 | let s:has_pasted = 1
+  " set paste variables
+  let s:v.has_changed = 1 | let s:has_pasted = 1
 
-    " set repeat.vim plug
-    let s:v.plug = [a:plug, v:count1, v:register]
+  " set repeat.vim plug
+  let s:v.plug = [a:plug, v:count1, v:register]
 
-    " set last_paste_key and remember format_this option (used by swap)
-    let s:last_paste_key = a:key
-    let s:last_paste_format_this = s:v.format_this
+  " set last_paste_key and remember format_this option (used by swap)
+  let s:last_paste_key = a:key
+  let s:last_paste_format_this = s:v.format_this
 
-    return a:key
+  return a:key
 endfunction
 
 
@@ -126,42 +132,48 @@ endfunction
 " will define if the deletion will be redirected or not
 
 function! yanktools#redir_opts(register)
-    let s:register = a:register
+  let s:register = a:register
 endfunction
 
 function! yanktools#cut(type)
-    let s:register = s:rreg(s:register, 1)
-    call yanktools#delete(a:type)
+  let s:register = s:rreg(s:register, 1)
+  call yanktools#delete(a:type)
 endfunction
 
 function! yanktools#redirect(type)
-    let s:register = s:rreg(s:register, 0)
-    call yanktools#delete(a:type)
+  let s:register = s:rreg(s:register, 0)
+  call yanktools#delete(a:type)
 endfunction
 
 function! yanktools#delete(type)
+  if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
+  endif
 
-    if a:type == 'line' | execute "keepjumps normal! `[V`]"
-    else                | execute "keepjumps normal! `[v`]"
-    endif
-    execute "normal! \"".s:register."d"
+  if a:type == 'line' | execute "keepjumps normal! `[V`]"
+  else                | execute "keepjumps normal! `[v`]"
+  endif
+  execute "normal! \"".s:register."d"
 endfunction
 
 function! yanktools#delete_visual(register, cut)
-    let reg = s:rreg(a:register, a:cut)
+  let reg = s:rreg(a:register, a:cut)
+  if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
-    return "\"" . reg . 'd'
+  endif
+  return "\"" . reg . 'd'
 endfunction
 
 function! yanktools#delete_line(register, count, cut)
-    let reg = s:rreg(a:register, a:cut)
+  let reg = s:rreg(a:register, a:cut)
+  if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
     let pl = a:cut ? '(CutLine)' : '(RedirectLine)'
     let s:v.plug = [pl, a:count, reg]
     let s:force_plug = 1
-    let n = a:count ? a:count : ''
-    execute "normal! \"".reg.n."dd"
+  endif
+  let n = a:count ? a:count : ''
+  execute "normal! \"".reg.n."dd"
 endfunction
 
 
@@ -170,39 +182,39 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#paste_redirected_with_key(key, plug, visual, format)
-    let s:v.format_this = a:format
-    let s:v.has_changed = 1
-    let s:has_pasted = 1
-    let s:v.plug = [a:plug, v:count, g:yanktools_redirect_register]
+  let s:v.format_this = a:format
+  let s:v.has_changed = 1
+  let s:has_pasted = 1
+  let s:v.plug = [a:plug, v:count, g:yanktools_redirect_register]
 
-    " set current stack
-    let s:current_stack = s:R
+  " set current stack
+  let s:current_stack = s:R
 
-    " set last_paste_key and remember format_this option (used by swap)
-    let s:last_paste_key = a:key
-    let s:last_paste_format_this = s:v.format_this
+  " set last_paste_key and remember format_this option (used by swap)
+  let s:last_paste_key = a:key
+  let s:last_paste_format_this = s:v.format_this
 
-    return '"'.g:yanktools_redirect_register.a:key
+  return '"'.g:yanktools_redirect_register.a:key
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yanktools#restore_after_redirect()
-    " don't store empty lines/whitespaces only
-    if getreg(s:F.default_reg()) !~ '^[\s\n]*$'
-        call s:R.update_stack()
-    else
-        let r = g:yanktools.redir.stack[0]
-        call setreg(g:yanktools_redirect_register, r['text'], r['type'])
-    endif
-    call setreg(s:r[0], s:r[1], s:r[2])
+  " don't store empty lines/whitespaces only
+  if getreg(s:F.default_reg()) !~ '^[\s\n]*$'
+    call s:R.update_stack()
+  else
+    let r = g:yanktools.redir.stack[0]
+    call setreg(g:yanktools_redirect_register, r['text'], r['type'])
+  endif
+  call setreg(s:r[0], s:r[1], s:r[2])
 endfun
 
 fun! yanktools#redirecting()
-    " register will be restored in any case, even if specifying a register
-    let s:v.has_changed = 1
-    let s:v.redirecting = 1
-    call s:F.get_register()
+  " register will be restored in any case, even if specifying a register
+  let s:v.has_changed = 1
+  let s:v.redirecting = 1
+  call s:F.get_register()
 endfun
 
 
@@ -211,15 +223,15 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#duplicate_visual()
-    call yanktools#redirecting()
-    return "yP"
+  call yanktools#redirecting()
+  return "yP"
 endfunction
 
 function! yanktools#duplicate_lines()
-    let s:force_plug = 1
-    let s:v.plug = ['(DuplicateLines)', v:count, v:register]
-    call yanktools#redirecting()
-    return "yyP"
+  let s:force_plug = 1
+  let s:v.plug = ['(DuplicateLines)', v:count, v:register]
+  call yanktools#redirecting()
+  return "yyP"
 endfunction
 
 fun! yanktools#duplicate(type)
@@ -240,34 +252,34 @@ endfun
 
 function! yanktools#swap_paste(forward, key)
 
-    if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
-        execute "normal ".a:key
-        return
-    endif
+  if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
+    execute "normal ".a:key
+    return
+  endif
 
-    "---------------------------------------------------------------------------
+  "---------------------------------------------------------------------------
 
-    " move stack offset and get return message code
-    let msg = s:current_stack.move_offset(a:forward)
+  " move stack offset and get return message code
+  let msg = s:current_stack.move_offset(a:forward)
 
-    " set register to offset
-    call s:current_stack.update_register()
+  " set register to offset
+  call s:current_stack.update_register()
 
-    " set flag before actual paste, so that autocmd call will run
-    let s:has_pasted = 1 | let s:v.has_changed = 1
+  " set flag before actual paste, so that autocmd call will run
+  let s:has_pasted = 1 | let s:v.has_changed = 1
 
-    " perform a non-recursive paste, but reuse last options and key
-    let s:v.format_this = s:last_paste_format_this
-    exec 'normal! u'.s:last_paste_key
+  " perform a non-recursive paste, but reuse last options and key
+  let s:v.format_this = s:last_paste_format_this
+  exec 'normal! u'.s:last_paste_key
 
-    " update position, because using non recursive paste
-    let s:post_paste_pos = getpos('.')
+  " update position, because using non recursive paste
+  let s:post_paste_pos = getpos('.')
 
-    " restore register (unless stack is frozen)
-    if !s:current_stack.frozen
-      call s:F.restore_register()
-    endif
-    call s:msg(msg)
+  " restore register (unless stack is frozen)
+  if !s:current_stack.frozen
+    call s:F.restore_register()
+  endif
+  call s:msg(msg)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -275,15 +287,15 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:is_being_formatted()
-    let all = g:yanktools_auto_format_all
-    let this = s:v.format_this
-    return (all && !this) || (!all && this)
+  let all = g:yanktools_auto_format_all
+  let this = s:v.format_this
+  return (all && !this) || (!all && this)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:is_moving_at_end()
-    return g:yanktools_move_cursor_after_paste || s:v.move_this
+  return g:yanktools_move_cursor_after_paste || s:v.move_this
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -307,50 +319,51 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:reset_vars()
-    " reset vars
-    let s:v.is_replacing = 0
-    let s:v.format_this = 0
-    let s:v.move_this = 0
-    let s:v.redirecting = 0
-    let s:v.zeta = 0
-    let s:v.has_yanked = 0
-    let s:v.plug = []
-    let s:force_plug = 0
-    let &updatetime = s:old_ut
+  " reset vars
+  let s:v.has_changed = 0
+  let s:v.is_replacing = 0
+  let s:v.format_this = 0
+  let s:v.move_this = 0
+  let s:v.redirecting = 0
+  let s:v.zeta = 0
+  let s:v.has_yanked = 0
+  let s:v.plug = []
+  let s:force_plug = 0
+  let &updatetime = s:old_ut
 endfun
 
 "------------------------------------------------------------------------------
 
 fun! s:repeat()
-    " update repeat.vim, duplicating also redirects reg but can be repeated
-    if !empty(s:v.plug)
-      if !s:v.redirecting || s:force_plug
-        call s:F.set_repeat()
-      endif
+  " update repeat.vim, duplicating also redirects reg but can be repeated
+  if !empty(s:v.plug)
+    if !s:v.redirecting || s:force_plug
+      call s:F.set_repeat()
     endif
+  endif
 endfun
 
 "------------------------------------------------------------------------------
 
 fun! s:rreg(reg, cut)
-    " redirect, cut, or a register has been specified?
-    let s:cutting = g:yanktools_use_redirection && a:cut ||
-                \ !a:cut && !g:yanktools_use_redirection
-    return s:cutting ? a:reg
-                \ : a:reg == s:F.default_reg()
-                \ ? g:yanktools_redirect_register : a:reg
+  " redirect, cut, or a register has been specified?
+  let s:cutting = g:yanktools_use_redirection && a:cut ||
+        \ !a:cut && !g:yanktools_use_redirection
+  return s:cutting ? a:reg
+        \ : a:reg == s:F.default_reg()
+        \ ? g:yanktools_redirect_register : a:reg
 endfun
 
 "------------------------------------------------------------------------------
 
 fun! s:redir_vars()
-    if s:cutting
-        let s:v.has_changed = 1
-        let s:v.has_yanked = 1
-        let s:cutting = 0
-    else
-        call yanktools#redirecting()
-    endif
+  if s:cutting
+    let s:v.has_changed = 1
+    let s:v.has_yanked = 1
+    let s:cutting = 0
+  else
+    call yanktools#redirecting()
+  endif
 endfun
 
 

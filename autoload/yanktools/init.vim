@@ -100,17 +100,27 @@ function! yanktools#init#maps()
   call s:nmap('dd', '<Plug>(RedirectLine)')
   call s:xmap('d', '<Plug>(RedirectVisual)')
 
-  nnoremap <silent>       <Plug>(Redirect_d) :call yanktools#redir_opts(v:register)<cr>:set opfunc=yanktools#redirect<cr>g@
+  nnoremap <silent><expr> <Plug>(Redirect_d) <sid>redirect(v:count, 0)
   nmap     <silent>       <Plug>(Redirect_D) <Plug>(Redirect_d)$
   nnoremap <silent>       <Plug>(RedirectLine) :<c-u>call yanktools#delete_line(v:register, v:count, 0)<cr>
   xnoremap <silent><expr> <Plug>(RedirectVisual) yanktools#delete_visual(v:register, 0)
 
+  fun! s:redirect(count, cut)
+    let n = a:count ? string(a:count) : ''
+    let c = ":\<c-u>call yanktools#redir_opts(v:register)\<cr>"
+    if !a:cut
+      let c .= ":set opfunc=yanktools#redirect\<cr>"
+    else
+      let c .= ":set opfunc=yanktools#cut\<cr>"
+    endif
+    return c.n."g@"
+  endfun
 
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
   " Cut {{{1
   """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-  nnoremap <silent>       <Plug>(Cut)         :call yanktools#redir_opts(v:register)<cr>:set opfunc=yanktools#cut<cr>g@
+  nnoremap <silent><expr> <Plug>(Cut)         <sid>redirect(v:count, 1)
   nnoremap <silent>       <Plug>(CutLine)     :<c-u>call yanktools#delete_line(v:register, v:count, 1)<cr>
   xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#delete_visual(v:register, 1)
 

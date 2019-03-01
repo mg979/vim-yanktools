@@ -31,9 +31,16 @@ function! yanktools#zeta#paste_with_key(key, plug, visual, format)
 
     " set vars
     let s:v.has_changed = 1
-    let s:v.move_this = 1
     let s:v.format_this = a:format
     let s:v.plug = [a:plug, v:count, s:F.default_reg()]
+
+    if a:key ==# 'p'
+      let s:v.move_this = 1
+      let post = ''
+    else
+      let s:v.move_this = 0
+      let post = '`['
+    endif
 
     " backup register
     let r = s:F.get_register()
@@ -47,7 +54,7 @@ function! yanktools#zeta#paste_with_key(key, plug, visual, format)
     call remove(g:yanktools.zeta.stack, 0)
 
     " perform paste
-    exec 'normal! '.a:key
+    exec 'normal! '.a:key.post
 
     call s:F.restore_register()
     call s:F.msg("There are ".len(g:yanktools.zeta.stack)." entries left in the zeta stack.")

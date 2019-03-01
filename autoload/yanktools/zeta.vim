@@ -9,7 +9,7 @@ let s:F = g:yanktools.Funcs
 function! yanktools#zeta#yank_with_key(key)
     let s:v.zeta = 1
     let s:v.has_yanked = 1
-    call s:F.updatetime()
+    call s:F.updatetime(0)
     return a:key
 endfunction
 

@@ -269,7 +269,7 @@ function! yanktools#init#maps()
   nnoremap <silent> <Plug>(Yanks)             :call yanktools#extras#show_yanks('y')<cr>
   nnoremap <silent> <Plug>(RedirectedYanks)   :call yanktools#extras#show_yanks('x')<cr>
   nnoremap <silent> <Plug>(ZetaYanks)         :call yanktools#extras#show_yanks('z')<cr>
-  nnoremap <silent> <Plug>(ConvertYankType)   :call yanktools#extras#change_yank_type()<cr>
+  nnoremap <silent> <Plug>(ConvertYankType)   :call yanktools#extras#convert_yank_type()<cr>
   nnoremap <silent> <Plug>(YanktoolsMenu)     :Yanktools<cr>
   nnoremap <silent> <expr> <Plug>(ISelectYank) exists('g:loaded_fzf')
         \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"

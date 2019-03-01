@@ -21,7 +21,7 @@ augroup plugin-yanktools
   autocmd TextChanged * call yanktools#on_text_change()
   autocmd InsertEnter * call yanktools#on_text_change()
 
-  if exists("#TextYankPost") || has('nvim')
+  if exists("##TextYankPost")
     autocmd TextYankPost * call yanktools#check_yanks()
     autocmd CursorMoved  * call yanktools#check_yanks()
   else

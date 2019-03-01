@@ -60,7 +60,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:Funcs.updatetime(restore) dict
-  if exists("#TextYankPost") || has('nvim') | return | endif
+  if exists("##TextYankPost") | return | endif
   if a:restore
     let &updatetime = s:v.updatetime
   else

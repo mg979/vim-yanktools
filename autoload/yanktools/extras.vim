@@ -117,7 +117,7 @@ function! yanktools#extras#fzf_menu(choice)
     elseif a:choice == 'Select Redirected Yank'
         FzfSelectYank!
     elseif a:choice == 'Convert Yank Type'
-        call yanktools#extras#change_yank_type()
+        call yanktools#extras#convert_yank_type()
     elseif a:choice == 'Toggle Auto Indent'
         call yanktools#extras#toggle_autoformat()
     endif
@@ -125,9 +125,8 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#change_yank_type()
+function! yanktools#extras#convert_yank_type()
     let r = v:register | let text = getreg(r) | let type = getregtype(r)
-    if type ==# 'v' | echo "Not a multiline yank." | return | endif
 
     if type[:0] ==# ""
         call setreg(r, text, "V")

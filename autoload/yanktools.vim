@@ -307,6 +307,7 @@ function! s:msg(n)
     echo s:current_stack.name "stack position:" s:current_stack.offset + 1
           \ . "/" . s:current_stack.size()
   else
+    redraw!
     let t = tolower(s:current_stack.name)
     echohl WarningMsg
     if a:n == 1 | echo "Reached the end of the" t

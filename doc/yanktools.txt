@@ -29,9 +29,8 @@ License..............................................|yanktools-license|
 INTRODUCTION                                                   *yanktools-intro*
 ==============================================================================
 
-Yanktools is a plugin inspired by |vim-yankstack| and |vim-easyclip|, and it
-takes elements from both. You should expect all features from vim-easyclip,
-plus some new ones.
+Yanktools is a plugin inspired by |vim-yankstack| and |vim-easyclip|.
+It can be used in manual mode (default) or automatic mode (not recommended).
 
 
 
@@ -52,21 +51,16 @@ With |vim-plug|:
 FEATURES LIST                                               *yanktools-features*
 ==============================================================================
 
-* Cycle yank stack: all yanks are stored in a list, that can be cycled at
+
+General:~
+
+* Stacks: yanks and deletions are stored in a list, that can be cycled at
   cursor position, back and forth, with a specific keybinding. It keeps the
   properties of the last paste command (autoformat, paste before, etc).
 
 * Black hole redirection: `c`, `C`, `x`, `X`, <del>
 
-* Register redirection: `d` and `D` are redirected to another register
-  (default 'x'), without replacing the unnamed register.
-
 * Paste in visual mode won't change the default register.
-
-* Since register redirection is an option, pasting from that register has its
-  own mapping. This can also be used in combination with the replace operator.
-
-* Redirected text fills its own stack, so that you can swap/paste from it too.
 
 * Replace operator: replace text objects with register. Works with swap too.
 
@@ -74,35 +68,68 @@ FEATURES LIST                                               *yanktools-features*
 
 * Zeta mode: a disposable yank stack, from which items are taken from the
   back, and pasting them removes them from the stack as well. You can populate
-  the stack both by yanking and cutting.
+  the stack both by yanking and deleting.
 
 * Autoindent: you can toggle it, or use a prefix to the normal
   mappings to perform a single indented paste.
 
 * Interactive paste (also with |fzf-vim|)
 
-* Convert yank type: convert selected register between linewise and blockwise.
+* Convert yank type: convert selected register to/from blockwise.
 
 * |repeat-vim| support: yanktools supports it for most paste operations.
 
-* and some more...
+
+Automatic mode (not recommended!):~
+
+* Stacks are filled automatically at every yank/delete operation.
+
+* Register redirection: `d` and `D` can be redirected to another register
+  (default 'x'), without replacing the unnamed register.
 
 
 
 
-BASIC USAGE                                                    *yanktools-usage*
+MANUAL MODE                                                   *yanktools-manual*
 ==============================================================================
-
-There are many functions available, but you don't need to use them all or even
-know about them.
 
 Defined operators and their default behaviour:
 
-* `y`   (yank)        add yanked text to the yank stack
-* `d`   (delete)      redirect the deleted text to register 'x'
-* `yr`    (replace)     replace text object with register
-* `yd`  (duplicate)   text objects/lines/visual
-* `yx`  (cut)         deletes, but doesn't redirect to register 'x'
+  `ys`  (yank & save)    add yanked text to the yank stack
+  `ds`  (delete & save)  add deleted text to the yank stack
+  `yr`  (replace)        replace text object with register
+  `yd`  (duplicate)      duplicate text object
+
+Further notes:
+
+- yank and delete commands add the text to the yank stack
+- you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
+
+- `change` and `x` commands redirect to the black hole register
+- visual mode mapping for `duplicate` is `<M-d>`
+
+Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
+
+
+
+
+AUTOMATIC MODE                                             *yanktools-automatic*
+==============================================================================
+
+This was the old behaviour, but I think it's too pervasive, therefore it's
+disabled by default. Enable with:
+>
+  let g:yanktools_manual = 0
+<
+You can disable redirection (inverting cut & deletion mappings):
+>
+  let g:yanktools_use_redirection = 0
+<
+  `y`   (yank)        add yanked text to the yank stack
+  `yx`  (cut)         add deleted text to the yank stack
+  `d`   (delete)      redirect the deleted text to register 'x'
+  `yr`  (replace)     replace text object with register
+  `yd`  (duplicate)   duplicate text object
 
 Further notes:
 
@@ -114,11 +141,13 @@ Further notes:
 - you can cycle the redirected stack with the 'swap' commands after <leader>p/P
 
 - `change` and `x` commands redirect to the black hole register
-- visual `x` cuts instead of doing black hole deletion
 - visual mode mapping for `duplicate` is `<'d>'`
 
-Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
+>
+  NOTE:
 
+  Much of what follows concerns the automatic mode, and not relevant by
+  default.
 
 
 
@@ -133,6 +162,7 @@ Set to 0 if you want a single stack for both yank and delete operations, so
 that you can cycle among all of them, instead of having separate stacks.
 This will disable redirection, and make `delete` work as in vim, but the
 deleted text will be added to the yank stack as well.
+
 It can be toggled with mapping `cyr`.
 
 Set to `s` or another character if you want an easy mapping for the replace
@@ -273,10 +303,12 @@ REPLACE OPERATOR                                            *yanktools-replace*
 By default it's mapped to `yr` (`yrr` to replace lines), and it accepts a
 register from which to paste.
 
+
 There are two variants:
 
 - `yr` repeatable with dot, but not swappable
 - `yR` swappable, but not repeatable with dot
+
 
 The `replace line` command can have two different behaviours:
 
@@ -291,12 +323,9 @@ The `replace line` command is both swappable and repeatable (with `vim-repeat`).
 Plugs and default mappings:
 
   <Plug>(ReplaceOperatorR)          yr      repeatable, non-swappable
-  <Plug>(ReplaceOperatorS)           yR      swappable, non-repeatable
-  <Plug>(ReplaceFormatOperator)     <yr     replace and indent, non-repeatable
+  <Plug>(ReplaceOperatorS)          yR      swappable, non-repeatable
   <Plug>(ReplaceLineSingle)         yrr     replace [count] lines
-  <Plug>(ReplaceLineFormatSingle)   <yrr    ,, ,, and indent
   <Plug>(ReplaceLineMulti)          \yrr    replace each of [count] lines
-  <Plug>(ReplaceLineFormatMulti)    \<yrr   ,, ,, and indent
 
 For easier mappings, set for example:
 >
@@ -306,11 +335,8 @@ mappings will become:
 >
   yr      ->    s
   yR      ->    sr
-  <yr     ->    <s
   yrr     ->    ss
-  <yrr    ->    <ss
   \yrr    ->    \ss
-  \<yrr   ->    \<ss
 
 
 
@@ -326,7 +352,7 @@ Plugs and default mappings:
 
   <Plug>(DuplicateOperator)    yd
   <Plug>(DuplicateLines)       ydd
-  <Plug>(DuplicateVisual)      <c-d>
+  <Plug>(DuplicateVisual)      <M-d>
 
 
 
@@ -358,8 +384,6 @@ Plugs, if you want to remap them:
   <Plug>(ZetaPaste_p)        zp
   <Plug>(ZetaPaste_P)        zP
   <Plug>(ZetaPasteVisual)    Zp
-  <Plug>(ZetaPasteIndent_p)  <zp
-  <Plug>(ZetaPasteIndent_P)  <zP
 
 To disable the default `zeta` mappings:
 >
@@ -430,6 +454,8 @@ Some commands (replace operator, zeta paste) use this method by default.
 
 
 
+
+
 OTHER COMMANDS                                                  *yanktools-misc*
 ==============================================================================
 
@@ -451,6 +477,7 @@ OTHER COMMANDS                                                  *yanktools-misc*
 
 OPTIONS SUMMARY                                              *yanktools-options*
 ==============================================================================
+
 Option                                        | Default            ~
 ----------------------------------------------+------------------------
 g:yanktools_paste_keys                        |  ['p', 'P']

@@ -1,4 +1,6 @@
 
+let g:loaded_yanktools = 1
+
 let g:yanktools = {'vars': {}}
 let g:yanktools.vars.redirecting = 0
 let g:yanktools.vars.format_this = 0

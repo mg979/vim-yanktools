@@ -7,7 +7,9 @@ let s:Y = g:yanktools.yank
 let s:R = g:yanktools.redir
 
 function! yanktools#extras#show_yanks(type)
-    call s:Y.update_stack()
+    if !g:yanktools_manual
+        call s:Y.update_stack()
+    endif
     let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
     let i = 0
     let stack = a:type == 'x' ? g:yanktools.redir.stack

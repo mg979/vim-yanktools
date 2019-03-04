@@ -212,6 +212,8 @@ You can redefine the default register for redirection:
 
 
 
+
+
 SINGLE VS DOUBLE STACK                             *yanktools-redirected-stack*
 =============================================================================
                                                  *g:yanktools_use_redirection*
@@ -233,6 +235,8 @@ depend on the key you used for pasting:
 
 Setting this option to false will effectively disable register redirection,
 but it can be toggled with mapping `cyr` ('change use redirection').
+
+
 
 
 
@@ -260,9 +264,11 @@ Plugs and default mappings:
 
 
 
+
+
 REPLACE OPERATOR                                            *yanktools-replace*
 =============================================================================
-																										 *g:yanktools_replace_key*
+                                                     *g:yanktools_replace_key*
 
 By default it's mapped to `yr` (`yrr` to replace lines), and it accepts a
 register from which to paste.
@@ -308,11 +314,12 @@ mappings will become:
 
 
 
+
 DUPLICATE OPERATOR                                         *yanktools-duplicate*
 ==============================================================================
 
 Duplicate lines, text object, or visually selected text. Duplicated text won't
-overwrite the default register. `DuplicateLines` is repeatable with repeat.vim, 
+overwrite the default register. `DuplicateLines` is repeatable with repeat.vim,
 the operator version doesn't need it.
 
 Plugs and default mappings:
@@ -320,6 +327,7 @@ Plugs and default mappings:
   <Plug>(DuplicateOperator)    yd
   <Plug>(DuplicateLines)       ydd
   <Plug>(DuplicateVisual)      <c-d>
+
 
 
 
@@ -342,20 +350,23 @@ Note: visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
 
 Plugs, if you want to remap them:
 
-	<Plug>(ZetaYank)					 yz
-	<Plug>(ZetaYankVisual)     Zy
-	<Plug>(ZetaDelete)         dz
-	<Plug>(ZetaDeleteLine)     dzd
-	<Plug>(ZetaDeleteVisual)   Zd
-	<Plug>(ZetaPaste_p)        zp
-	<Plug>(ZetaPaste_P)        zP
-	<Plug>(ZetaPasteVisual)    Zp
-	<Plug>(ZetaPasteIndent_p)  <zp
-	<Plug>(ZetaPasteIndent_P)  <zP
+  <Plug>(ZetaYank)           yz
+  <Plug>(ZetaYankVisual)     Zy
+  <Plug>(ZetaDelete)         dz
+  <Plug>(ZetaDeleteLine)     dzd
+  <Plug>(ZetaDeleteVisual)   Zd
+  <Plug>(ZetaPaste_p)        zp
+  <Plug>(ZetaPaste_P)        zP
+  <Plug>(ZetaPasteVisual)    Zp
+  <Plug>(ZetaPasteIndent_p)  <zp
+  <Plug>(ZetaPasteIndent_P)  <zP
 
 To disable the default `zeta` mappings:
 >
   let g:yanktools_zeta = 0
+
+
+
 
 
 VISUAL MODE                                                   *yanktools-visual*
@@ -374,6 +385,9 @@ Zd            zeta delete
 Zp            zeta paste
 
 
+
+
+
 REPEAT.VIM                                                *yanktools-repeat-vim*
 ==============================================================================
 
@@ -385,6 +399,12 @@ Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
 
 The replace operator is also repeatable, but only the `replace line(s)` variant.
+
+Support must be enabled by setting:
+>
+  let g:yanktools_repeat = 1
+
+
 
 
 
@@ -486,6 +506,8 @@ Plug                                        | Default                    ~
 
 
 
+
+
 CONVENIENT REMAPS                       *convenient-remaps* *yanktools-convenient*
 ==============================================================================
                                                  *g:yanktools_convenient_remaps*
@@ -514,15 +536,6 @@ Some convenient mappings you can add to your vimrc:
   nmap m, <Plug>(SwapPastePrevious)
 
 
-NOTES AND ISSUES                                               *yanktools-notes*
-==============================================================================
-
-As you will understand, this plugin is rather far-fetching and complex.
-Therefore, if posting issues, consider that I'm there to fix bugs, but not for
-adding/tweaking features.
-
-If you want to remap some function, use the <Plug>s to remap them to your
-leasure.
 
 
 
@@ -532,6 +545,7 @@ CREDITS                                                      *yanktools-credits*
 Bram Moolenaar for Vim
 Steve Vermeulen for |vim-easyclip|
 Max Brunsfeld for |vim-yankstack|
+
 
 
 

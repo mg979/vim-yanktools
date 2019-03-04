@@ -8,6 +8,7 @@ let s:Funcs = {}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:Funcs.set_repeat() dict
+  if !get(g:, 'yanktools_repeat', 0) | return | endif
   let p = s:v.plug
   silent! call repeat#setreg("\<Plug>".p[0], p[2])
   silent! call repeat#set("\<Plug>".p[0], p[1])

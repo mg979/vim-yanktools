@@ -1,6 +1,9 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Replace operator
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" let &undolevels = &undolevels ( is used to break undo from script )
+
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 

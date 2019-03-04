@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:post_paste_pos = getpos('.')
-let s:force_plug = 0
+let s:store_plug = 0
 let s:has_pasted = 0
 let s:last_paste_format_this = 0
 let s:last_paste_key = 0
@@ -66,6 +66,8 @@ function! yanktools#on_text_change()
   endif
   if s:v.has_yanked     | call s:update_yanks() | endif
   if !s:v.has_changed   | return                | endif
+
+  " reset changed state in any case
   let s:v.has_changed = 0
 
   " restore register after redirection
@@ -170,7 +172,7 @@ function! yanktools#delete_line(register, count, cut)
     call s:redir_vars()
     let pl = a:cut ? '(CutLine)' : '(RedirectLine)'
     let s:v.plug = [pl, a:count, reg]
-    let s:force_plug = 1
+    let s:store_plug = 1
   endif
   let n = a:count ? a:count : ''
   call feedkeys('"'.reg.n."dd", 'n')
@@ -228,7 +230,7 @@ function! yanktools#duplicate_visual()
 endfunction
 
 function! yanktools#duplicate_lines()
-  let s:force_plug = 1
+  let s:store_plug = 1
   let s:v.plug = ['(DuplicateLines)', v:count, v:register]
   call yanktools#redirecting()
   return "yyP"
@@ -328,7 +330,7 @@ fun! s:reset_vars()
   let s:v.zeta = 0
   let s:v.has_yanked = 0
   let s:v.plug = []
-  let s:force_plug = 0
+  let s:store_plug = 0
   call s:F.updatetime(1)
 endfun
 
@@ -337,7 +339,7 @@ endfun
 fun! s:repeat()
   " update repeat.vim, duplicating also redirects reg but can be repeated
   if !empty(s:v.plug)
-    if !s:v.redirecting || s:force_plug
+    if !s:v.redirecting || s:store_plug
       call s:F.set_repeat()
     endif
   endif

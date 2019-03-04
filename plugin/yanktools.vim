@@ -224,8 +224,8 @@ endif
 
 nnoremap <silent> <Plug>(ReplaceOperatorS)  :call yanktools#replop#opts(v:register, 0, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
 nnoremap <silent> <Plug>(ReplaceOperatorR)  :call yanktools#replop#opts(v:register, 0, 1)<cr>:set opfunc=yanktools#replop#replace<cr>g@
-nnoremap <silent> <Plug>(ReplaceLineSingle) :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0, 0)<cr>
-nnoremap <silent> <Plug>(ReplaceLineMulti)  :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 1, 0)<cr>
+nnoremap <silent> <Plug>(ReplaceLineSingle) :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0)<cr>
+nnoremap <silent> <Plug>(ReplaceLineMulti)  :<c-u>call yanktools#replop#replace_multi_line(v:register, v:count1, 0)<cr>
 
 let key = get(g:, 'yanktools_replace_key', '')
 if !empty(key)

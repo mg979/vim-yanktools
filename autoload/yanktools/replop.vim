@@ -54,19 +54,33 @@ fun! s:del_before_replace(r, c)
     for i in range(a:c)
       execute "normal! \"".reg."dd"
     endfor
-    let &undolevels = &undolevels
     return
   else
     execute "normal! \"".reg."d$j"
     for i in range(a:c - 1)
       execute "normal! \"".reg."dd"
     endfor
-    let &undolevels = &undolevels
     normal! k$l
   endif
 endfun
 
-fun! yanktools#replop#replace_line(r, c, multi, format)
+fun! yanktools#replop#replace_line(r, c, format)
+  " get register
+  let reg = getreg(a:r)
+
+  " set marks
+  exe "noautocmd normal!" a:c.'yy'
+
+  " set register and replace line(s)
+  call setreg('"', reg, 'V')
+  let s:v.format_this = a:format
+  execute "normal! `[V`]p"
+
+  " restore register
+  call setreg('"', reg, 'V')
+endfun
+
+fun! yanktools#replop#replace_multi_line(r, c, format)
   let s:repl_reg = a:r
   let s:oldvmode = &virtualedit | set virtualedit=onemore
 
@@ -77,15 +91,12 @@ fun! yanktools#replop#replace_line(r, c, multi, format)
   call s:del_before_replace(a:r, a:c)
 
   " multiple or single replacement
-  let N = a:multi ? range(a:c) : [0]
-  for i in N
+  for i in range(a:c)
     let s:v.format_this = a:format
     execute "normal \"".a:r.paste_type
   endfor
 
   let &virtualedit = s:oldvmode
-  let plug = "(ReplaceLine"
-        \ . (a:format ? 'Format' : '') . (a:multi ? 'Multi' : 'Single') . ')'
-  let s:v.plug = [plug, a:c, a:r]
+  let s:v.plug = ["(ReplaceLineMulti)", a:c, a:r]
   call s:F.set_repeat()
 endfun

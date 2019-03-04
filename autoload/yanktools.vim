@@ -11,10 +11,6 @@ let s:last_paste_tick = -1
 
 function! yanktools#init_vars()
 
-  if !get(g:, 'yanktools_loaded', 0)
-    call yanktools#init#maps()
-  endif
-
   call yanktools#stack#init()
   let s:Y = g:yanktools.yank
   let s:R = g:yanktools.redir

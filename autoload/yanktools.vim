@@ -173,7 +173,7 @@ function! yanktools#delete_line(register, count, cut)
     let s:force_plug = 1
   endif
   let n = a:count ? a:count : ''
-  execute "normal! \"".reg.n."dd"
+  call feedkeys('"'.reg.n."dd", 'n')
 endfunction
 
 

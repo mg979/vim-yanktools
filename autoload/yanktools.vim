@@ -229,16 +229,16 @@ function! yanktools#duplicate_lines()
   let s:store_plug = 1
   let s:v.plug = ['(DuplicateLines)', v:count, v:register]
   call yanktools#redirecting()
-  return "yyP"
+  return "yyP`]j^"
 endfunction
 
 fun! yanktools#duplicate(type)
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   call yanktools#redirecting()
   if a:type == 'line'
-    keepjumps normal! `[V`]yP
+    keepjumps normal! `[V`]yP`]j^
   else
-    keepjumps normal! `[v`]yP
+    keepjumps normal! `[v`]yP`]
   endif
   let &virtualedit = s:oldvmode
 endfun

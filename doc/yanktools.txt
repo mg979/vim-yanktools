@@ -6,9 +6,12 @@ YANKTOOLS - TABLE OF CONTENTS                                    *yanktools-toc*
 Introduction.........................................|yanktools-intro|
 Installation.........................................|yanktools-installation|
 Features.............................................|yanktools-features|
-Basic usage..........................................|yanktools-usage|
+Manual mode..........................................|yanktools-manual|
+Other commands.......................................|yanktools-misc|
+Automatic mode.......................................|yanktools-automatic|
 Basic options........................................|yanktools-basic|
 Cycle yank stack.....................................|yanktools-cycle|
+Preview stacks.......................................|yanktools-preview|
 Register redirection.................................|yanktools-redirection|
 Redirected stack.....................................|yanktools-redirected-stack|
 Cut operator.........................................|yanktools-cut|
@@ -18,7 +21,6 @@ Zeta mode............................................|yanktools-zeta|
 Visual mode..........................................|yanktools-visual|
 Options..............................................|yanktools-options|
 Interactive paste....................................|yanktools-interactive|
-Other commands.......................................|yanktools-misc|
 Mappings.............................................|yanktools-mappings|
 Convenient remaps....................................|yanktools-convenient|
 Credits..............................................|yanktools-credits|
@@ -60,6 +62,8 @@ General:~
 
 * Black hole redirection: `c`, `C`, `x`, `X`, <del>
 
+* Swap-&-paste or preview (in preview window) yank stack entries
+
 * Paste in visual mode won't change the default register.
 
 * Replace operator: replace text objects with register. Works with swap too.
@@ -99,16 +103,58 @@ Defined operators and their default behaviour:
   `ds`  (delete & save)  add deleted text to the yank stack
   `yr`  (replace)        replace text object with register
   `yd`  (duplicate)      duplicate text object
+  `yz`  (zeta)           zeta mode (|yanktools-zeta|)
+
+More mappings:
+  
+  `M-p` (paste next)      cycle the stack (+1) and paste
+  `M-P` (paste previous)  cycle the stack (-1) and paste
+  `]y`  (swap next)       cycle the stack (+1) and open preview
+  `[y`  (swap previous)   cycle the stack (-1) and open preview
 
 Further notes:
 
 - yank and delete commands add the text to the yank stack
-- you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
-
 - `change` and `x` commands redirect to the black hole register
 - visual mode mapping for `duplicate` is `<M-d>`
 
-Have a look at |convenient-remaps| if you want mappings similar to |vim-unimpaired|.
+Recommended settings:
+>
+  let g:yanktools_replace_key = 's'
+
+  nmap S s$
+  nmap sy    <Plug>(Yank)
+  nmap sY    <Plug>(Yank)$
+  nmap sd    <Plug>(Cut)
+  nmap sdd   <Plug>(CutLine)
+  nmap sD    <Plug>(Cut)$
+  nmap <M-d> <Plug>(DuplicateLines)
+
+
+
+
+
+OTHER COMMANDS                                                  *yanktools-misc*
+==============================================================================
+
+  `yus`      save current [register] into the yank stack
+  `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
+  `yuxs`     clear yank stacks
+  `yuxz`     clear zeta stack
+  `yui`      toggle autoindent
+  `yur`      toggle redirection
+  `yum`      yanktools menu (fzf only)
+
+  `yiy`      interactively select a yank
+  `yir`      interactively select a redirected yank
+
+  `yY`       show yanks
+  `yX`       show redirected yanks
+  `yZ`       show zeta yanks
+
+
+This is all for the recommended (MANUAL) mode.
+
 
 
 
@@ -163,7 +209,7 @@ that you can cycle among all of them, instead of having separate stacks.
 This will disable redirection, and make `delete` work as in vim, but the
 deleted text will be added to the yank stack as well.
 
-It can be toggled with mapping `cyr`.
+It can be toggled with mapping `yur`.
 
 Set to `s` or another character if you want an easy mapping for the replace
 operator. Otherwise it will default to `yr`.
@@ -197,6 +243,19 @@ Simply moving the cursor after a swap resets this command.
 By default, deleted (redirected) text builds its own stack, so you can cycle
 it by using these commands, after having performed a paste from the redirected
 register (default '<leader>p').
+
+
+
+
+PREVIEW YANK STACKS                                          *yanktools-preview*
+==============================================================================
+
+By pressing `]y` or `[y`, you will move to a different position in the stack,
+and also open a preview window with the current entry. This window closes if
+you move the cursor, or paste the entry.
+
+You can preview items also by pressing `yY` (normal stack), `yX` (redirected
+stack) or `yZ` (zeta stack).
 
 
 
@@ -315,7 +374,7 @@ The `replace line` command can have two different behaviours:
 - `yrr` will replace [count] lines with a single instance of the register
   (this behaviour is the same as in ReplaceWithRegister plugin).
 
-- `<leader>yrr` will instead replace each line in [count] with the register
+- `yrm` will instead replace each line in [count] with the register
   content, while keeping the order of multiline entries.
 
 The `replace line` command is both swappable and repeatable (with `vim-repeat`).
@@ -325,7 +384,7 @@ Plugs and default mappings:
   <Plug>(ReplaceOperatorR)          yr      repeatable, non-swappable
   <Plug>(ReplaceOperatorS)          yR      swappable, non-repeatable
   <Plug>(ReplaceLineSingle)         yrr     replace [count] lines
-  <Plug>(ReplaceLineMulti)          \yrr    replace each of [count] lines
+  <Plug>(ReplaceLineMulti)          yrm     replace each of [count] lines
 
 For easier mappings, set for example:
 >
@@ -336,7 +395,7 @@ mappings will become:
   yr      ->    s
   yR      ->    sr
   yrr     ->    ss
-  \yrr    ->    \ss
+  yrm     ->    srr
 
 
 
@@ -377,13 +436,13 @@ Note: visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
 Plugs, if you want to remap them:
 
   <Plug>(ZetaYank)           yz
-  <Plug>(ZetaYankVisual)     Zy
+  <Plug>(ZetaYankVisual)     ZY
   <Plug>(ZetaDelete)         dz
   <Plug>(ZetaDeleteLine)     dzd
-  <Plug>(ZetaDeleteVisual)   Zd
+  <Plug>(ZetaDeleteVisual)   ZD
   <Plug>(ZetaPaste_p)        zp
   <Plug>(ZetaPaste_P)        zP
-  <Plug>(ZetaPasteVisual)    Zp
+  <Plug>(ZetaPasteVisual)    ZP
 
 To disable the default `zeta` mappings:
 >
@@ -452,26 +511,6 @@ content:
 <
 Some commands (replace operator, zeta paste) use this method by default.
 
-
-
-
-
-OTHER COMMANDS                                                  *yanktools-misc*
-==============================================================================
-
-  cyi      toggle autoindent
-  cyr      toggle redirection
-  cys      clear yank stacks
-  czs      clear zeta stack
-  cyt      convert yank type  (turns a blockwise yank to linewise, and vv.)
-  cym      yanktools menu (fzf only)
-
-  yiy      interactively select a yank
-  yir      interactively select a redirected yank
-
-  yY       show yanks
-  yX       show redirected yanks
-  yZ       show zeta yanks
 
 
 
@@ -585,5 +624,3 @@ MIT
 
 ==============================================================================
 vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:expandtab
-
-

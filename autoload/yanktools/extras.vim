@@ -12,15 +12,17 @@ function! yanktools#extras#show_yanks(type)
     endif
     let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
     let i = 0
-    let stack = a:type == 'x' ? g:yanktools.redir.stack
-          \ :   a:type == 'z' ? g:yanktools.zeta.stack : g:yanktools.yank.stack
+    let stack  = a:type == 'x' ? g:yanktools.redir.stack
+          \ :    a:type == 'z' ? g:yanktools.zeta.stack : g:yanktools.yank.stack
+    let offset = a:type == 'x' ? g:yanktools.redir.offset
+          \ :    a:type == 'z' ? g:yanktools.zeta.offset : g:yanktools.yank.offset
     redraw!
     if empty(stack)
       return s:F.msg("Stack is empty")
     endif
     echohl WarningMsg | echo "--- ".t."Yanks ---" | echohl None
     for yank in stack
-        call yanktools#extras#show_yank(yank, i)
+        call s:show_yank(yank, i==str2nr(offset)? (string(i) . '<') : i)
         let i += 1
     endfor
 endfunction
@@ -64,8 +66,8 @@ endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#show_yank(yank, index)
-    let index = printf("%-4d", a:index)
+function! s:show_yank(yank, index)
+    let index = printf("%-4s", a:index)
     let line = substitute(a:yank.text, '\V\n', '^M', 'g')
 
     if len(line) > 80
@@ -161,7 +163,7 @@ function! yanktools#extras#select_yank(redirected)
     let stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
     let i = 0
     for yank in stack.stack
-        call yanktools#extras#show_yank(yank, i)
+        call s:show_yank(yank, i)
         let i += 1
     endfor
 

@@ -85,9 +85,9 @@ com! Yanktools call fzf#run({'source': [
 " Initialize                                                                {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let paste_keys                          = get(g:, 'yanktools_paste_keys', ['p', 'P'])
-let format                              = get(g:, 'yanktools_format_prefix', "<")
-let leader                              = get(g:, 'mapleader', '\')
+let paste_keys = get(g:, 'yanktools_paste_keys', ['p', 'P'])
+let format     = get(g:, 'yanktools_format_prefix', "<")
+let leader     = get(g:, 'mapleader', '\')
 
 function! s:nmap(key, plug)
   if !hasmapto(a:plug)
@@ -232,12 +232,12 @@ if !empty(key)
   call s:nmap(key,            '<Plug>(ReplaceOperatorR)')
   call s:nmap(key.'r',        '<Plug>(ReplaceOperatorS)')
   call s:nmap(key.key,        '<Plug>(ReplaceLineSingle)')
-  call s:nmap(leader.key.key, '<Plug>(ReplaceLineMulti)')
+  call s:nmap(key.'rr',       '<Plug>(ReplaceLineMulti)')
 else
   call s:nmap('yr',           '<Plug>(ReplaceOperatorR)')
   call s:nmap('yR',           '<Plug>(ReplaceOperatorS)')
   call s:nmap('yrr',          '<Plug>(ReplaceLineSingle)')
-  call s:nmap(leader.'yrr',   '<Plug>(ReplaceLineMulti)')
+  call s:nmap('yrm',          '<Plug>(ReplaceLineMulti)')
 endif
 
 
@@ -326,20 +326,31 @@ nnoremap <silent> <Plug>(SwapPastePrevious) :call yanktools#swap_paste(0, "P")<c
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Choose offset                                                             {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+call s:nmap(']y', '<Plug>(YankNext)')
+call s:nmap('[y', '<Plug>(YankPrevious)')
+nnoremap <silent> <Plug>(YankNext)     :call yanktools#offset(1)<cr>
+nnoremap <silent> <Plug>(YankPrevious) :call yanktools#offset(0)<cr>
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " z mode                                                                    {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if get(g:, 'yanktools_zeta', 1)
   call s:nmap('yz', '<Plug>(ZetaYank)')
-  call s:xmap('Zy', '<Plug>(ZetaYankVisual)')
+  call s:xmap('ZY', '<Plug>(ZetaYankVisual)')
 
   call s:nmap('dz', '<Plug>(ZetaDelete)')
   call s:nmap('dzd', '<Plug>(ZetaDeleteLine)')
-  call s:xmap('Zd', '<Plug>(ZetaDeleteVisual)')
+  call s:xmap('ZD', '<Plug>(ZetaDeleteVisual)')
 
   call s:nmap('zp', '<Plug>(ZetaPaste_p)')
   call s:nmap('zP', '<Plug>(ZetaPaste_P)')
-  call s:xmap('Zp', '<Plug>(ZetaPasteVisual)')
+  call s:xmap('ZP', '<Plug>(ZetaPasteVisual)')
 endif
 
 nnoremap <silent><expr> <Plug>(ZetaYank)           yanktools#zeta#yank_with_key("y")
@@ -358,15 +369,16 @@ xnoremap <silent>       <Plug>(ZetaPasteVisual)    :call yanktools#zeta#paste_wi
 " Misc commands                                                             {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call s:nmaparg('cyi', '<Plug>(ToggleAutoIndent)')
-call s:nmaparg('cyf', '<Plug>(FreezeYank)')
-call s:nmaparg('cys', '<Plug>(ClearYankStack)')
-call s:nmaparg('czs', '<Plug>(ClearZetaStack)')
+call s:nmaparg('yui', '<Plug>(ToggleAutoIndent)')
+call s:nmaparg('yuf', '<Plug>(FreezeYank)')
+call s:nmaparg('yuxs', '<Plug>(ClearYankStack)')
+call s:nmaparg('yuxz', '<Plug>(ClearZetaStack)')
 call s:nmaparg('yY',  '<Plug>(Yanks)')
 call s:nmaparg('yZ',  '<Plug>(ZetaYanks)')
 call s:nmaparg('yiy', '<Plug>(ISelectYank)')
-call s:nmaparg('yir', '<Plug>(ISelectYank!)')
-call s:nmaparg('cyt', '<Plug>(ConvertYankType)')
+call s:nmaparg('yuc', '<Plug>(ConvertYankType)')
+call s:nmaparg('yus', '<Plug>(YankSaveCurrent)')
+call s:nmaparg('yum', '<Plug>(YanktoolsMenu)')
 
 nnoremap <silent> <Plug>(ToggleAutoIndent)  :ToggleAutoIndent<cr>
 nnoremap <silent> <Plug>(FreezeYank)        :call yanktools#stack#freeze()<cr>
@@ -375,17 +387,18 @@ nnoremap <silent> <Plug>(ClearZetaStack)    :call yanktools#extras#clear_yanks(1
 nnoremap <silent> <Plug>(Yanks)             :call yanktools#extras#show_yanks('y')<cr>
 nnoremap <silent> <Plug>(ZetaYanks)         :call yanktools#extras#show_yanks('z')<cr>
 nnoremap <silent> <Plug>(ConvertYankType)   :call yanktools#extras#convert_yank_type()<cr>
+nnoremap <silent> <Plug>(YanktoolsMenu)     :Yanktools<cr>
+nnoremap <silent> <Plug>(YankSaveCurrent)   :<c-u>call yanktools#save_current(v:register)<cr>
 nnoremap <silent> <expr> <Plug>(ISelectYank) exists('g:loaded_fzf')
       \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"
-nnoremap <silent> <expr> <Plug>(ISelectYank!) exists('g:loaded_fzf')
-      \ ? ":FzfSelectYank!\<cr>" : ":ISelectYank!\<cr>"
 
 if !g:yanktools_manual
   nnoremap <silent> <Plug>(ToggleRedirection) :ToggleRedirection<cr>
   nnoremap <silent> <Plug>(RedirectedYanks)   :call yanktools#extras#show_yanks('x')<cr>
-  nnoremap <silent> <Plug>(YanktoolsMenu)     :Yanktools<cr>
+  nnoremap <silent> <expr> <Plug>(ISelectYank!) exists('g:loaded_fzf')
+        \ ? ":FzfSelectYank!\<cr>" : ":ISelectYank!\<cr>"
 
-  call s:nmaparg('cyr', '<Plug>(ToggleRedirection)')
+  call s:nmaparg('yur', '<Plug>(ToggleRedirection)')
   call s:nmaparg('yX',  '<Plug>(RedirectedYanks)')
-  call s:nmaparg('cym', '<Plug>(YanktoolsMenu)')
+  call s:nmaparg('yir', '<Plug>(ISelectYank!)')
 endif

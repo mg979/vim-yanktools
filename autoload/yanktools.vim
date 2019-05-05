@@ -20,6 +20,7 @@ function! yanktools#init_vars()
 
   let s:current_stack = g:yanktools.current_stack
   let s:v.updatetime = &updatetime
+  let s:v.pwline = 0
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -119,9 +120,22 @@ function! yanktools#paste_with_key(key, plug, visual, format)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = s:v.format_this
 
+  let s:v.pwline = -1
   return a:key
 endfunction
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yanktools#save_current(reg) abort
+  if empty(getreg(a:reg))
+    return s:F.msg('Register '.a:reg.' is empty!')
+  endif
+  let r = [ getreg('"'), getregtype('"') ]
+  call setreg('"', getreg(a:reg), getregtype(a:reg))
+  call g:yanktools.yank.update_stack()
+  call setreg('"', r[0], r[1])
+  call s:F.msg('Register '''.a:reg.''' saved', 1)
+endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Redirect / Cut {{{1
@@ -192,6 +206,7 @@ function! yanktools#paste_redirected_with_key(key, plug, visual, format)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = s:v.format_this
 
+  let s:v.pwline = -1
   return '"'.g:yanktools_redirect_register.a:key
 endfunction
 
@@ -249,8 +264,13 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yanktools#swap_paste(forward, key)
+  if s:current_stack.empty()
+    return
+  endif
 
   if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
+    " ensure current stack offset is correct
+    call s:current_stack.synched()
     execute "normal ".a:key
     return
   endif
@@ -258,7 +278,7 @@ function! yanktools#swap_paste(forward, key)
   "---------------------------------------------------------------------------
 
   " move stack offset and get return message code
-  let msg = s:current_stack.move_offset(a:forward)
+  let msg = s:current_stack.move_offset(a:forward, 1)
 
   " set register to offset
   call s:current_stack.update_register()
@@ -277,8 +297,29 @@ function! yanktools#swap_paste(forward, key)
   if !s:current_stack.frozen
     call s:F.restore_register()
   endif
+  let s:v.pwline = -1
   call s:msg(msg)
 endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Choose offset                                                             {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! yanktools#offset(next)
+  let S = s:current_stack
+  if S.empty()
+    return
+  endif
+
+  " move stack offset and set register
+  call S.move_offset(a:next)
+  call S.update_register()
+
+  " show register in preview
+  call S.show_current()
+endfun
+
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helper fuctions {{{1

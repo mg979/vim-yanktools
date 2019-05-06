@@ -70,7 +70,7 @@ function! yt#on_text_change()
   " restore register after redirection
   if s:v.redirecting         | call s:R.update_stack()        | endif
 
-  " replace operator: complete replacement
+  " replace operator: return now to keep repeatabilty
   if yt#replop#paste_replacement() | return s:reset_vars() | endif
 
   " autoformat / move cursor, ensure CursorMoved runs
@@ -79,9 +79,9 @@ function! yt#on_text_change()
   else                        | execute "normal! hl"              | endif
 
   " update repeat.vim
-  call s:repeat()
+  call s:F.set_repeat()
 
-  " record position and tick
+  " record position and tick (used by swap)
   let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
 
   call s:reset_vars()
@@ -120,7 +120,7 @@ function! yt#paste_with_key(key, plug, visual, format)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = s:v.format_this
 
-  let s:v.pwline = -1
+  call s:F.dismiss_preview()
   return a:key
 endfunction
 
@@ -152,12 +152,12 @@ function! yt#redir_opts(register)
 endfunction
 
 function! yt#cut(type)
-  let s:register = s:rreg(s:register, 1)
+  let s:register = s:choose_reg(s:register, 1)
   call yt#delete(a:type)
 endfunction
 
 function! yt#redirect(type)
-  let s:register = s:rreg(s:register, 0)
+  let s:register = s:choose_reg(s:register, 0)
   call yt#delete(a:type)
 endfunction
 
@@ -173,7 +173,7 @@ function! yt#delete(type)
 endfunction
 
 function! yt#delete_visual(register, cut)
-  let reg = s:rreg(a:register, a:cut)
+  let reg = s:choose_reg(a:register, a:cut)
   if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
   endif
@@ -181,7 +181,7 @@ function! yt#delete_visual(register, cut)
 endfunction
 
 function! yt#delete_line(register, count, cut)
-  let reg = s:rreg(a:register, a:cut)
+  let reg = s:choose_reg(a:register, a:cut)
   if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
     let pl = a:cut ? '(CutLine)' : '(RedirectLine)'
@@ -212,7 +212,7 @@ function! yt#paste_redirected_with_key(key, plug, visual, format)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = s:v.format_this
 
-  let s:v.pwline = -1
+  call s:F.dismiss_preview()
   return '"'.g:yanktools_redirect_register.a:key
 endfunction
 
@@ -302,7 +302,7 @@ function! yt#swap_paste(forward, key)
   if !s:current_stack.frozen
     call s:F.restore_register()
   endif
-  let s:v.pwline = -1
+  call s:F.dismiss_preview()
   call s:msg(msg)
 endfunction
 
@@ -381,24 +381,14 @@ endfun
 
 "------------------------------------------------------------------------------
 
-fun! s:repeat()
-  " update repeat.vim, duplicating also redirects reg but can be repeated
-  if !empty(s:v.plug)
-    if !s:v.redirecting || s:store_plug
-      call s:F.set_repeat()
-    endif
-  endif
-endfun
-
-"------------------------------------------------------------------------------
-
-fun! s:rreg(reg, cut)
-  " redirect, cut, or a register has been specified?
-  let s:cutting = g:yanktools_use_redirection && a:cut ||
-        \ !a:cut && !g:yanktools_use_redirection
-  return s:cutting ? a:reg
-        \ : a:reg == s:F.default_reg()
-        \ ? g:yanktools_redirect_register : a:reg
+fun! s:choose_reg(reg, cut)
+  " Cases: use default, redirect, or a register has been specified?
+  " if cutting, we're always use the provided register, even if default
+  " otherwise we'll redirect, unless a register has been provided
+  let s:v.cutting = g:yanktools_use_redirection && a:cut ||
+        \           !g:yanktools_use_redirection && !a:cut
+  return s:v.cutting || a:reg != s:F.default_reg() ?
+        \ a:reg : g:yanktools_redirect_register
 endfun
 
 "------------------------------------------------------------------------------

@@ -27,9 +27,9 @@ fun! s:update_stack() dict
 endfun
 
 fun! s:move_offset(forward, ...) dict
-  if !self.synched()
-    return
-  endif
+  " if the stack wasn't synched, use current offset first
+  if !self.synched() | return | endif
+
   let self.offset += (a:forward ? 1 : -1)
   if self.offset >= self.size()
     let self.offset = 0
@@ -71,8 +71,8 @@ fun! s:set_at_offset(n) dict
 endfun
 
 fun! s:synched() dict
-  " when accessing the stack, ensure current register belongs to it
-  if getreg('"') != self.stack[self.offset].text
+  " verify that stack and register are synched
+  if s:F.get_register()[1] != self.stack[self.offset].text
     call self.update_register()
     return 0
   endif

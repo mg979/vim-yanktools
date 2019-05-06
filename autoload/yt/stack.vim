@@ -1,6 +1,6 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Common functions                                     {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Common functions                                                         {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:clear_stack() dict
   let self.offset = -1
@@ -105,9 +105,9 @@ endfun
 
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Initialize stacks                                    {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Initialize stacks                                                        {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:Yank  = {
       \ 'name': 'Yank', 'offset': -1, 'frozen': 1,
@@ -151,14 +151,14 @@ let s:frozen = 1
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 
-fun! yanktools#stack#init()
+fun! yt#stack#init()
   """Initialize stacks.
   call g:yanktools.yank.clear()
   call g:yanktools.redir.clear()
   call g:yanktools.zeta.clear()
 endfun
 
-fun! yanktools#stack#freeze()
+fun! yt#stack#freeze()
   if s:frozen
     let g:yanktools.yank.frozen = 0
     let g:yanktools.redir.frozen = 0
@@ -176,9 +176,9 @@ endfun
 
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Zeta stack                                           {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Zeta stack                                                               {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:Zeta.clear() dict
   let self.stack = []
@@ -194,9 +194,9 @@ fun! s:Zeta.update_stack() dict
 endfun
 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Helpers                                              {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Helpers                                                                  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
 fun! s:too_big(text)
@@ -208,11 +208,11 @@ fun s:preview(...)
   augroup yanktools_preview
     au!
     au CursorMoved * if line('.') != s:v.pwline
-          \        |   call yanktools#stack#pclose() | endif
+          \        |   call yt#stack#pclose() | endif
   augroup END
 endfun
 
-fun! yanktools#stack#pclose()
+fun! yt#stack#pclose()
   if s:v.pwline
     pclose!
     autocmd! yanktools_preview

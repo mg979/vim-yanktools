@@ -7,7 +7,7 @@
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 
-fun! yanktools#replop#paste_replacement()
+fun! yt#replop#paste_replacement()
   if !s:v.is_replacing
     return
   endif
@@ -18,7 +18,7 @@ fun! yanktools#replop#paste_replacement()
   return s:v.is_replacing == 2
 endfun
 
-fun! yanktools#replop#replace(type)
+fun! yt#replop#replace(type)
   let reg = get(g:, 'yanktools_replace_to_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
   let s:v.has_changed = 1
@@ -35,7 +35,7 @@ fun! yanktools#replop#replace(type)
   endif
 endfun
 
-fun! yanktools#replop#opts(register, format, repeat)
+fun! yt#replop#opts(register, format, repeat)
   " prevent black hole register bug
   let s:repl_reg = a:register == "_" ? s:F.default_reg() : a:register
   let s:format_this = a:format
@@ -64,7 +64,7 @@ fun! s:del_before_replace(r, c)
   endif
 endfun
 
-fun! yanktools#replop#replace_line(r, c, format)
+fun! yt#replop#replace_line(r, c, format)
   " get register
   let reg = getreg(a:r)
 
@@ -80,7 +80,7 @@ fun! yanktools#replop#replace_line(r, c, format)
   call setreg('"', reg, 'V')
 endfun
 
-fun! yanktools#replop#replace_multi_line(r, c, format)
+fun! yt#replop#replace_multi_line(r, c, format)
   let s:repl_reg = a:r
   let s:oldvmode = &virtualedit | set virtualedit=onemore
 

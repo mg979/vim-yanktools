@@ -6,7 +6,7 @@ let s:F = g:yanktools.Funcs
 let s:Y = g:yanktools.yank
 let s:R = g:yanktools.redir
 
-function! yanktools#extras#show_yanks(type)
+function! yt#extras#show_yanks(type)
     if !g:yanktools_manual
         call s:Y.update_stack()
     endif
@@ -29,7 +29,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#clear_yanks(zeta, ...)
+function! yt#extras#clear_yanks(zeta, ...)
     if a:zeta
         call g:yanktools.zeta.clear()
         echo "Zeta stack has been cleared."
@@ -43,7 +43,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#toggle_autoformat()
+function! yt#extras#toggle_autoformat()
     if g:yanktools_auto_format_all
         let g:yanktools_auto_format_all = 0
         echo "Autoindent is now disabled."
@@ -55,7 +55,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yanktools#extras#toggle_redirection()
+fun! yt#extras#toggle_redirection()
   let g:yanktools_use_redirection = !g:yanktools_use_redirection
   if g:yanktools_use_redirection
     call s:F.msg("Redirection has been enabled, using two stacks", 1)
@@ -81,7 +81,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#yanks(redirected)
+function! yt#extras#yanks(redirected)
     let s:fzf_stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
     let yanks = [] | let i = 0
     for yank in s:fzf_stack.stack
@@ -95,7 +95,7 @@ function! yanktools#extras#yanks(redirected)
     return yanks
 endfunction
 
-function! yanktools#extras#select_yank_fzf(yank)
+function! yt#extras#select_yank_fzf(yank)
     let index = a:yank[:4]
     let index = substitute(index, "[", "", "")
     let index = substitute(index, "]", "", "")
@@ -105,31 +105,31 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#fzf_menu(choice)
+function! yt#extras#fzf_menu(choice)
     if a:choice == 'Toggle Freeze Offset'
-        call yanktools#stack#freeze()
+        call yt#stack#freeze()
     elseif a:choice == 'Toggle Single Stack'
-        call yanktools#extras#toggle_redirection()
+        call yt#extras#toggle_redirection()
     elseif a:choice == 'Clear Yank Stacks'
-        call yanktools#extras#clear_yanks(0, 1)
+        call yt#extras#clear_yanks(0, 1)
     elseif a:choice == 'Clear Zeta Stack'
-        call yanktools#extras#clear_yanks(1)
+        call yt#extras#clear_yanks(1)
     elseif a:choice == 'Display Yanks'
-        call yanktools#extras#show_yanks('y')
+        call yt#extras#show_yanks('y')
     elseif a:choice == 'Select Yank'
         FzfSelectYank
     elseif a:choice == 'Select Redirected Yank'
         FzfSelectYank!
     elseif a:choice == 'Convert Yank Type'
-        call yanktools#extras#convert_yank_type()
+        call yt#extras#convert_yank_type()
     elseif a:choice == 'Toggle Auto Indent'
-        call yanktools#extras#toggle_autoformat()
+        call yt#extras#toggle_autoformat()
     endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#convert_yank_type()
+function! yt#extras#convert_yank_type()
     let r = v:register | let text = getreg(r) | let type = getregtype(r)
 
     if type[:0] ==# ""
@@ -158,7 +158,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#extras#select_yank(redirected)
+function! yt#extras#select_yank(redirected)
     echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
     let stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
     let i = 0

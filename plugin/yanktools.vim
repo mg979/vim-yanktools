@@ -17,7 +17,7 @@ let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0
 let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
 let g:yanktools_use_redirection         = get(g:, 'yanktools_use_redirection', !empty(g:yanktools_redirect_register))
 
-let g:yanktools.Funcs = yanktools#funcs#init()
+let g:yanktools.Funcs = yt#funcs#init()
 
 
 
@@ -27,16 +27,16 @@ let g:yanktools.Funcs = yanktools#funcs#init()
 
 augroup plugin-yanktools
   autocmd!
-  autocmd VimEnter    * call yanktools#init_vars()
-  autocmd TextChanged * call yanktools#on_text_change()
-  autocmd InsertEnter * call yanktools#on_text_change()
+  autocmd VimEnter    * call yt#init_vars()
+  autocmd TextChanged * call yt#on_text_change()
+  autocmd InsertEnter * call yt#on_text_change()
 
   if exists("##TextYankPost")
-    autocmd TextYankPost * call yanktools#check_yanks()
-    autocmd CursorMoved  * call yanktools#check_yanks()
+    autocmd TextYankPost * call yt#check_yanks()
+    autocmd CursorMoved  * call yt#check_yanks()
   else
-    autocmd CursorMoved  * call yanktools#check_yanks()
-    autocmd CursorHold   * call yanktools#check_yanks()
+    autocmd CursorMoved  * call yt#check_yanks()
+    autocmd CursorHold   * call yt#check_yanks()
   endif
 augroup END
 
@@ -47,22 +47,22 @@ augroup END
 " Commands                                                                  {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-command! Yanks             call yanktools#extras#show_yanks('y')
-command! ZetaYanks         call yanktools#extras#show_yanks('z')
-command! ClearYankStacks   call yanktools#extras#clear_yanks(0, 1)
-command! ClearZetaStack    call yanktools#extras#clear_yanks(1)
-command! ToggleAutoIndent  call yanktools#extras#toggle_autoformat()
+command! Yanks             call yt#extras#show_yanks('y')
+command! ZetaYanks         call yt#extras#show_yanks('z')
+command! ClearYankStacks   call yt#extras#clear_yanks(0, 1)
+command! ClearZetaStack    call yt#extras#clear_yanks(1)
+command! ToggleAutoIndent  call yt#extras#toggle_autoformat()
 
 if !g:yanktools_manual
-  command! RedirectedYanks   call yanktools#extras#show_yanks('x')
-  command! ToggleRedirection call yanktools#extras#toggle_redirection()
+  command! RedirectedYanks   call yt#extras#show_yanks('x')
+  command! ToggleRedirection call yt#extras#toggle_redirection()
 endif
 
-com! -bang FzfSelectYank call fzf#run({'source': yanktools#extras#yanks(<bang>0),
-      \ 'sink': function('yanktools#extras#select_yank_fzf'), 'down': '30%',
+com! -bang FzfSelectYank call fzf#run({'source': yt#extras#yanks(<bang>0),
+      \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
       \ 'options': '--prompt "Select Yank >>>   "'})
 
-com! -bang ISelectYank call yanktools#extras#select_yank(<bang>0)
+com! -bang ISelectYank call yt#extras#select_yank(<bang>0)
 
 com! Yanktools call fzf#run({'source': [
       \ 'Toggle Freeze Offset',
@@ -75,7 +75,7 @@ com! Yanktools call fzf#run({'source': [
       \ 'Select Yank',
       \ 'Select Redirected Yank',
       \ ],
-      \ 'sink': function('yanktools#extras#fzf_menu'), 'down': '30%',
+      \ 'sink': function('yt#extras#fzf_menu'), 'down': '30%',
       \ 'options': '--prompt "Yanktools Menu >>>   "'})
 
 
@@ -85,9 +85,8 @@ com! Yanktools call fzf#run({'source': [
 " Initialize                                                                {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let paste_keys = get(g:, 'yanktools_paste_keys', ['p', 'P'])
-let format     = get(g:, 'yanktools_format_prefix', "<")
-let leader     = get(g:, 'mapleader', '\')
+let s:paste_keys = get(g:, 'yanktools_paste_keys', ['p', 'P'])
+let s:format     = get(g:, 'yanktools_format_prefix', "<")
 
 function! s:nmap(key, plug)
   if !hasmapto(a:plug)
@@ -153,8 +152,8 @@ endif
 " Yank                                                                      {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-nnoremap <silent><expr> <Plug>(Yank) yanktools#yank_with_key("y")
-xnoremap <silent><expr> <Plug>(Yank) yanktools#yank_with_key("y")
+nnoremap <silent><expr> <Plug>(Yank) yt#yank_with_key("y")
+xnoremap <silent><expr> <Plug>(Yank) yt#yank_with_key("y")
 
 if !g:yanktools_manual
   call s:nmap('y',  '<Plug>(Yank)')
@@ -175,8 +174,8 @@ endif
 
 fun! s:redirect(count, cut)
   let n = a:count ? string(a:count) : ''
-  let c = ":\<c-u>call yanktools#redir_opts(v:register)\<cr>"
-  let c .= ':set opfunc=yanktools#'.(a:cut ? 'cut' : 'redir')."\<cr>"
+  let c = ":\<c-u>call yt#redir_opts(v:register)\<cr>"
+  let c .= ':set opfunc=yt#'.(a:cut ? 'cut' : 'redir')."\<cr>"
   return c.n."g@"
 endfun
 
@@ -188,8 +187,8 @@ if !g:yanktools_manual
 
   nnoremap <silent><expr> <Plug>(Redirect_d)     <sid>redirect(v:count, 0)
   nmap     <silent>       <Plug>(Redirect_D)     <Plug>(Redirect_d)$
-  nnoremap <silent>       <Plug>(RedirectLine)   :<c-u>call yanktools#delete_line(v:register, v:count, 0)<cr>
-  xnoremap <silent><expr> <Plug>(RedirectVisual) yanktools#delete_visual(v:register, 0)
+  nnoremap <silent>       <Plug>(RedirectLine)   :<c-u>call yt#delete_line(v:register, v:count, 0)<cr>
+  xnoremap <silent><expr> <Plug>(RedirectVisual) yt#delete_visual(v:register, 0)
 endif
 
 
@@ -200,8 +199,8 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 nnoremap <silent><expr> <Plug>(Cut)         <sid>redirect(v:count, 1)
-nnoremap <silent>       <Plug>(CutLine)     :<c-u>call yanktools#delete_line(v:register, v:count, 1)<cr>
-xnoremap <silent><expr> <Plug>(CutVisual)   yanktools#delete_visual(v:register, 1)
+nnoremap <silent>       <Plug>(CutLine)     :<c-u>call yt#delete_line(v:register, v:count, 1)<cr>
+xnoremap <silent><expr> <Plug>(CutVisual)   yt#delete_visual(v:register, 1)
 
 if !g:yanktools_manual
   call s:nmap('yx',  '<Plug>(Cut)')
@@ -222,23 +221,27 @@ endif
 " Replace operator                                                          {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-nnoremap <silent> <Plug>(ReplaceOperatorS)  :call yanktools#replop#opts(v:register, 0, 0)<cr>:set opfunc=yanktools#replop#replace<cr>g@
-nnoremap <silent> <Plug>(ReplaceOperatorR)  :call yanktools#replop#opts(v:register, 0, 1)<cr>:set opfunc=yanktools#replop#replace<cr>g@
-nnoremap <silent> <Plug>(ReplaceLineSingle) :<c-u>call yanktools#replop#replace_line(v:register, v:count1, 0)<cr>
-nnoremap <silent> <Plug>(ReplaceLineMulti)  :<c-u>call yanktools#replop#replace_multi_line(v:register, v:count1, 0)<cr>
+nnoremap <silent> <Plug>(ReplaceOperatorS)  :call yt#replop#opts(v:register, 0, 0)<cr>:set opfunc=yt#replop#replace<cr>g@
+nnoremap <silent> <Plug>(ReplaceOperatorR)  :call yt#replop#opts(v:register, 0, 1)<cr>:set opfunc=yt#replop#replace<cr>g@
+nnoremap <silent> <Plug>(ReplaceLineSingle) :<c-u>call yt#replop#replace_line(v:register, v:count1, 0)<cr>
+nnoremap <silent> <Plug>(ReplaceLineMulti)  :<c-u>call yt#replop#replace_multi_line(v:register, v:count1, 0)<cr>
 
-let key = get(g:, 'yanktools_replace_key', '')
-if !empty(key)
-  call s:nmap(key,            '<Plug>(ReplaceOperatorR)')
-  call s:nmap(key.'r',        '<Plug>(ReplaceOperatorS)')
-  call s:nmap(key.key,        '<Plug>(ReplaceLineSingle)')
-  call s:nmap(key.'rr',       '<Plug>(ReplaceLineMulti)')
-else
-  call s:nmap('yr',           '<Plug>(ReplaceOperatorR)')
-  call s:nmap('yR',           '<Plug>(ReplaceOperatorS)')
-  call s:nmap('yrr',          '<Plug>(ReplaceLineSingle)')
-  call s:nmap('yrm',          '<Plug>(ReplaceLineMulti)')
-endif
+fun! s:map_repl()
+  let key = get(g:, 'yanktools_replace_key', '')
+  if !empty(key)
+    call s:nmap(key,            '<Plug>(ReplaceOperatorR)')
+    call s:nmap(key.'r',        '<Plug>(ReplaceOperatorS)')
+    call s:nmap(key.key,        '<Plug>(ReplaceLineSingle)')
+    call s:nmap(key.'rr',       '<Plug>(ReplaceLineMulti)')
+  else
+    call s:nmap('yr',           '<Plug>(ReplaceOperatorR)')
+    call s:nmap('yR',           '<Plug>(ReplaceOperatorS)')
+    call s:nmap('yrr',          '<Plug>(ReplaceLineSingle)')
+    call s:nmap('yrm',          '<Plug>(ReplaceLineMulti)')
+  endif
+endfun
+
+call s:map_repl()
 
 
 
@@ -248,9 +251,9 @@ endif
 " Duplicate                                                                 {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-nnoremap <silent>       <Plug>(DuplicateOperator)   :set opfunc=yanktools#duplicate<cr>g@
-nnoremap <silent><expr> <Plug>(DuplicateLines)      yanktools#duplicate_lines()
-xnoremap <silent><expr> <Plug>(DuplicateVisual)     yanktools#duplicate_visual()
+nnoremap <silent>       <Plug>(DuplicateOperator)   :set opfunc=yt#duplicate<cr>g@
+nnoremap <silent><expr> <Plug>(DuplicateLines)      yt#duplicate_lines()
+xnoremap <silent><expr> <Plug>(DuplicateVisual)     yt#duplicate_visual()
 
 call s:nmap('yd',    '<Plug>(DuplicateOperator)')
 call s:nmap('ydd',   '<Plug>(DuplicateLines)')
@@ -264,28 +267,32 @@ call s:xmap('<M-d>', '<Plug>(DuplicateVisual)')
 " Paste redirected                                                          {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-if !g:yanktools_manual
+fun! s:map_rpaste()
+  if !g:yanktools_manual
 
-  let cmd = ' yanktools#paste_redirected_with_key'
-  let prefix = get(g:, 'yanktools_redir_paste_prefix', '<leader>')
+    let cmd = ' yt#paste_redirected_with_key'
+    let prefix = get(g:, 'yanktools_redir_paste_prefix', '<leader>')
 
-  for key in paste_keys
-    let plug = '(PasteRedirected_'.key.')'
+    for key in s:paste_keys
+      let plug = '(PasteRedirected_'.key.')'
 
-    if !empty(prefix)
-      call s:nxmap(prefix.key, '<Plug>'.plug)
-    endif
-    exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
-    exec 'xnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
+      if !empty(prefix)
+        call s:nxmap(prefix.key, '<Plug>'.plug)
+      endif
+      exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
+      exec 'xnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
 
-    let plug = '(PasteRedirectedIndent_'.key.')'
+      let plug = '(PasteRedirectedIndent_'.key.')'
 
-    if !empty(prefix)
-      call s:nmapf(format.prefix.key, '<Plug>'.plug)
-    endif
-    exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
-  endfor
-endif
+      if !empty(prefix)
+        call s:nmapf(s:format.prefix.key, '<Plug>'.plug)
+      endif
+      exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
+    endfor
+  endif
+endfun
+
+call s:map_rpaste()
 
 
 
@@ -295,18 +302,22 @@ endif
 " Paste keys                                                                {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let cmd = ' yanktools#paste_with_key'
+fun! s:map_paste()
+  let cmd = ' yt#paste_with_key'
 
-for key in paste_keys
-  let plug = '(Paste_'.key.')'
-  call s:nxmap(key, '<Plug>'.plug)
-  exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
-  exec 'xnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
+  for key in s:paste_keys
+    let plug = '(Paste_'.key.')'
+    call s:nxmap(key, '<Plug>'.plug)
+    exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 0)'
+    exec 'xnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 1, 0)'
 
-  let plug = '(PasteIndent_'.key.')'
-  call s:nmapf(format.key, '<Plug>'.plug)
-  exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
-endfor
+    let plug = '(PasteIndent_'.key.')'
+    call s:nmapf(s:format.key, '<Plug>'.plug)
+    exec 'nnoremap <silent><expr> <Plug>'.plug.cmd.'("' . key . '", "'.plug.'", 0, 1)'
+  endfor
+endfun
+
+call s:map_paste()
 
 
 
@@ -318,8 +329,8 @@ endfor
 
 call s:nmap('<M-p>', '<Plug>(SwapPasteNext)')
 call s:nmap('<M-P>', '<Plug>(SwapPastePrevious)')
-nnoremap <silent> <Plug>(SwapPasteNext)     :call yanktools#swap_paste(1, "P")<cr>
-nnoremap <silent> <Plug>(SwapPastePrevious) :call yanktools#swap_paste(0, "P")<cr>
+nnoremap <silent> <Plug>(SwapPasteNext)     :call yt#swap_paste(1, "P")<cr>
+nnoremap <silent> <Plug>(SwapPastePrevious) :call yt#swap_paste(0, "P")<cr>
 
 
 
@@ -331,8 +342,8 @@ nnoremap <silent> <Plug>(SwapPastePrevious) :call yanktools#swap_paste(0, "P")<c
 
 call s:nmap(']y', '<Plug>(YankNext)')
 call s:nmap('[y', '<Plug>(YankPrevious)')
-nnoremap <silent> <Plug>(YankNext)     :call yanktools#offset(1)<cr>
-nnoremap <silent> <Plug>(YankPrevious) :call yanktools#offset(0)<cr>
+nnoremap <silent> <Plug>(YankNext)     :call yt#offset(1)<cr>
+nnoremap <silent> <Plug>(YankPrevious) :call yt#offset(0)<cr>
 
 
 
@@ -353,14 +364,14 @@ if get(g:, 'yanktools_zeta', 1)
   call s:xmap('ZP', '<Plug>(ZetaPasteVisual)')
 endif
 
-nnoremap <silent><expr> <Plug>(ZetaYank)           yanktools#zeta#yank_with_key("y")
-xnoremap <silent><expr> <Plug>(ZetaYankVisual)     yanktools#zeta#yank_with_key("y")
-nnoremap <silent><expr> <Plug>(ZetaDelete)         yanktools#zeta#del_with_key("d")
-nnoremap <silent><expr> <Plug>(ZetaDeleteLine)     yanktools#zeta#del_with_key("dd")
-xnoremap <silent><expr> <Plug>(ZetaDeleteVisual)   yanktools#zeta#del_with_key("d")
-nnoremap <silent>       <Plug>(ZetaPaste_p)        :call yanktools#zeta#paste_with_key('p', '(ZetaPaste_p)', 0 , 0)<cr>
-nnoremap <silent>       <Plug>(ZetaPaste_P)        :call yanktools#zeta#paste_with_key('P', '(ZetaPaste_P)', 0 , 0)<cr>
-xnoremap <silent>       <Plug>(ZetaPasteVisual)    :call yanktools#zeta#paste_with_key('p', '(ZetaPaste_p)', 1 , 0)<cr>
+nnoremap <silent><expr> <Plug>(ZetaYank)           yt#zeta#yank_with_key("y")
+xnoremap <silent><expr> <Plug>(ZetaYankVisual)     yt#zeta#yank_with_key("y")
+nnoremap <silent><expr> <Plug>(ZetaDelete)         yt#zeta#del_with_key("d")
+nnoremap <silent><expr> <Plug>(ZetaDeleteLine)     yt#zeta#del_with_key("dd")
+xnoremap <silent><expr> <Plug>(ZetaDeleteVisual)   yt#zeta#del_with_key("d")
+nnoremap <silent>       <Plug>(ZetaPaste_p)        :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 0 , 0)<cr>
+nnoremap <silent>       <Plug>(ZetaPaste_P)        :call yt#zeta#paste_with_key('P', '(ZetaPaste_P)', 0 , 0)<cr>
+xnoremap <silent>       <Plug>(ZetaPasteVisual)    :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 1 , 0)<cr>
 
 
 
@@ -381,20 +392,20 @@ call s:nmaparg('yus', '<Plug>(YankSaveCurrent)')
 call s:nmaparg('yum', '<Plug>(YanktoolsMenu)')
 
 nnoremap <silent> <Plug>(ToggleAutoIndent)  :ToggleAutoIndent<cr>
-nnoremap <silent> <Plug>(FreezeYank)        :call yanktools#stack#freeze()<cr>
-nnoremap <silent> <Plug>(ClearYankStack)    :call yanktools#extras#clear_yanks(0, 1)<cr>
-nnoremap <silent> <Plug>(ClearZetaStack)    :call yanktools#extras#clear_yanks(1)<cr>
-nnoremap <silent> <Plug>(Yanks)             :call yanktools#extras#show_yanks('y')<cr>
-nnoremap <silent> <Plug>(ZetaYanks)         :call yanktools#extras#show_yanks('z')<cr>
-nnoremap <silent> <Plug>(ConvertYankType)   :call yanktools#extras#convert_yank_type()<cr>
+nnoremap <silent> <Plug>(FreezeYank)        :call yt#stack#freeze()<cr>
+nnoremap <silent> <Plug>(ClearYankStack)    :call yt#extras#clear_yanks(0, 1)<cr>
+nnoremap <silent> <Plug>(ClearZetaStack)    :call yt#extras#clear_yanks(1)<cr>
+nnoremap <silent> <Plug>(Yanks)             :call yt#extras#show_yanks('y')<cr>
+nnoremap <silent> <Plug>(ZetaYanks)         :call yt#extras#show_yanks('z')<cr>
+nnoremap <silent> <Plug>(ConvertYankType)   :call yt#extras#convert_yank_type()<cr>
 nnoremap <silent> <Plug>(YanktoolsMenu)     :Yanktools<cr>
-nnoremap <silent> <Plug>(YankSaveCurrent)   :<c-u>call yanktools#save_current(v:register)<cr>
+nnoremap <silent> <Plug>(YankSaveCurrent)   :<c-u>call yt#save_current(v:register)<cr>
 nnoremap <silent> <expr> <Plug>(ISelectYank) exists('g:loaded_fzf')
       \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"
 
 if !g:yanktools_manual
   nnoremap <silent> <Plug>(ToggleRedirection) :ToggleRedirection<cr>
-  nnoremap <silent> <Plug>(RedirectedYanks)   :call yanktools#extras#show_yanks('x')<cr>
+  nnoremap <silent> <Plug>(RedirectedYanks)   :call yt#extras#show_yanks('x')<cr>
   nnoremap <silent> <expr> <Plug>(ISelectYank!) exists('g:loaded_fzf')
         \ ? ":FzfSelectYank!\<cr>" : ":ISelectYank!\<cr>"
 

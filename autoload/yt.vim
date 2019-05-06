@@ -1,6 +1,6 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Functions {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Functions                                                                {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:post_paste_pos = getpos('.')
 let s:store_plug = 0
@@ -9,9 +9,9 @@ let s:last_paste_format_this = 0
 let s:last_paste_key = 0
 let s:last_paste_tick = -1
 
-function! yanktools#init_vars()
+function! yt#init_vars()
 
-  call yanktools#stack#init()
+  call yt#stack#init()
   let s:Y = g:yanktools.yank
   let s:R = g:yanktools.redir
   let s:Z = g:yanktools.zeta
@@ -23,11 +23,11 @@ function! yanktools#init_vars()
   let s:v.pwline = 0
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Autocommand calls {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Autocommand calls                                                        {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#check_yanks()
+function! yt#check_yanks()
   """This function is called on CursorMoved/CursorHold/TextYankPost.
   if s:v.has_yanked
     call s:update_yanks()
@@ -54,9 +54,9 @@ fun! s:check_swap()
   endif
 endfun
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#on_text_change()
+function! yt#on_text_change()
   """This function is called on TextChanged event."""
   if exists('g:VM') && g:VM.is_active
     return s:reset_vars()
@@ -71,7 +71,7 @@ function! yanktools#on_text_change()
   if s:v.redirecting         | call s:R.update_stack()        | endif
 
   " replace operator: complete replacement
-  if yanktools#replop#paste_replacement() | return s:reset_vars() | endif
+  if yt#replop#paste_replacement() | return s:reset_vars() | endif
 
   " autoformat / move cursor, ensure CursorMoved runs
   if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
@@ -88,11 +88,11 @@ function! yanktools#on_text_change()
 endfunction
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Yank/paste {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Yank/paste                                                               {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#yank_with_key(key)
+function! yt#yank_with_key(key)
   if exists('g:VM') && g:VM.is_active
     return a:key
   endif
@@ -101,10 +101,10 @@ function! yanktools#yank_with_key(key)
   return a:key
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_with_key(key, plug, visual, format)
-  if a:visual | call yanktools#redirecting() | endif
+function! yt#paste_with_key(key, plug, visual, format)
+  if a:visual | call yt#redirecting() | endif
   if a:format | let s:v.format_this = 1 | endif
 
   " set current stack
@@ -126,7 +126,7 @@ endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#save_current(reg) abort
+function! yt#save_current(reg) abort
   if empty(getreg(a:reg))
     return s:F.msg('Register '.a:reg.' is empty!')
   endif
@@ -137,27 +137,31 @@ function! yanktools#save_current(reg) abort
   call s:F.msg('Register '''.a:reg.''' saved', 1)
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirect / Cut {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Redirect / Cut                                                           {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " The 'cut' argument and the current g:yanktools_use_redirection variable
 " will define if the deletion will be redirected or not
 
-function! yanktools#redir_opts(register)
+
+function! yt#redir_opts(register)
   let s:register = a:register
 endfunction
 
-function! yanktools#cut(type)
+function! yt#cut(type)
   let s:register = s:rreg(s:register, 1)
-  call yanktools#delete(a:type)
+  call yt#delete(a:type)
 endfunction
 
-function! yanktools#redirect(type)
+function! yt#redirect(type)
   let s:register = s:rreg(s:register, 0)
-  call yanktools#delete(a:type)
+  call yt#delete(a:type)
 endfunction
 
-function! yanktools#delete(type)
+function! yt#delete(type)
   if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
   endif
@@ -168,7 +172,7 @@ function! yanktools#delete(type)
   execute "normal! \"".s:register."d"
 endfunction
 
-function! yanktools#delete_visual(register, cut)
+function! yt#delete_visual(register, cut)
   let reg = s:rreg(a:register, a:cut)
   if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
@@ -176,7 +180,7 @@ function! yanktools#delete_visual(register, cut)
   return "\"" . reg . 'd'
 endfunction
 
-function! yanktools#delete_line(register, count, cut)
+function! yt#delete_line(register, count, cut)
   let reg = s:rreg(a:register, a:cut)
   if !( exists('g:VM') && g:VM.is_active )
     call s:redir_vars()
@@ -189,11 +193,13 @@ function! yanktools#delete_line(register, count, cut)
 endfunction
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirected paste {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#paste_redirected_with_key(key, plug, visual, format)
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Redirected paste                                                         {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yt#paste_redirected_with_key(key, plug, visual, format)
   let s:v.format_this = a:format
   let s:v.has_changed = 1
   let s:has_pasted = 1
@@ -212,7 +218,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yanktools#restore_after_redirect()
+fun! yt#restore_after_redirect()
   " don't store empty lines/whitespaces only
   if getreg(s:F.default_reg()) !~ '^[\s\n]*$'
     call s:R.update_stack()
@@ -223,33 +229,32 @@ fun! yanktools#restore_after_redirect()
   call setreg(s:r[0], s:r[1], s:r[2])
 endfun
 
-fun! yanktools#redirecting()
+fun! yt#redirecting()
   " register will be restored in any case, even if specifying a register
   let s:v.has_changed = 1
   let s:v.redirecting = 1
   call s:F.get_register()
 endfun
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Duplicate                                                                {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Duplicate {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yanktools#duplicate_visual()
-  call yanktools#redirecting()
+function! yt#duplicate_visual()
+  call yt#redirecting()
   return "yP"
 endfunction
 
-function! yanktools#duplicate_lines()
+function! yt#duplicate_lines()
   let s:store_plug = 1
   let s:v.plug = ['(DuplicateLines)', v:count, v:register]
-  call yanktools#redirecting()
+  call yt#redirecting()
   return "yyP`]j^"
 endfunction
 
-fun! yanktools#duplicate(type)
+fun! yt#duplicate(type)
   let s:oldvmode = &virtualedit | set virtualedit=onemore
-  call yanktools#redirecting()
+  call yt#redirecting()
   if a:type == 'line'
     keepjumps normal! `[V`]yP`]j^
   else
@@ -259,11 +264,11 @@ fun! yanktools#duplicate(type)
 endfun
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Swap paste {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Swap paste                                                               {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#swap_paste(forward, key)
+function! yt#swap_paste(forward, key)
   if s:current_stack.empty()
     return
   endif
@@ -301,11 +306,13 @@ function! yanktools#swap_paste(forward, key)
   call s:msg(msg)
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Choose offset                                                             {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yanktools#offset(next)
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Choose offset                                                            {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! yt#offset(next)
   let S = s:current_stack
   if S.empty()
     return
@@ -321,9 +328,9 @@ endfun
 
 
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Helper fuctions {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Helper fuctions                                                          {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:is_being_formatted()
   let all = g:yanktools_auto_format_all
@@ -331,13 +338,13 @@ function! s:is_being_formatted()
   return (all && !this) || (!all && this)
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:is_moving_at_end()
   return g:yanktools_move_cursor_after_paste || s:v.move_this
 endfun
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:msg(n)
   if !a:n
@@ -356,7 +363,7 @@ function! s:msg(n)
   endif
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:reset_vars()
   " reset vars
@@ -402,7 +409,7 @@ fun! s:redir_vars()
     let s:v.has_yanked = 1
     let s:cutting = 0
   else
-    call yanktools#redirecting()
+    call yt#redirecting()
   endif
 endfun
 

@@ -6,19 +6,19 @@ let s:F = g:yanktools.Funcs
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#zeta#yank_with_key(key)
+function! yt#zeta#yank_with_key(key)
     let s:v.zeta = 1
     let s:v.has_yanked = 1
     call s:F.updatetime(0)
     return a:key
 endfunction
 
-function! yanktools#zeta#del_with_key(key)
+function! yt#zeta#del_with_key(key)
     if !g:yanktools_use_redirection
-      return yanktools#zeta#yank_with_key(a:key)
+      return yt#zeta#yank_with_key(a:key)
     endif
 
-    call yanktools#redirecting()
+    call yt#redirecting()
     let s:v.zeta = 1
     let s:v.has_yanked = 1
     return "\"".g:yanktools_redirect_register.a:key
@@ -26,7 +26,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yanktools#zeta#paste_with_key(key, plug, visual, format)
+function! yt#zeta#paste_with_key(key, plug, visual, format)
     if !len(g:yanktools.zeta.stack) | return s:F.msg("Empty zeta stack.") | endif
 
     " set vars

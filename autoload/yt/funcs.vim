@@ -1,4 +1,4 @@
-fun! yanktools#funcs#init()
+fun! yt#funcs#init()
   return s:Funcs
 endfun
 
@@ -46,13 +46,6 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:Funcs.set_register(r) dict
-  call setreg(a:r[0], a:r[1], a:r[2])
-  let s:v.stored_register = [a:r[0], a:r[1], a:r[2]]
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 function! s:Funcs.restore_register() dict
   let r = s:v.stored_register
   call setreg(r[0], r[1], r[2])
@@ -76,14 +69,4 @@ function! s:Funcs.msg(txt, ...) dict
   echo a:txt
   echohl None
 endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! s:Funcs.update_reg(stack) dict
-  let r = self.get_register()
-  let text = a:stack[a:stack.offset]['text']
-  let type = a:stack[a:stack.offset]['type']
-  call setreg(r[0], text, type)
-endfunction
-
 

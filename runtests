@@ -1,0 +1,17 @@
+#!/bin/bash
+
+[ -e ~/.pyenv ] &&
+	export PATH="~/.pyenv/bin:$PATH" &&
+	eval "$(pyenv init -)" &&
+	eval "$(pyenv virtualenv-init -)"
+
+[ -e "test/test.py" ] || exit 2
+
+cd ./test
+
+if [ $# -gt 0 ]; then
+	./test.py "$@"
+else
+	./test.py
+fi
+

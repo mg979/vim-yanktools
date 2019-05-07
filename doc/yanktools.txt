@@ -1,10 +1,8 @@
 *yanktools.txt*    yanktools     Version 0.6.0    Last change: March 29 2018
 
-YANKTOOLS - TABLE OF CONTENTS                                    *yanktools-toc*
+YANKTOOLS - TABLE OF CONTENTS                                        *yanktools*
 ==============================================================================
 
-Introduction.........................................|yanktools-intro|
-Installation.........................................|yanktools-installation|
 Features.............................................|yanktools-features|
 Manual mode..........................................|yanktools-manual|
 Other commands.......................................|yanktools-misc|
@@ -28,24 +26,19 @@ License..............................................|yanktools-license|
 
 
 
-INTRODUCTION                                                   *yanktools-intro*
+INTRODUCTION ~
 ==============================================================================
 
 Yanktools is a plugin inspired by |vim-yankstack| and |vim-easyclip|.
 It can be used in manual mode (default) or automatic mode (not recommended).
 
-
-
-
-INSTALLATION                                            *yanktools-installation*
-==============================================================================
-
-Use {vim-plug}{1} or any other Vim plugin manager.
+To install, use {vim-plug}{1} or any other Vim plugin manager.
 
                                       {1} https://github.com/junegunn/vim-plug
 With |vim-plug|:
 >
     Plug 'mg979/vim-yanktools'
+
 
 
 
@@ -97,38 +90,44 @@ Automatic mode (not recommended!):~
 MANUAL MODE                                                   *yanktools-manual*
 ==============================================================================
 
+By default, the key `s` is used for both saving into the stack, and for the
+replace operator. This will remap the default vim `s` key. If this is
+a problem for you, read |yanktools-mappings|.
+
 Defined operators and their default behaviour:
 
-  `ys`  (yank & save)    add yanked text to the yank stack
-  `ds`  (delete & save)  add deleted text to the yank stack
-  `yr`  (replace)        replace text object with register
+  `sy`  (yank & save)    add yanked text to the yank stack
+  `sd`  (delete & save)  add deleted text to the yank stack
+  `s`   (replace)        replace text object with register
   `yd`  (duplicate)      duplicate text object
-  `yz`  (zeta)           zeta mode (|yanktools-zeta|)
-
-More mappings:
-  
-  `M-p` (paste next)      cycle the stack (+1) and paste
-  `M-P` (paste previous)  cycle the stack (-1) and paste
-  `]y`  (swap next)       cycle the stack (+1) and open preview
-  `[y`  (swap previous)   cycle the stack (-1) and open preview
 
 Further notes:
 
 - yank and delete commands add the text to the yank stack
 - `change` and `x` commands redirect to the black hole register
-- visual mode mapping for `duplicate` is `<M-d>`
 
-Recommended settings:
->
-  let g:yanktools_replace_key = 's'
+Special mappings:
+  
+  <M-p>        cycle the stack (+1) and paste
+  <M-P>        cycle the stack (-1) and paste
+  `]y`           cycle the stack (+1) and open preview window
+  `[y`           cycle the stack (-1) and open preview window
 
-  nmap S s$
-  nmap sy    <Plug>(Yank)
-  nmap sY    <Plug>(Yank)$
-  nmap sd    <Plug>(Cut)
-  nmap sdd   <Plug>(CutLine)
-  nmap sD    <Plug>(Cut)$
-  nmap <M-d> <Plug>(DuplicateLines)
+Visual mode mappings:
+
+  `sy`           yank & save
+  `sd`           delete & save
+  `x` <del>      black hole deletion
+  <M-d>        duplicate
+
+Zeta mode (|yanktools-zeta|):
+
+  `yz`           yank
+  `dz`           delete
+  `zp`           paste
+  `ZY`           visual yank
+  `ZD`           visual delete
+  `ZP`           visual paste
 
 
 
@@ -136,6 +135,8 @@ Recommended settings:
 
 OTHER COMMANDS                                                  *yanktools-misc*
 ==============================================================================
+
+  Mappings for special actions/options use `yu`:
 
   `yus`      save current [register] into the yank stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
@@ -145,8 +146,12 @@ OTHER COMMANDS                                                  *yanktools-misc*
   `yur`      toggle redirection
   `yum`      yanktools menu (fzf only)
 
+  Mappings for interactive paste use `yi`:
+
   `yiy`      interactively select a yank
   `yir`      interactively select a redirected yank
+
+  Mappings to display stack contents:
 
   `yY`       show yanks
   `yX`       show redirected yanks
@@ -179,15 +184,13 @@ You can disable redirection (inverting cut & deletion mappings):
 
 Further notes:
 
+- `change` and `x` commands redirect to the black hole register
 - yank commands add the yanked text to the yank stack
 - you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
 
 - delete commands add the deleted text to the redirected stack
 - you can paste from the redirected register with <leader>p/P
 - you can cycle the redirected stack with the 'swap' commands after <leader>p/P
-
-- `change` and `x` commands redirect to the black hole register
-- visual mode mapping for `duplicate` is `<'d>'`
 
 >
   NOTE:
@@ -460,12 +463,12 @@ A summary of the default mappings for visual mode:
 p             paste from default register
 <leader>p     paste from redirected register
 d             delete and redirect
-<c-d>         duplicate
+<M-d>         duplicate
 x             cut (doesn't redirect if redirection is active and vv.)
 <del>         black hole deletion
-Zy            zeta yank
-Zd            zeta delete
-Zp            zeta paste
+ZY            zeta yank
+ZD            zeta delete
+ZP            zeta paste
 
 
 
@@ -474,18 +477,18 @@ Zp            zeta paste
 REPEAT.VIM                                                *yanktools-repeat-vim*
 ==============================================================================
 
-This plugin supports |repeat-vim| for most paste operations. This means that
+This plugin supports |repeat-vim| for most `paste` operations. This means that
 you can press |dot| to repeat the last paste command while keeping the same
-formatting options of the last command.
+formatting options of the last command. The `replace operator` is also
+repeatable.
 
 Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
 
-The replace operator is also repeatable, but only the `replace line(s)` variant.
 
-Support must be enabled by setting:
+`vim-repeat` integration can be disabled by setting:
 >
-  let g:yanktools_repeat = 1
+  let g:yanktools_repeat = 0
 
 
 

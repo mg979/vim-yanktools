@@ -1,27 +1,32 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Functions                                                                {{{1
+" Initialize                                                               {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:post_paste_pos = getpos('.')
-let s:store_plug = 0
 let s:has_pasted = 0
 let s:last_paste_format_this = 0
 let s:last_paste_key = 0
 let s:last_paste_tick = -1
 
-function! yt#init_vars()
+let s:F = g:yanktools.Funcs
 
-  call yt#stack#init()
-  let s:Y = g:yanktools.yank
-  let s:R = g:yanktools.redir
-  let s:Z = g:yanktools.zeta
-  let s:v = g:yanktools.vars
-  let s:F = g:yanktools.Funcs
+let s:v = g:yanktools.vars
+let s:v.redirecting  = 0
+let s:v.replacing    = 0
+let s:v.restoring    = 0
+let s:v.format_this  = 0
+let s:v.has_changed  = 0
+let s:v.plug         = []
+let s:v.move_this    = 0
+let s:v.zeta         = 0
+let s:v.has_yanked   = 0
+let s:v.updatetime   = &updatetime
+let s:v.pwline       = 0
 
-  let s:current_stack = g:yanktools.current_stack
-  let s:v.updatetime = &updatetime
-  let s:v.pwline = 0
-endfunction
+let s:Y = g:yanktools.yank
+let s:R = g:yanktools.redir
+let s:Z = g:yanktools.zeta
+let s:current_stack = g:yanktools.current_stack
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommand calls                                                        {{{1
@@ -58,9 +63,8 @@ endfun
 
 function! yt#on_text_change()
   """This function is called on TextChanged event."""
-  if exists('g:VM') && g:VM.is_active
-    return s:reset_vars()
-  endif
+  if s:VM() | return s:reset_vars() | endif
+
   if s:v.has_yanked     | call s:update_yanks() | endif
   if !s:v.has_changed   | return                | endif
 
@@ -68,10 +72,11 @@ function! yt#on_text_change()
   let s:v.has_changed = 0
 
   " restore register after redirection
-  if s:v.redirecting         | call s:R.update_stack()        | endif
+  if s:v.redirecting          | call s:R.update_stack()     | endif
+  if s:v.restoring            | call s:F.restore_register() | endif
 
   " replace operator: return now to keep repeatabilty
-  if yt#replop#paste_replacement() | return s:reset_vars() | endif
+  if yt#replop#paste_replacement() | return s:reset_vars()  | endif
 
   " autoformat / move cursor, ensure CursorMoved runs
   if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
@@ -93,9 +98,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#yank_with_key(key)
-  if exists('g:VM') && g:VM.is_active
-    return a:key
-  endif
+  if s:VM() | return a:key | endif
   let s:v.has_yanked = 1
   call s:F.updatetime(0)
   return a:key
@@ -104,8 +107,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#paste_with_key(key, plug, visual, format)
-  if a:visual | call yt#redirecting() | endif
-  if a:format | let s:v.format_this = 1 | endif
+  if a:visual | call s:F.store_register() | endif
+  if a:format | let s:v.format_this = 1   | endif
 
   " set current stack
   let s:current_stack = s:Y
@@ -130,10 +133,7 @@ function! yt#save_current(reg) abort
   if empty(getreg(a:reg))
     return s:F.msg('Register '.a:reg.' is empty!')
   endif
-  let r = [ getreg('"'), getregtype('"') ]
-  call setreg('"', getreg(a:reg), getregtype(a:reg))
-  call g:yanktools.yank.update_stack()
-  call setreg('"', r[0], r[1])
+  call s:Y.update_stack(a:reg)
   call s:F.msg('Register '''.a:reg.''' saved', 1)
 endfunction
 
@@ -147,46 +147,33 @@ endfunction
 " will define if the deletion will be redirected or not
 
 
-function! yt#redir_opts(register)
-  let s:register = a:register
+function! yt#delete(count, register, redirect)
+  let s:register = s:choose_reg(a:register, !a:redirect)
+  set opfunc=yt#del_opfunc
+  let n = a:count > 1 ? string(a:count) : ''
+  return n.'g@'
 endfunction
 
-function! yt#cut(type)
-  let s:register = s:choose_reg(s:register, 1)
-  call yt#delete(a:type)
-endfunction
+function! yt#del_opfunc(type)
+  if !s:VM() | call s:deleting() | endif
 
-function! yt#redirect(type)
-  let s:register = s:choose_reg(s:register, 0)
-  call yt#delete(a:type)
-endfunction
-
-function! yt#delete(type)
-  if !( exists('g:VM') && g:VM.is_active )
-    call s:redir_vars()
-  endif
-
-  if a:type == 'line' | execute "keepjumps normal! `[V`]"
-  else                | execute "keepjumps normal! `[v`]"
+  if a:type == 'line' | keepjumps normal! `[V`]
+  else                | keepjumps normal! `[v`]
   endif
   execute "normal! \"".s:register."d"
 endfunction
 
 function! yt#delete_visual(register, cut)
   let reg = s:choose_reg(a:register, a:cut)
-  if !( exists('g:VM') && g:VM.is_active )
-    call s:redir_vars()
-  endif
   return "\"" . reg . 'd'
 endfunction
 
 function! yt#delete_line(register, count, cut)
   let reg = s:choose_reg(a:register, a:cut)
-  if !( exists('g:VM') && g:VM.is_active )
-    call s:redir_vars()
+  if !s:VM()
+    call s:deleting()
     let pl = a:cut ? '(CutLine)' : '(RedirectLine)'
     let s:v.plug = [pl, a:count, reg]
-    let s:store_plug = 1
   endif
   let n = a:count ? a:count : ''
   call feedkeys('"'.reg.n."dd", 'n')
@@ -216,45 +203,26 @@ function! yt#paste_redirected_with_key(key, plug, visual, format)
   return '"'.g:yanktools_redirect_register.a:key
 endfunction
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#restore_after_redirect()
-  " don't store empty lines/whitespaces only
-  if getreg(s:F.default_reg()) !~ '^[\s\n]*$'
-    call s:R.update_stack()
-  else
-    let r = g:yanktools.redir.stack[0]
-    call setreg(g:yanktools_redirect_register, r['text'], r['type'])
-  endif
-  call setreg(s:r[0], s:r[1], s:r[2])
-endfun
-
-fun! yt#redirecting()
-  " register will be restored in any case, even if specifying a register
-  let s:v.has_changed = 1
-  let s:v.redirecting = 1
-  call s:F.get_register()
-endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Duplicate                                                                {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#duplicate_visual()
-  call yt#redirecting()
+  call s:F.store_register()
   return "yP"
 endfunction
 
 function! yt#duplicate_lines()
-  let s:store_plug = 1
   let s:v.plug = ['(DuplicateLines)', v:count, v:register]
-  call yt#redirecting()
+  call s:F.store_register()
   return "yyP`]j^"
 endfunction
 
 fun! yt#duplicate(type)
   let s:oldvmode = &virtualedit | set virtualedit=onemore
-  call yt#redirecting()
+  call s:F.store_register()
   if a:type == 'line'
     keepjumps normal! `[V`]yP`]j^
   else
@@ -281,6 +249,9 @@ function! yt#swap_paste(forward, key)
   endif
 
   "---------------------------------------------------------------------------
+
+  " enable lazyredraw for better statusline message
+  let s:v.lz = &lazyredraw | set lz
 
   " move stack offset and get return message code
   let msg = s:current_stack.move_offset(a:forward, 1)
@@ -347,20 +318,17 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:msg(n)
-  if !a:n
-    echo s:current_stack.name "stack position:" s:current_stack.offset + 1
-          \ . "/" . s:current_stack.size()
-  else
-    redraw!
-    let t = tolower(s:current_stack.name)
+  redraw
+  echo s:current_stack.name "stack position: " . (s:current_stack.offset + 1)
+        \ . "/" . s:current_stack.size()
+  if a:n
     echohl WarningMsg
-    if a:n == 1 | echo "Reached the end of the" t
-          \            "stack, restarting from the beginning."
-    else        | echo "Reached the beginning of the" t
-          \            "stack, restarting from the end."
+    if a:n == 1 | echon " restarting from the beginning"
+    else        | echon " restarting from the end"
     endif
     echohl None
   endif
+  let &lazyredraw = s:v.lz
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -368,14 +336,14 @@ endfunction
 fun! s:reset_vars()
   " reset vars
   let s:v.has_changed = 0
-  let s:v.is_replacing = 0
+  let s:v.replacing = 0
   let s:v.format_this = 0
   let s:v.move_this = 0
   let s:v.redirecting = 0
+  let s:v.restoring = 0
   let s:v.zeta = 0
   let s:v.has_yanked = 0
   let s:v.plug = []
-  let s:store_plug = 0
   call s:F.updatetime(1)
 endfun
 
@@ -393,14 +361,20 @@ endfun
 
 "------------------------------------------------------------------------------
 
-fun! s:redir_vars()
-  if s:cutting
+fun! s:deleting()
+  if s:v.cutting
     let s:v.has_changed = 1
     let s:v.has_yanked = 1
-    let s:cutting = 0
   else
-    call yt#redirecting()
+    let s:v.has_changed = 1
+    let s:v.redirecting = 1
   endif
+endfun
+
+"------------------------------------------------------------------------------
+
+fun! s:VM() abort
+  return exists('g:Vm') && g:Vm.is_active
 endfun
 
 

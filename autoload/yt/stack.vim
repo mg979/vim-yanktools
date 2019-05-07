@@ -1,29 +1,55 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Common functions                                                         {{{1
+" Stack Update                                                             {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:clear_stack() dict
-  let self.offset = -1
-  let self.stack = []
+"----------------------------------------
+"   Stack --->  Register
+"----------------------------------------
+
+fun! s:update_register(...) dict
+  if !self.size()
+    return
+  endif
+  let ix = a:0 ? a:1 : self.offset
+  let item = self.get(ix)
+  call s:F.set_register(s:F.default_reg(), item.text, item.type)
 endfun
 
-fun! s:update_stack() dict
-  " if entry is duplicate, put it upfront removing the previous one
-  let r = s:F.get_register()
+"----------------------------------------
+"   Register --->  Stack
+"----------------------------------------
+
+fun! s:update_stack(...) dict
+  " Conditions: to be added to the stack
+  "   entry must not be too big
+  "   must contain printable characters
+  "   if entry is duplicate, put it upfront removing the previous one
+  let is_R = self.name == 'Redirected'
+
+  let r = is_R ? s:F.get_register(g:yanktools_redirect_register)
+        \      : s:F.get_register(a:0 ? a:1 : '"')
   let text = r[1]
   let type = r[2]
-  if !s:too_big(text)
+
+  if !s:too_big(text) && text =~ '[[:graph:]]'
     let item = {'text': text, 'type': type, 'ft': &ft}
     let ix = index(self.stack, item)
     call insert(self.stack, ix == - 1 ?
           \     item : remove(self.stack, ix))
-    if self.offset < 0
-      let self.offset = 0
-    endif
   endif
-  if self.name == 'Redirected'
-    call s:F.restore_register()
-  endif
+
+  " if using redirection, we must restore the register after updating
+  if is_R | call s:F.restore_register() | endif
+endfun
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Other stack functions                                                    {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:clear_stack() dict
+  let self.stack = []
 endfun
 
 fun! s:move_offset(forward, ...) dict
@@ -45,20 +71,11 @@ fun! s:size() dict
 endfun
 
 fun! s:empty() dict
+  " check size and print message if empty
   if !self.size()
-    let self.offset = -1
     call s:F.msg('Stack is empty')
     return 1
   endif
-endfun
-
-fun! s:update_register() dict
-  if !self.size()
-    let self.offset = -1
-    return
-  endif
-  let item = self.get()
-  call setreg(s:F.default_reg(), item.text, item.type)
 endfun
 
 fun! s:reset_offset() dict
@@ -66,7 +83,12 @@ fun! s:reset_offset() dict
 endfun
 
 fun! s:set_at_offset(n) dict
-  let self.offset = a:n
+  " set offset with bounds check, then update register
+  let size = self.size()
+  if !size | return | endif
+
+  let self.offset = a:n >= size ? size - 1 :
+        \           a:n < 0 ? 0 : a:n
   call self.update_register()
 endfun
 
@@ -99,9 +121,10 @@ fun! s:show_current() dict
   call s:preview()
 endfun
 
-fun! s:get() dict
-  return self.size() ? self.stack[self.offset] : {}
+fun! s:get(...) dict
+  return self.size() ? self.stack[a:0 ? a:1 : self.offset] : {}
 endfun
+
 
 
 
@@ -110,7 +133,7 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:Yank  = {
-      \ 'name': 'Yank', 'offset': -1, 'frozen': 1,
+      \ 'name': 'Yank', 'offset': 0, 'frozen': 1,
       \ 'clear': function('s:clear_stack'),
       \ 'update_stack': function('s:update_stack'),
       \ 'move_offset': function('s:move_offset'),
@@ -125,7 +148,7 @@ let s:Yank  = {
       \}
 
 let s:Redir = {
-      \ 'name': 'Redirected', 'offset': -1, 'frozen': 1,
+      \ 'name': 'Redirected', 'offset': 0, 'frozen': 1,
       \ 'clear': function('s:clear_stack'),
       \ 'update_stack': function('s:update_stack'),
       \ 'move_offset': function('s:move_offset'),
@@ -139,13 +162,48 @@ let s:Redir = {
       \ 'synched': function('s:synched'),
       \}
 
-let s:Zeta  = {'name': 'Zeta', 'offset': 0, 'frozen': 0}
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Zeta stack                                                               {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let s:Zeta  = {'name': 'Zeta', 'offset': 0, 'frozen': 0,
+      \ 'clear': function('s:clear_stack'),
+      \ 'empty': function('s:empty'),
+      \ 'size': function('s:size'),
+      \ 'get': function('s:get'),
+      \ 'update_register': function('s:update_register'),
+      \}
+
+fun! s:Zeta.update_stack() dict
+  " duplicate yanks will be added to this stack nonetheless
+  let r = s:F.get_register()
+  call add(self.stack, {'text': r[1], 'type': r[2]})
+  if s:v.restoring
+    call s:F.restore_register()
+  endif
+endfun
+
+fun! s:Zeta.pop_stack() abort
+    " set register and remove index from stack
+    call self.update_register()
+    call remove(self.stack, self.offset)
+endfun
+
+
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Initialize variables                                                     {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:yanktools.yank = s:Yank
 let g:yanktools.redir = s:Redir
 let g:yanktools.zeta = s:Zeta
 let g:yanktools.current_stack = s:Yank
-let s:current = g:yanktools.current_stack
 let s:frozen = 1
 
 let s:v = g:yanktools.vars
@@ -164,7 +222,7 @@ fun! yt#stack#freeze()
     let g:yanktools.redir.frozen = 0
     let g:yanktools.yank.offset = 0
     let g:yanktools.redir.offset = 0
-    echo "Stacks offset will be reset normally."
+    echo "Stacks offset will be reset."
   else
     let g:yanktools.yank.frozen = 1
     let g:yanktools.redir.frozen = 1
@@ -174,24 +232,6 @@ fun! yt#stack#freeze()
   let s:frozen = !s:frozen
 endfun
 
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Zeta stack                                                               {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-fun! s:Zeta.clear() dict
-  let self.stack = []
-endfun
-
-fun! s:Zeta.update_stack() dict
-  " duplicate yanks will be added to this stack nonetheless
-  let r = s:F.get_register()
-  call add(self.stack, {'text': r[1], 'type': r[2]})
-  if s:v.redirecting
-    call s:F.restore_register()
-  endif
-endfun
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -208,15 +248,7 @@ fun s:preview(...)
   augroup yanktools_preview
     au!
     au CursorMoved * if line('.') != s:v.pwline
-          \        |   call yt#stack#pclose() | endif
+          \        |   call yt#extras#pclose() | endif
   augroup END
 endfun
 
-fun! yt#stack#pclose()
-  if s:v.pwline
-    pclose!
-    autocmd! yanktools_preview
-    augroup! yanktools_preview
-    let s:v.pwline = 0
-  endif
-endfun

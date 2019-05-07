@@ -1,5 +1,5 @@
 fun! yt#funcs#init()
-  return s:Funcs
+  let g:yanktools.Funcs = s:Funcs
 endfun
 
 let s:v = g:yanktools.vars
@@ -8,7 +8,7 @@ let s:Funcs = {}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:Funcs.set_repeat() abort
-  if get(g:, 'yanktools_repeat', 0) && !empty(s:v.plug) && !s:v.redirecting
+  if get(g:, 'yanktools_repeat', 1) && !empty(s:v.plug) && !s:v.redirecting
     let p = s:v.plug
     silent! call repeat#setreg("\<Plug>".p[0], p[2])
     silent! call repeat#set("\<Plug>".p[0], p[1])
@@ -28,33 +28,62 @@ fun! s:Funcs.default_reg() abort
   else
     return "\""
   endif
-endfunction
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:Funcs.get_register(...) dict
-  if a:0 || s:v.redirecting
-    " don't overwrite stored register because it will be restored
-    let r = g:yanktools_redirect_register
-    return [r, getreg(r), getregtype(r)]
-  else
-    " store current register for later restoring, then return it
-    let r = self.default_reg()
-    let s:v.stored_register = [r, getreg(r), getregtype(r)]
-    return s:v.stored_register
+fun! s:Funcs.set_redirected(...) abort
+  call self.store_register()
+  let r = g:yanktools_redirect_register
+  call setreg(r[0], r[1], r[2])
+endfun
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:Funcs.get_register(...) abort
+  " return default or other register
+  let r = a:0 ? a:1 : self.default_reg()
+  return [r, getreg(r), getregtype(r)]
+endfun
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:Funcs.set_register(r, text, type) abort
+  " set the register to value, ensure also unnamed is set
+  let r = [ a:r, a:text, a:type ]
+  let def = self.default_reg()
+  let unnamed = def == '"'
+  call setreg(r[0], r[1], r[2])
+  if !unnamed
+    call setreg(r[0], r[1], r[2])
   endif
-endfunction
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! s:Funcs.restore_register() dict
+fun! s:Funcs.store_register(...) abort
+  " store current register for later restoring, then return it
+  let s:v.restoring = 1
+  let s:v.has_changed = 1
+  let r = self.default_reg()
+  let s:v.stored_register = [r, getreg(r), getregtype(r)]
+  return s:v.stored_register
+endfun
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:Funcs.restore_register() abort
+  " s:v.restoring is reset also elsewhere, just in case
+  let s:v.restoring = 0
   let r = s:v.stored_register
   call setreg(r[0], r[1], r[2])
-endfunction
+  " better an error than restoring the same register twice
+  unlet s:v.stored_register
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:Funcs.updatetime(restore) dict
+fun! s:Funcs.updatetime(restore) abort
   if exists("##TextYankPost") | return | endif
   if a:restore
     let &updatetime = s:v.updatetime

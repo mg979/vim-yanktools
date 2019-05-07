@@ -8,21 +8,21 @@ let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 
 fun! yt#replop#paste_replacement()
-  if !s:v.is_replacing
+  if !s:v.replacing
     return
   endif
   let s:v.format_this = s:format_this
   execute "normal \"".s:repl_reg."P"
   normal! `]
   let &virtualedit = s:oldvmode
-  return s:v.is_replacing == 2
+  return s:v.replacing == 2
 endfun
 
 fun! yt#replop#replace(type)
   let reg = get(g:, 'yanktools_replace_to_bh', 1)
         \ ? "_" : g:yanktools_redirect_register
   let s:v.has_changed = 1
-  let s:v.is_replacing = 1 + s:repeatable
+  let s:v.replacing = 1 + s:repeatable
   let s:oldvmode = &virtualedit | set virtualedit=onemore
   if a:type == 'line'
     execute "keepjumps normal! `[V`]"
@@ -66,18 +66,19 @@ endfun
 
 fun! yt#replop#replace_line(r, c, format)
   " get register
-  let reg = getreg(a:r)
+  let reg = s:F.store_register()
+  let s:v.plug = ["(ReplaceLine)", a:c, a:r]
 
   " set marks
   exe "noautocmd normal!" a:c.'yy'
 
   " set register and replace line(s)
-  call setreg('"', reg, 'V')
+  call setreg('"', reg[1], 'V')
   let s:v.format_this = a:format
   execute "normal! `[V`]p"
 
   " restore register
-  call setreg('"', reg, 'V')
+  call s:F.restore_register()
 endfun
 
 fun! yt#replop#replace_multi_line(r, c, format)

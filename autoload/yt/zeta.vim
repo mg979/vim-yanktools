@@ -18,19 +18,20 @@ function! yt#zeta#del_with_key(key)
       return yt#zeta#yank_with_key(a:key)
     endif
 
-    call yt#redirecting()
     let s:v.zeta = 1
+    let s:v.has_changed = 1
     let s:v.has_yanked = 1
-    return "\"".g:yanktools_redirect_register.a:key
+    call s:F.store_register()
+    return a:key
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#zeta#paste_with_key(key, plug, visual, format)
-    if !len(g:yanktools.zeta.stack) | return s:F.msg("Empty zeta stack.") | endif
+    let Z = g:yanktools.zeta
+    if Z.empty() | return | endif
 
     " set vars
-    let s:v.has_changed = 1
     let s:v.format_this = a:format
     let s:v.plug = [a:plug, v:count, s:F.default_reg()]
 
@@ -43,20 +44,13 @@ function! yt#zeta#paste_with_key(key, plug, visual, format)
     endif
 
     " backup register
-    let r = s:F.get_register()
+    let r = s:F.store_register()
 
-    " set register
-    let text = g:yanktools.zeta.stack[0]['text']
-    let type = g:yanktools.zeta.stack[0]['type']
-    call setreg(r[0], text, type)
-
-    " remove index from zeta stack
-    call remove(g:yanktools.zeta.stack, 0)
-
-    " perform paste
-    exec 'normal! '.a:key.post
+    " pop an item from the stack and perform paste
+    call Z.pop_stack()
+    exec 'normal!' a:key.post
 
     call s:F.restore_register()
-    call s:F.msg("There are ".len(g:yanktools.zeta.stack)." entries left in the zeta stack.")
+    call s:F.msg("There are " . len(Z.stack) . " entries left in the zeta stack.")
 endfunction
 

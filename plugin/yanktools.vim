@@ -1,23 +1,23 @@
+let s:save_cpo = &cpo
+set cpo&vim
+
+if exists('g:loaded_yanktools')
+  finish
+endif
+
+"------------------------------------------------------------------------------
 
 let g:loaded_yanktools = 1
 
 let g:yanktools = {'vars': {}}
-let g:yanktools.vars.redirecting = 0
-let g:yanktools.vars.format_this = 0
-let g:yanktools.vars.has_changed = 0
-let g:yanktools.vars.is_replacing = 0
-let g:yanktools.vars.plug = []
-let g:yanktools.vars.move_this = 0
-let g:yanktools.vars.zeta = 0
-let g:yanktools.vars.has_yanked = 0
+call yt#funcs#init()
+call yt#stack#init()
 
 let g:yanktools_manual                  = get(g:, 'yanktools_manual', 1)
 let g:yanktools_move_cursor_after_paste = get(g:, 'yanktools_move_cursor_after_paste', 0)
 let g:yanktools_auto_format_all         = get(g:, 'yanktools_auto_format_all', 0)
 let g:yanktools_redirect_register       = get(g:, 'yanktools_redirect_register', "x")
 let g:yanktools_use_redirection         = get(g:, 'yanktools_use_redirection', !empty(g:yanktools_redirect_register))
-
-let g:yanktools.Funcs = yt#funcs#init()
 
 
 
@@ -27,7 +27,6 @@ let g:yanktools.Funcs = yt#funcs#init()
 
 augroup plugin-yanktools
   autocmd!
-  autocmd VimEnter    * call yt#init_vars()
   autocmd TextChanged * call yt#on_text_change()
   autocmd InsertEnter * call yt#on_text_change()
 
@@ -58,25 +57,9 @@ if !g:yanktools_manual
   command! ToggleRedirection call yt#extras#toggle_redirection()
 endif
 
-com! -bang FzfSelectYank call fzf#run({'source': yt#extras#yanks(<bang>0),
-      \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
-      \ 'options': '--prompt "Select Yank >>>   "'})
-
 com! -bang ISelectYank call yt#extras#select_yank(<bang>0)
 
-com! Yanktools call fzf#run({'source': [
-      \ 'Toggle Freeze Offset',
-      \ 'Convert Yank Type',
-      \ 'Toggle Auto Indent',
-      \ 'Toggle Single Stack',
-      \ 'Clear Yank Stacks',
-      \ 'Clear Zeta Stack',
-      \ 'Display Yanks',
-      \ 'Select Yank',
-      \ 'Select Redirected Yank',
-      \ ],
-      \ 'sink': function('yt#extras#fzf_menu'), 'down': '30%',
-      \ 'options': '--prompt "Yanktools Menu >>>   "'})
+com! Yanktools call yt#extras#menu()
 
 
 
@@ -160,8 +143,8 @@ if !g:yanktools_manual
   call s:nmap('Y',  '<Plug>(Yank)$')
   call s:xmap('y',  '<Plug>(Yank)')
 else
-  call s:nmap('ys',  '<Plug>(Yank)')
-  call s:nmap('yS',  '<Plug>(Yank)$')
+  call s:nmap('sy',  '<Plug>(Yank)')
+  call s:nmap('sY',  '<Plug>(Yank)$')
   call s:xmap('sy',  '<Plug>(Yank)')
 endif
 
@@ -172,20 +155,13 @@ endif
 " Redirection                                                               {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:redirect(count, cut)
-  let n = a:count ? string(a:count) : ''
-  let c = ":\<c-u>call yt#redir_opts(v:register)\<cr>"
-  let c .= ':set opfunc=yt#'.(a:cut ? 'cut' : 'redir')."\<cr>"
-  return c.n."g@"
-endfun
-
 if !g:yanktools_manual
   call s:nmap('d', '<Plug>(Redirect_d)')
   call s:nmap('D',  '<Plug>(Redirect_D)')
   call s:nmap('dd', '<Plug>(RedirectLine)')
   call s:xmap('d', '<Plug>(RedirectVisual)')
 
-  nnoremap <silent><expr> <Plug>(Redirect_d)     <sid>redirect(v:count, 0)
+  nnoremap <silent><expr> <Plug>(Redirect_d)     yt#delete(v:count, v:register, 1)
   nmap     <silent>       <Plug>(Redirect_D)     <Plug>(Redirect_d)$
   nnoremap <silent>       <Plug>(RedirectLine)   :<c-u>call yt#delete_line(v:register, v:count, 0)<cr>
   xnoremap <silent><expr> <Plug>(RedirectVisual) yt#delete_visual(v:register, 0)
@@ -198,7 +174,7 @@ endif
 " Cut                                                                       {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-nnoremap <silent><expr> <Plug>(Cut)         <sid>redirect(v:count, 1)
+nnoremap <silent><expr> <Plug>(Cut)         yt#delete(v:count, v:register, 0)
 nnoremap <silent>       <Plug>(CutLine)     :<c-u>call yt#delete_line(v:register, v:count, 1)<cr>
 xnoremap <silent><expr> <Plug>(CutVisual)   yt#delete_visual(v:register, 1)
 
@@ -207,9 +183,9 @@ if !g:yanktools_manual
   call s:nmap('yxx', '<Plug>(CutLine)')
   call s:xmap('x',   '<Plug>(CutVisual)')
 else
-  call s:nmap('ds',  '<Plug>(Cut)')
-  call s:nmap('dS',  '<Plug>(Cut)$')
-  call s:nmap('dsd', '<Plug>(CutLine)')
+  call s:nmap('sd',  '<Plug>(Cut)')
+  call s:nmap('sD',  '<Plug>(Cut)$')
+  call s:nmap('sdd', '<Plug>(CutLine)')
   call s:xmap('sd',  '<Plug>(CutVisual)')
 endif
 
@@ -227,8 +203,8 @@ nnoremap <silent> <Plug>(ReplaceLineSingle) :<c-u>call yt#replop#replace_line(v:
 nnoremap <silent> <Plug>(ReplaceLineMulti)  :<c-u>call yt#replop#replace_multi_line(v:register, v:count1, 0)<cr>
 
 fun! s:map_repl()
-  let key = get(g:, 'yanktools_replace_key', '')
-  if !empty(key)
+  let key = get(g:, 'yanktools_replace_key', 's')
+  if !empty(key) && strchars(key) == 1
     call s:nmap(key,            '<Plug>(ReplaceOperatorR)')
     call s:nmap(key.'r',        '<Plug>(ReplaceOperatorS)')
     call s:nmap(key.key,        '<Plug>(ReplaceLineSingle)')
@@ -400,16 +376,19 @@ nnoremap <silent> <Plug>(ZetaYanks)         :call yt#extras#show_yanks('z')<cr>
 nnoremap <silent> <Plug>(ConvertYankType)   :call yt#extras#convert_yank_type()<cr>
 nnoremap <silent> <Plug>(YanktoolsMenu)     :Yanktools<cr>
 nnoremap <silent> <Plug>(YankSaveCurrent)   :<c-u>call yt#save_current(v:register)<cr>
-nnoremap <silent> <expr> <Plug>(ISelectYank) exists('g:loaded_fzf')
-      \ ? ":FzfSelectYank\<cr>" : ":ISelectYank\<cr>"
+nnoremap <silent> <Plug>(ISelectYank)       :ISelectYank<cr>
 
 if !g:yanktools_manual
   nnoremap <silent> <Plug>(ToggleRedirection) :ToggleRedirection<cr>
   nnoremap <silent> <Plug>(RedirectedYanks)   :call yt#extras#show_yanks('x')<cr>
-  nnoremap <silent> <expr> <Plug>(ISelectYank!) exists('g:loaded_fzf')
-        \ ? ":FzfSelectYank!\<cr>" : ":ISelectYank!\<cr>"
+  nnoremap <silent> <Plug>(ISelectYank!)      :ISelectYank!<cr>
 
   call s:nmaparg('yur', '<Plug>(ToggleRedirection)')
   call s:nmaparg('yX',  '<Plug>(RedirectedYanks)')
   call s:nmaparg('yir', '<Plug>(ISelectYank!)')
 endif
+
+"------------------------------------------------------------------------------
+
+let &cpo = s:save_cpo
+unlet s:save_cpo

@@ -8,7 +8,7 @@ let s:Funcs = {}
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:Funcs.set_repeat() abort
-  if get(g:, 'yanktools_repeat', 1) && !empty(s:v.plug) && !s:v.redirecting
+  if get(g:, 'yanktools_repeat', 1) && !empty(s:v.plug)
     let p = s:v.plug
     silent! call repeat#setreg("\<Plug>".p[0], p[2])
     silent! call repeat#set("\<Plug>".p[0], p[1])
@@ -28,14 +28,6 @@ fun! s:Funcs.default_reg() abort
   else
     return "\""
   endif
-endfun
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-fun! s:Funcs.set_redirected(...) abort
-  call self.store_register()
-  let r = g:yanktools_redirect_register
-  call setreg(r[0], r[1], r[2])
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -63,8 +55,10 @@ endfun
 
 fun! s:Funcs.store_register(...) abort
   " store current register for later restoring, then return it
-  let s:v.restoring = 1
-  let s:v.has_changed = 1
+  if !a:0
+    let s:v.restoring = 1
+    let s:v.has_changed = 1
+  endif
   let r = self.default_reg()
   let s:v.stored_register = [r, getreg(r), getregtype(r)]
   return s:v.stored_register

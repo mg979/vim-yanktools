@@ -14,10 +14,6 @@ function! yt#zeta#yank_with_key(key)
 endfunction
 
 function! yt#zeta#del_with_key(key)
-    if !g:yanktools_use_redirection
-      return yt#zeta#yank_with_key(a:key)
-    endif
-
     let s:v.zeta = 1
     let s:v.has_changed = 1
     let s:v.has_yanked = 1

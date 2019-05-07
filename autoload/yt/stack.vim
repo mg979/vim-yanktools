@@ -24,10 +24,7 @@ fun! s:update_stack(...) dict
   "   entry must not be too big
   "   must contain printable characters
   "   if entry is duplicate, put it upfront removing the previous one
-  let is_R = self.name == 'Redirected'
-
-  let r = is_R ? s:F.get_register(g:yanktools_redirect_register)
-        \      : s:F.get_register(a:0 ? a:1 : '"')
+  let r = s:F.get_register(a:0 ? a:1 : '"')
   let text = r[1]
   let type = r[2]
 
@@ -37,9 +34,6 @@ fun! s:update_stack(...) dict
     call insert(self.stack, ix == - 1 ?
           \     item : remove(self.stack, ix))
   endif
-
-  " if using redirection, we must restore the register after updating
-  if is_R | call s:F.restore_register() | endif
 endfun
 
 
@@ -147,27 +141,6 @@ let s:Yank  = {
       \ 'synched': function('s:synched'),
       \}
 
-let s:Redir = {
-      \ 'name': 'Redirected', 'offset': 0, 'frozen': 1,
-      \ 'clear': function('s:clear_stack'),
-      \ 'update_stack': function('s:update_stack'),
-      \ 'move_offset': function('s:move_offset'),
-      \ 'size': function('s:size'),
-      \ 'update_register': function('s:update_register'),
-      \ 'reset_offset': function('s:reset_offset'),
-      \ 'set_at_offset': function('s:set_at_offset'),
-      \ 'empty': function('s:empty'),
-      \ 'get': function('s:get'),
-      \ 'show_current': function('s:show_current'),
-      \ 'synched': function('s:synched'),
-      \}
-
-
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Zeta stack                                                               {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:Zeta  = {'name': 'Zeta', 'offset': 0, 'frozen': 0,
       \ 'clear': function('s:clear_stack'),
@@ -201,7 +174,6 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let g:yanktools.yank = s:Yank
-let g:yanktools.redir = s:Redir
 let g:yanktools.zeta = s:Zeta
 let g:yanktools.current_stack = s:Yank
 let s:frozen = 1
@@ -212,21 +184,17 @@ let s:F = g:yanktools.Funcs
 fun! yt#stack#init()
   """Initialize stacks.
   call g:yanktools.yank.clear()
-  call g:yanktools.redir.clear()
   call g:yanktools.zeta.clear()
 endfun
 
 fun! yt#stack#freeze()
   if s:frozen
     let g:yanktools.yank.frozen = 0
-    let g:yanktools.redir.frozen = 0
     let g:yanktools.yank.offset = 0
-    let g:yanktools.redir.offset = 0
-    echo "Stacks offset will be reset."
+    echo "Stack offsets will be reset."
   else
     let g:yanktools.yank.frozen = 1
-    let g:yanktools.redir.frozen = 1
-    echo "Stacks offset won't be reset."
+    echo "Stack offsets won't be reset."
   endif
   call g:yanktools.yank.update_register()
   let s:frozen = !s:frozen

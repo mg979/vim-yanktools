@@ -33,9 +33,6 @@ With vim-plug:
 
 * __Black hole redirection__: `c`, `C`, `x`, `X`, `<del>`
 
-* __Register redirection__: `d` and `D` are redirected to another register
-  (default 'x'), without replacing the unnamed register.
-
 * __Replace operator__: replace text objects with register. Works with cycling too.
 
 * __Duplicate operator__: lines, text objects or from visual mode.
@@ -55,11 +52,6 @@ With vim-plug:
 
 * Paste in visual mode won't change the default register.
 
-* Since register redirection is an option, pasting from that register has its
-  own mapping. This can also be used in combination with the replace operator.
-
-* Redirected text fills its own stack, so that you can cycle/paste from it too.
-
 * and some more...
 
 
@@ -68,50 +60,12 @@ With vim-plug:
 
 ### Basic usage
 
-There are many functions available, but you don't need to use them all or even
-know about them.
-
 Defined operators and their default behaviour:
-
-||||
-|-|-|-|
-| `y`  |	yank        |add yanked text to the yank stack|
-| `d`  |	delete      |redirect the deleted text to register 'x'|
-| `yr` |	replace     |replace text object with register|
-| `yd` |	duplicate   |text objects/lines/visual|
-| `yx` |	cut         |deletes, but doesn't redirect to register 'x'|
-
-Further notes:
-
-- yank commands add the yanked text to the yank stack
-- you can cycle the yank stack with the 'swap' commands (default `<M-p>` / `<M-P>`)
-- delete commands add the deleted text to the redirected stack
-- you can paste from the redirected register with `<leader>p/P`
-- you can cycle the redirected stack with the 'swap' commands after `<leader>p/P`
-- `change` and `x` commands redirect to the black hole register
-- some visual mode mappings have different behaviours, check the docs
-
-
 
 ----------------------------------------------------------------------------
 
 ### Basic options
 
-
-The most important options, with their defaults:
-
-	let g:yanktools_use_redirection = 1
-
-Set to 0 if you want a single stack for both yank and delete operations, so
-that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, and make `delete` work as in vim, but the
-deleted text will be added to the yank stack as well.
-It can be toggled with mapping `cyr`.
-
-	let g:yanktools_replace_key = ''
-
-Set to `s` or another character if you want an easy mapping for the replace
-operator. Otherwise it will default to `yr`.
 
 	let g:yanktools_format_prefix = '<'
 

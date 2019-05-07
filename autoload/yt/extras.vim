@@ -4,19 +4,13 @@
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 let s:Y = g:yanktools.yank
-let s:R = g:yanktools.redir
+let s:Z = g:yanktools.zeta
 
 function! yt#extras#show_yanks(type)
-  if !g:yanktools_manual
-    s:Y.update_stack()
-  endif
   let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
   let i = 0
-  let stack  = a:type == 'x' ? g:yanktools.redir.stack
-        \ :    a:type == 'z' ? g:yanktools.zeta.stack : g:yanktools.yank.stack
-  let offset = a:type == 'x' ? g:yanktools.redir.offset
-        \ :    a:type == 'z' ? g:yanktools.zeta.offset : g:yanktools.yank.offset
-  redraw!
+  let stack  = a:type == 'z' ? s:Z.stack : s:Y.stack
+  let offset = a:type == 'z' ? s:Z.offset : s:Y.offset
   if empty(stack)
     return s:F.msg("Stack is empty")
   endif
@@ -29,15 +23,13 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#clear_yanks(zeta, ...)
+function! yt#extras#clear_yanks(zeta)
   if a:zeta
-    call g:yanktools.zeta.clear()
+    call s:Z.clear()
     echo "Zeta stack has been cleared."
   else
-    call g:yanktools.yank.clear()
-    call g:yanktools.redir.clear()
-    call g:yanktools.zeta.clear()
-    echo "Yank stacks have been cleared."
+    call s:Y.clear()
+    echo "Yank stack has been cleared."
   endif
 endfunction
 
@@ -55,12 +47,26 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#extras#toggle_redirection()
-  let g:yanktools_use_redirection = !g:yanktools_use_redirection
-  if g:yanktools_use_redirection
-    call s:F.msg("Redirection has been enabled, using two stacks", 1)
+fun! yt#extras#toggle_recording(...)
+  let s:v.is_recording = !s:v.is_recording
+  if s:v.is_recording
+    nmap y  <Plug>(Yank)
+    nmap Y  <Plug>(Yank)$
+    xmap y  <Plug>(Yank)
+    nmap d  <Plug>(Cut)
+    nmap D  <Plug>(Cut)$
+    nmap dd <Plug>(CutLine)
+    xmap d  <Plug>(CutVisual)
+    if !a:0 | call s:F.msg("Recording has been enabled", 1) | endif
   else
-    call s:F.msg("Redirection has been disabled, using a single stack")
+    silent! nunmap y
+    silent! nunmap Y
+    silent! xunmap y
+    silent! nunmap d
+    silent! nunmap D
+    silent! nunmap dd
+    silent! xunmap d
+    if !a:0 | call s:F.msg("Recording has been disabled") | endif
   endif
 endfun
 
@@ -81,10 +87,9 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#yanks(redirected)
-  let s:fzf_stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
+function! yt#extras#yanks()
   let yanks = [] | let i = 0
-  for yank in s:fzf_stack.stack
+  for yank in s:Y
     let line = substitute(yank.text, '\V\n', '^M', 'g')
     if len(line) > 80 | let line = line[:80] . '…' | endif
     if i < 10 | let spaces = "    " | else | let spaces = "   " | endif
@@ -100,31 +105,7 @@ function! yt#extras#select_yank_fzf(yank)
   let index = substitute(index, "[", "", "")
   let index = substitute(index, "]", "", "")
   let index = substitute(index, " ", "", "g")
-  call s:fzf_stack.set_at_offset(index)
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yt#extras#fzf_menu(choice)
-  if a:choice == 'Toggle Freeze Offset'
-    call yt#stack#freeze()
-  elseif a:choice == 'Toggle Single Stack'
-    call yt#extras#toggle_redirection()
-  elseif a:choice == 'Clear Yank Stacks'
-    call yt#extras#clear_yanks(0, 1)
-  elseif a:choice == 'Clear Zeta Stack'
-    call yt#extras#clear_yanks(1)
-  elseif a:choice == 'Display Yanks'
-    call yt#extras#show_yanks('y')
-  elseif a:choice == 'Select Yank'
-    FzfSelectYank
-  elseif a:choice == 'Select Redirected Yank'
-    FzfSelectYank!
-  elseif a:choice == 'Convert Yank Type'
-    call yt#extras#convert_yank_type()
-  elseif a:choice == 'Toggle Auto Indent'
-    call yt#extras#toggle_autoformat()
-  endif
+  call s:Y.set_at_offset(index)
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -136,7 +117,7 @@ function! yt#extras#convert_yank_type()
     call setreg(r, text, "V")
     echo "Register ".r." converted to linewise yank."
     if r ==# s:F.default_reg()
-      call remove(g:yanktools.yank.stack, 0)
+      call remove(s:Y.stack, 0)
       call s:Y.update_stack()
     endif
     return
@@ -151,26 +132,25 @@ function! yt#extras#convert_yank_type()
   call setreg(r, text, "".maxl)
   echo "Register ".r." converted to blockwise yank."
   if r ==# s:F.default_reg()
-    call remove(g:yanktools.yank.stack, 0)
+    call remove(s:Y.stack, 0)
     call s:Y.update_stack()
   endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#select_yank(redirected)
-  let stack = a:redirected ? g:yanktools.redir : g:yanktools.yank
-  if stack.empty() | return | endif
+function! yt#extras#select_yank()
+  if s:Y.empty() | return | endif
 
   if exists('g:loaded_fzf')
-    return fzf#run({'source': yt#extras#yanks(a:redirected),
+    return fzf#run({'source': yt#extras#yanks(),
           \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
   endif
 
   echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
   let i = 0
-  for yank in stack.stack
+  for yank in s:Y.stack
     call s:show_yank(yank, i)
     let i += 1
   endfor
@@ -184,10 +164,10 @@ function! yt#extras#select_yank(redirected)
   else
     let index = str2nr(indexStr)
 
-    if index < 0 || index > len(stack)
+    if index < 0 || index >= len(s:Y.stack)
       echo "\n" | echoerr "Yank index out of bounds"
     else
-      call stack.set_at_offset(index)
+      call s:Y.set_at_offset(index)
     endif
   endif
 endfunction
@@ -205,22 +185,22 @@ endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#extras#menu()
-  if !exists('g:loaded_fzf')
-    return s:F.msg('[yanktools] fzf is needed for this command')
-  endif
-  call fzf#run({'source': [
-        \ 'Toggle Freeze Offset',
-        \ 'Convert Yank Type',
-        \ 'Toggle Auto Indent',
-        \ 'Toggle Single Stack',
-        \ 'Clear Yank Stacks',
-        \ 'Clear Zeta Stack',
-        \ 'Display Yanks',
-        \ 'Select Yank',
-        \ 'Select Redirected Yank',
-        \ ],
-        \ 'sink': function('yt#extras#fzf_menu'), 'down': '30%',
-        \ 'options': '--prompt "Yanktools Menu >>>   "'})
+fun! yt#extras#help()
+  let key = get(g:, 'yanktools_options_prefix', "yu")
+  echohl Title | echo "Yanktools commands:\n\n"
+  for [ m, cmd ] in [
+        \  ['s',   "Save current [register]" ],
+        \  ['c',   "Convert Yank Type" ],
+        \  ['r',   "Toggle Record Mode" ],
+        \  ['ai',  "Toggle Auto Indent" ],
+        \  ['xs',  "Clear Yank Stacks" ],
+        \  ['xz',  "Clear Zeta Stack" ],
+        \  ['i',   "Interactive Paste" ],
+        \  ['Y',   "Display Yanks" ],
+        \  ['Z',   "Display Zeta Yanks" ],
+        \  ['f',   "Toggle Freeze Offset\n\n" ],
+        \ ]
+    echohl Type | echo key.m."\t" | echohl None | echon cmd
+  endfor
 endfun
 

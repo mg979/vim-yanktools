@@ -11,8 +11,6 @@ Basic options........................................|yanktools-basic|
 Cycle yank stack.....................................|yanktools-cycle|
 Preview stacks.......................................|yanktools-preview|
 Register redirection.................................|yanktools-redirection|
-Redirected stack.....................................|yanktools-redirected-stack|
-Cut operator.........................................|yanktools-cut|
 Replace operator.....................................|yanktools-replace|
 Duplicate text.......................................|yanktools-duplicate|
 Zeta mode............................................|yanktools-zeta|
@@ -81,9 +79,6 @@ Automatic mode (not recommended!):~
 
 * Stacks are filled automatically at every yank/delete operation.
 
-* Register redirection: `d` and `D` can be redirected to another register
-  (default 'x'), without replacing the unnamed register.
-
 
 
 
@@ -140,22 +135,14 @@ OTHER COMMANDS                                                  *yanktools-misc*
 
   `yus`      save current [register] into the yank stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
-  `yuxs`     clear yank stacks
+  `yui`      interactive paste
+  `yur`      toggle recording mode (all yanks/deletions will be recorded)
+  `yuai`     toggle autoindent
+  `yuxs`     clear yank stack
   `yuxz`     clear zeta stack
-  `yui`      toggle autoindent
-  `yur`      toggle redirection
-  `yum`      yanktools menu (fzf only)
-
-  Mappings for interactive paste use `yi`:
-
-  `yiy`      interactively select a yank
-  `yir`      interactively select a redirected yank
-
-  Mappings to display stack contents:
-
-  `yY`       show yanks
-  `yX`       show redirected yanks
-  `yZ`       show zeta yanks
+  `yuY`      display yank stack
+  `yuZ`      display zeta stack
+  `yu?`      print this list of mappings
 
 
 This is all for the recommended (MANUAL) mode.
@@ -172,56 +159,15 @@ disabled by default. Enable with:
 >
   let g:yanktools_manual = 0
 <
-You can disable redirection (inverting cut & deletion mappings):
->
-  let g:yanktools_use_redirection = 0
-<
-  `y`   (yank)        add yanked text to the yank stack
-  `yx`  (cut)         add deleted text to the yank stack
-  `d`   (delete)      redirect the deleted text to register 'x'
-  `yr`  (replace)     replace text object with register
-  `yd`  (duplicate)   duplicate text object
+NOTE: Much of what follows concerns the automatic mode, and not relevant by
+default.
 
-Further notes:
 
-- `change` and `x` commands redirect to the black hole register
-- yank commands add the yanked text to the yank stack
-- you can cycle the yank stack with the 'swap' commands (default <M-p> / <M-P>)
-
-- delete commands add the deleted text to the redirected stack
-- you can paste from the redirected register with <leader>p/P
-- you can cycle the redirected stack with the 'swap' commands after <leader>p/P
-
->
-  NOTE:
-
-  Much of what follows concerns the automatic mode, and not relevant by
-  default.
 
 
 
 BASIC OPTIONS                                                  *yanktools-basic*
 ==============================================================================
-
-The most important options, with their defaults:
->
-  let g:yanktools_use_redirection = 1
-
-Set to 0 if you want a single stack for both yank and delete operations, so
-that you can cycle among all of them, instead of having separate stacks.
-This will disable redirection, and make `delete` work as in vim, but the
-deleted text will be added to the yank stack as well.
-
-It can be toggled with mapping `yur`.
-
-Set to `s` or another character if you want an easy mapping for the replace
-operator. Otherwise it will default to `yr`.
->
-  let g:yanktools_format_prefix = '<'
-
-Perform an autoindented paste/replacement by preponing this prefix.
-
-See also |yanktools-redirected-stack| and |yanktools-replace-operator|.
 
 
 
@@ -243,10 +189,6 @@ pasting before, and applying autoformat.
 
 Simply moving the cursor after a swap resets this command.
 
-By default, deleted (redirected) text builds its own stack, so you can cycle
-it by using these commands, after having performed a paste from the redirected
-register (default '<leader>p').
-
 
 
 
@@ -257,102 +199,21 @@ By pressing `]y` or `[y`, you will move to a different position in the stack,
 and also open a preview window with the current entry. This window closes if
 you move the cursor, or paste the entry.
 
-You can preview items also by pressing `yY` (normal stack), `yX` (redirected
-stack) or `yZ` (zeta stack).
+You can preview items also by pressing `yY` (normal stack) or `yZ` (zeta stack).
 
 
 
 
 REGISTER REDIRECTION                                     *yanktools-redirection*
 ==============================================================================
-                                                    *g:yanktools_black_hole_c*
-                                                    *g:yanktools_black_hole_x*
-                                                  *g:yanktools_black_hole_del*
-                                              *g:yanktools_redir_paste_prefix*
-                                               *g:yanktools_redirect_register*
 
-By default, `c`, `C`, `x`, `X` and `<Del>` redirect to the black hole register,
-while `d` and `D` redirect to a special register (default "x").  You
-can paste directly from this register with <leader>p/P.
-
-Normally, when you yank to a specific register, you overwrite at the same time
-the unnamed register, but this won't happen here, since it is restored to its
-previous content after each delete/change operation.
-
+By default, `c`, `C`, `x`, `X` and `<Del>` redirect to the black hole register.
 In visual mode, the pasted text will not overwrite the default register.
 
 You can still specify a register and it will override the default redirection:
 >
-  dd     will delete the line while redirecting to register "x"
-  "_dd   will delete the line while redirecting to black hole register
   cc     will change the line while redirecting to black hole register
-  "xcc   will change the line while redirecting to register "x"
-
-You can define the keys that redirect to the black hole register:
->
-  let g:yanktools_black_hole_c    = 1
-  let g:yanktools_black_hole_x    = 1
-  let g:yanktools_black_hole_del  = 1
-
-You can change the default prefix for redirected paste:
->
-  let g:yanktools_redir_paste_prefix = '<leader>'
-
-You can redefine the default register for redirection:
->
-  let g:yanktools_redirect_register = 'x'
-
-
-
-
-
-SINGLE VS DOUBLE STACK                             *yanktools-redirected-stack*
-=============================================================================
-                                                 *g:yanktools_use_redirection*
-
-If register redirection is active, text that is deleted is redirected to its
-own separate stack. If you prefer using a single stack for both yank and
-delete operations, set:
->
-  let g:yanktools_use_redirection = 0
-
-- `true` (default): deleted text is redirected and added to its own stack.
-- `false`: deleted text is not redirected and is added to the yank stack.
-
-In the first case, the kind of stack you'll be using when cycling will
-depend on the key you used for pasting:
-
-- normal paste                   -> will use normal stack when cycling
-- paste from redirected register -> will use redirected stack
-
-Setting this option to false will effectively disable register redirection,
-but it can be toggled with mapping `cyr` ('change use redirection').
-
-
-
-
-
-CUT OPERATOR                                                    *yanktools-cut*
-=============================================================================
-
-The `cut` operator is the inverse of the delete operator.
-
-To put it simply, the cut operator behaves like Vim default `delete` operator.
-
-If redirection is active, it will delete but not redirect, and the deleted
-text will be added to the normal yank stack. On the contrary, if redirection
-is disabled, the deleted text will be forcibly redirected, and added to the
-redirected stack.
-
-Note that in visual mode the key `x` is assigned to this command, so that `d`
-and `x` have different behaviours. <del> in visual mode redirects to the black
-hole register.
-
-Plugs and default mappings:
-
-    <Plug>(CutOperator) yx
-    <Plug>(CutLine)     yxx
-    <Plug>(CutVisual)   x
+  "xcc   will change the line while using register "x"
 
 
 
@@ -360,45 +221,25 @@ Plugs and default mappings:
 
 REPLACE OPERATOR                                            *yanktools-replace*
 =============================================================================
-                                                     *g:yanktools_replace_key*
 
-By default it's mapped to `yr` (`yrr` to replace lines), and it accepts a
-register from which to paste.
-
-
-There are two variants:
-
-- `yr` repeatable with dot, but not swappable
-- `yR` swappable, but not repeatable with dot
-
+By default it's mapped to `s` (`ss` to replace lines), and it accepts
+a register from which to paste.
 
 The `replace line` command can have two different behaviours:
 
-- `yrr` will replace [count] lines with a single instance of the register
+- `ss` will replace [count] lines with a single instance of the register
   (this behaviour is the same as in ReplaceWithRegister plugin).
 
-- `yrm` will instead replace each line in [count] with the register
+- `srr` will instead replace each line in [count] with the register
   content, while keeping the order of multiline entries.
 
-The `replace line` command is both swappable and repeatable (with `vim-repeat`).
+The `replace line` command is repeatable (with `vim-repeat`).
 
 Plugs and default mappings:
 
-  <Plug>(ReplaceOperatorR)          yr      repeatable, non-swappable
-  <Plug>(ReplaceOperatorS)          yR      swappable, non-repeatable
-  <Plug>(ReplaceLineSingle)         yrr     replace [count] lines
-  <Plug>(ReplaceLineMulti)          yrm     replace each of [count] lines
-
-For easier mappings, set for example:
->
-  let g:yanktools_replace_key = 's'
-
-mappings will become:
->
-  yr      ->    s
-  yR      ->    sr
-  yrr     ->    ss
-  yrm     ->    srr
+  <Plug>(ReplaceOperator)           s       repeatable
+  <Plug>(ReplaceLineSingle)         ss      replace [count] lines
+  <Plug>(ReplaceLineMulti)          srr     replace each of [count] lines
 
 
 
@@ -407,13 +248,15 @@ DUPLICATE OPERATOR                                         *yanktools-duplicate*
 ==============================================================================
 
 Duplicate lines, text object, or visually selected text. Duplicated text won't
-overwrite the default register. `DuplicateLines` is repeatable with repeat.vim,
-the operator version doesn't need it.
+overwrite the default register. Repeatable.
+
+Note that DuplicateLines with [count] duplicates the same single line [count]
+times, if you want to duplicate different lines use the operator (|j| or |_|).
 
 Plugs and default mappings:
 
   <Plug>(DuplicateOperator)    yd
-  <Plug>(DuplicateLines)       ydd
+  <Plug>(DuplicateLines)       <M-d>
   <Plug>(DuplicateVisual)      <M-d>
 
 
@@ -434,7 +277,7 @@ the key sequence `zpzpzp` would then recreate the same sequence and consume the
 stack.
 
 Note: to paste `zp` or `zP` are used.
-Note: visual mode uses uppercase Z mappings -> `Zy`, `Zd`, `Zp`
+Note: visual mode uses uppercase Z mappings -> `ZY`, `ZD`, `ZP`
 
 Plugs, if you want to remap them:
 
@@ -446,29 +289,10 @@ Plugs, if you want to remap them:
   <Plug>(ZetaPaste_p)        zp
   <Plug>(ZetaPaste_P)        zP
   <Plug>(ZetaPasteVisual)    ZP
-
+                                                            *g:yanktools_zeta*
 To disable the default `zeta` mappings:
 >
   let g:yanktools_zeta = 0
-
-
-
-
-
-VISUAL MODE                                                   *yanktools-visual*
-==============================================================================
-
-A summary of the default mappings for visual mode:
-
-p             paste from default register
-<leader>p     paste from redirected register
-d             delete and redirect
-<M-d>         duplicate
-x             cut (doesn't redirect if redirection is active and vv.)
-<del>         black hole deletion
-ZY            zeta yank
-ZD            zeta delete
-ZP            zeta paste
 
 
 
@@ -485,7 +309,7 @@ repeatable.
 Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
 
-
+                                                          *g:yanktools_repeat*
 `vim-repeat` integration can be disabled by setting:
 >
   let g:yanktools_repeat = 0
@@ -524,10 +348,6 @@ Option                                        | Default            ~
 ----------------------------------------------+------------------------
 g:yanktools_paste_keys                        |  ['p', 'P']
                                               |
-g:yanktools_use_redirection                   |  1
-g:yanktools_redirect_register                 |  'x'
-g:yanktools_redir_paste_prefix                |  '<leader>'
-                                              |
 g:yanktools_black_hole_c                      |  1
 g:yanktools_black_hole_x                      |  1
 g:yanktools_black_hole_del                    |  1
@@ -554,13 +374,10 @@ Plug                                        | Default                    ~
 --------------------------------------------+------------------------------
 <Plug>(Paste_<key>)                         | <key>
 <Plug>(PasteIndent_<key>)                   | <leader><key>
-<Plug>(PasteRedirected_<key>)               | <key>
-<Plug>(PasteRedirectedIndent_<key>)         | <leader><key>
                                             |
 <Plug>(SwapPasteNext)                       | <M-p>
 <Plug>(SwapPastePrevious)                   | <M-P>
                                             |
-<Plug>(ToggleRedirection)                   | cyr
 <Plug>(ToggleAutoIndent)                    | cyi
 <Plug>(ClearYankStack)                      | cys
 <Plug>(ClearZetaStack)                      | czs
@@ -568,7 +385,6 @@ Plug                                        | Default                    ~
 <Plug>(ConvertYankType)                     | cyt
 <Plug>(YanktoolsMenu)                       | cym
 <Plug>(Yanks)                               | yY
-<Plug>(RedirectedYanks)                     | yX
 <Plug>(ZetaYanks)                           | yZ
 <Plug>(ISelectYank)                         | yiy
 <Plug>(ISelectYank!)                        | yir
@@ -593,8 +409,6 @@ Some convenient mappings you can add to your vimrc:
 
   map [p <Plug>(PasteIndent_P)
   map ]p <Plug>(PasteIndent_p)
-  map =p <Plug>(PasteRedirectedIndent_p)
-  map -p <Plug>(PasteRedirectedIndent_P)
 >
   " if you can use meta-mappings
   nmap <M-d> <Plug>(DuplicateLines)

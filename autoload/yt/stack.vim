@@ -46,7 +46,7 @@ fun! s:clear_stack() dict
   let self.stack = []
 endfun
 
-fun! s:move_offset(count, ...) dict
+fun! s:move_offset(count) dict
   " take overflow in account if going out of bounds
   let start = self.offset
   let max = self.size()

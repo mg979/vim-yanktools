@@ -156,7 +156,7 @@ endfunction
 
 function! yt#delete_line(count, register)
   call s:deleting()
-  return yt#delete(1, a:register).'_'
+  return yt#delete(1, a:register, 0).'_'
 endfunction
 
 
@@ -190,9 +190,15 @@ function! yt#swap_paste(forward, key)
 
   "---------------------------------------------------------------------------
 
+  " enable lazyredraw for better statusline message
+  let s:v.lz = &lazyredraw | set lz
+
   " move stack offset and get return message code
   " if stack wasn't synched, it has been moved already (to the current offset)
-  let result = was_synched ? s:Y.move_offset(a:forward, 1) : 0
+  let result = was_synched ? s:Y.move_offset(a:forward ? 1 : -1) : 0
+
+  " set register to offset
+  call s:Y.update_register()
 
   " set flag before actual paste, so that autocmd call will run
   let s:has_pasted = 1 | let s:v.has_changed = 1
@@ -219,6 +225,7 @@ fun! yt#offset(count)
 
   " move stack offset and set register
   call s:Y.move_offset(a:count)
+  call s:Y.update_register()
 
   " show register in preview
   call s:Y.show_current()
@@ -245,9 +252,6 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:msg(n)
-  " enable lazyredraw for better statusline message
-  let s:v.lz = &lazyredraw | set lz
-
   redraw
   echo "Yank stack position: " . (s:Y.offset + 1) . "/" . s:Y.size()
   if a:n

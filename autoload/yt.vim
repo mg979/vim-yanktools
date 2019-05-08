@@ -157,7 +157,7 @@ endfunction
 
 function! yt#delete_line(count, register)
   call s:deleting()
-  return yt#delete(1, a:register, 0).'_'
+  return yt#delete(a:count, a:register, 0).'_'
 endfunction
 
 

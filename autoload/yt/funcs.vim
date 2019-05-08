@@ -55,6 +55,7 @@ endfun
 
 fun! s:Funcs.store_register(...) abort
   " store current register for later restoring, then return it
+  " if setting variables, will be automatically restored on text change
   if !a:0
     let s:v.restoring = 1
     let s:v.has_changed = 1

@@ -68,9 +68,10 @@ nnoremap <silent><expr>   <Plug>(ReplaceOperator)     yt#replace#operator(v:coun
 nnoremap <silent><expr>   <Plug>(ReplaceLineSingle)   yt#replace#line(v:count, v:register, 0)
 nnoremap <silent><expr>   <Plug>(ReplaceLineMulti)    yt#replace#line(v:count, v:register, 1)
 
-nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate(v:count)
-nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate_lines(v:count)
-xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate_visual()
+nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#operator(v:count)
+nnoremap <silent><expr>   <Plug>(DuplicateLine)       yt#duplicate#lines(v:count, 1)
+nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate#lines(v:count, 0)
+xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 
 nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 0, 0)
 xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 1, 0)
@@ -139,7 +140,7 @@ function! s:nmap(key, plug)
 endfunction
 
 function! s:nmaparg(key, plug)
-  if !hasmapto(a:plug) && empty(maparg(a:key))
+  if !hasmapto(a:plug) && empty(maparg(a:key, 'n'))
     exe 'nmap' a:key a:plug
   endif
 endfunction
@@ -211,6 +212,7 @@ call s:nmap(s:map.'rr',     '<Plug>(ReplaceLineMulti)')
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 call s:nmap('yd',    '<Plug>(Duplicate)')
+call s:nmap('ydd',   '<Plug>(DuplicateLine)')
 call s:nmap('<M-d>', '<Plug>(DuplicateLines)')
 call s:xmap('<M-d>', '<Plug>(Duplicate)')
 

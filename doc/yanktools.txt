@@ -223,17 +223,16 @@ Plugs and default mappings:
 DUPLICATE OPERATOR                                         *yanktools-duplicate*
 ==============================================================================
 
-Duplicate lines, text object, or visually selected text. Duplicated text won't
-overwrite the default register. Repeatable.
+Duplicate lines, text object, or visually selected text, without overwriting
+the default register. Repeatable.
 
-Note that DuplicateLines with [count] duplicates the same single line [count]
-times, if you want to duplicate different lines use the operator (|j| or |_|).
+         Plug                  Mapping           duplicates...~
+------------------------------------------------------------------------------
+  <Plug>(DuplicateOperator)    yd                text object
+  <Plug>(DuplicateLine)        ydd               the same line [count] times
+  <Plug>(DuplicateLines)       <M-d>             [count] lines
+  <Plug>(DuplicateVisual)      <M-d>             visual selection
 
-Plugs and default mappings:
-
-  <Plug>(DuplicateOperator)    yd
-  <Plug>(DuplicateLines)       <M-d>
-  <Plug>(DuplicateVisual)      <M-d>
 
 
 

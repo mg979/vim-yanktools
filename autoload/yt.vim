@@ -174,41 +174,6 @@ endfunction
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Duplicate                                                                {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-function! yt#duplicate_visual()
-  call s:F.store_register()
-  return "yP"
-endfunction
-
-function! yt#duplicate_lines(count)
-  let s:dupl_count = a:count>1? string(a:count) : ''
-  set opfunc=yt#dupl_opfunc
-  return ":\<c-u>\<cr>g@_"
-endfunction
-
-function! yt#duplicate(count)
-  let s:dupl_count = ''
-  set opfunc=yt#dupl_opfunc
-  return 'g@'
-endfunction
-
-fun! yt#dupl_opfunc(type)
-  let oldvmode = &virtualedit
-  set virtualedit=onemore
-  call s:F.store_register()
-  let n = s:dupl_count
-  if a:type == 'line'
-    exe 'keepjumps normal! `[V`]y'.n.'P`]j^'
-  else
-    exe 'keepjumps normal! `[v`]y'.n.'P`]'
-  endif
-  let &virtualedit = oldvmode
-endfun
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swap paste                                                               {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

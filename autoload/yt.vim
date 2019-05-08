@@ -53,8 +53,6 @@ fun! s:check_swap()
   " s:v.has_changed must be 0 because this must run after on_text_change()
   if s:has_pasted && !s:v.has_changed
         \ && getpos('.') != s:post_paste_pos
-    " reset stack (if not frozen)
-    if !s:Y.frozen | let s:Y.offset = 0 | endif
     let s:has_pasted = 0
     let s:post_paste_pos = getpos('.')
     let s:last_paste_tick = b:changedtick
@@ -217,12 +215,10 @@ endfun
 function! yt#swap_paste(forward, key)
   if s:Y.is_empty() | return | endif
 
-  " store register (unless stack is frozen)
-  if !s:Y.frozen | call s:F.store_register() | endif
+  " ensure register and stack are synched
+  let was_synched = s:Y.synched()
 
   if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
-    " ensure current stack offset is correct
-    call s:Y.synched()
     execute "normal ".a:key
     return
   endif
@@ -230,10 +226,8 @@ function! yt#swap_paste(forward, key)
   "---------------------------------------------------------------------------
 
   " move stack offset and get return message code
-  let msg = s:Y.move_offset(a:forward, 1)
-
-  " set register to offset
-  call s:Y.update_register()
+  " if stack wasn't synched, it has been moved already (to the current offset)
+  let result = was_synched ? s:Y.move_offset(a:forward, 1) : 0
 
   " set flag before actual paste, so that autocmd call will run
   let s:has_pasted = 1 | let s:v.has_changed = 1
@@ -245,11 +239,8 @@ function! yt#swap_paste(forward, key)
   " update position, because using non recursive paste
   let s:post_paste_pos = getpos('.')
 
-  " restore register (unless stack is frozen)
-  if !s:Y.frozen | call s:F.restore_register() | endif
-
   call s:F.dismiss_preview()
-  call s:msg(msg)
+  call s:msg(result)
 endfunction
 
 
@@ -258,12 +249,11 @@ endfunction
 " Choose offset                                                            {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#offset(next)
+fun! yt#offset(count)
   if s:Y.is_empty() | return | endif
 
   " move stack offset and set register
-  call s:Y.move_offset(a:next)
-  call s:Y.update_register()
+  call s:Y.move_offset(a:count)
 
   " show register in preview
   call s:Y.show_current()

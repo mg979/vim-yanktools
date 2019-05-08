@@ -82,8 +82,8 @@ nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", "(P
 nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
 nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>
 
-nnoremap <silent>         <Plug>(ChooseNext)          :call yt#offset(1)<cr>
-nnoremap <silent>         <Plug>(ChoosePrevious)      :call yt#offset(0)<cr>
+nnoremap <silent>         <Plug>(ChooseNext)          :<c-u>call yt#offset(v:count1)<cr>
+nnoremap <silent>         <Plug>(ChoosePrevious)      :<c-u>call yt#offset(v:count1 * -1)<cr>
 
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank_with_key("y")
 nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#del_with_key("d")
@@ -95,7 +95,7 @@ xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#del_with_key("d")
 xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 0)<cr>
 
 nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
-nnoremap <silent>         <Plug>(FreezeYank)          :call yt#stack#freeze()<cr>
+nnoremap <silent>         <Plug>(SetYank)             :<c-u>call yt#extras#set_offset(v:count)<cr>
 nnoremap <silent>         <Plug>(ClearYankStack)      :<c-u>call yt#extras#clear_yanks(0)<cr>
 nnoremap <silent>         <Plug>(ClearZetaStack)      :<c-u>call yt#extras#clear_yanks(1)<cr>
 nnoremap <silent>         <Plug>(Yanks)               :<c-u>call yt#extras#show_yanks('y')<cr>
@@ -270,7 +270,7 @@ endif
 
 if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'ai', '<Plug>(ToggleAutoIndent)')
-  call s:nmaparg(s:opt.'f', '<Plug>(FreezeYank)')
+  call s:nmaparg(s:opt.'o', '<Plug>(SetYank)')
   call s:nmaparg(s:opt.'xs', '<Plug>(ClearYankStack)')
   call s:nmaparg(s:opt.'xz', '<Plug>(ClearZetaStack)')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')

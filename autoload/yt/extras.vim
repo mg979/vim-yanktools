@@ -87,6 +87,14 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+fun! yt#extras#set_offset(ix)
+  if s:Y.is_empty() | return | endif
+  call s:Y.set_at_offset(a:ix)
+  call s:F.msg("Yank stack set at index " . s:Y.offset, 1)
+endfun
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yt#extras#yanks()
   let yanks = [] | let i = 0
   for yank in s:Y.stack

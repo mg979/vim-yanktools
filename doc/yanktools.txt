@@ -133,13 +133,13 @@ Zeta mode (|yanktools-zeta|):
 OTHER COMMANDS                                                  *yanktools-misc*
 ==============================================================================
 
-  Mappings for special actions/options use `yu`:
+  Mappings for special commands/options use `yu`:
 
   `yus`      save current [register] into the yank stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
   `yui`      interactive paste
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
-  `yuf`      toggle stack index freeze (reset stack index after swap)
+  `yuo`      set stack offset (index) to [count] (0 if not given)
   `yuai`     toggle autoindent
   `yuxs`     clear yank stack
   `yuxz`     clear zeta stack
@@ -171,9 +171,6 @@ If you press another paste key (p, [p, ]p...), the stack will be cycled
 keeping the properties of that paste command (before or after, move cursor at
 end, autoindent, etc).
 
-After a swap, stack index isn't reset by default. Use the 'yuf' command to
-toggle stack index 'freezing'.
-
 
 
 PREVIEW YANK STACKS                                          *yanktools-preview*
@@ -184,6 +181,8 @@ and also open a preview window with the current entry. This window closes if
 you move the cursor, or paste the entry.
 
 You can preview items also by pressing `yY` (normal stack) or `yZ` (zeta stack).
+
+You can set an arbitrary index in the stack with [count]`yuo`
 
 
 

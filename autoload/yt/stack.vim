@@ -46,18 +46,23 @@ fun! s:clear_stack() dict
   let self.stack = []
 endfun
 
-fun! s:move_offset(forward, ...) dict
-  " if the stack wasn't synched, use current offset first
-  if self.frozen && !self.synched() | return | endif
+fun! s:move_offset(count, ...) dict
+  " take overflow in account if going out of bounds
+  let start = self.offset
+  let max = self.size()
+  let n = ( abs(a:count) % max ) * ( a:count > 0 ? 1 : -1 )
+  let self.offset += n
 
-  let self.offset += (a:forward ? 1 : -1)
-  if self.offset >= self.size()
-    let self.offset = 0
+  if self.offset >= max
+    let self.offset = start + n - max
     return 1
+
   elseif self.offset < 0
-    let self.offset = self.size()-1
+    let self.offset = start + n + max
     return 2
+
   endif
+  call self.update_register()
 endfun
 
 fun! s:size() dict
@@ -124,7 +129,7 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 let s:Yank  = {
-      \ 'name': 'Yank', 'offset': 0, 'frozen': 1,
+      \ 'name': 'Yank', 'offset': 0,
       \ 'clear': function('s:clear_stack'),
       \ 'update_stack': function('s:update_stack'),
       \ 'move_offset': function('s:move_offset'),
@@ -138,7 +143,7 @@ let s:Yank  = {
       \}
 
 
-let s:Zeta  = {'name': 'Zeta', 'offset': 0, 'frozen': 0,
+let s:Zeta  = {'name': 'Zeta', 'offset': 0,
       \ 'clear': function('s:clear_stack'),
       \ 'is_empty': function('s:is_empty'),
       \ 'size': function('s:size'),
@@ -180,18 +185,6 @@ fun! yt#stack#init()
   """Initialize stacks.
   call s:Yank.clear()
   call s:Zeta.clear()
-endfun
-
-fun! yt#stack#freeze()
-  if s:Yank.frozen
-    let s:Yank.frozen = 0
-    let s:Yank.offset = 0
-    echo "Stack offset will be reset."
-  else
-    let s:Yank.frozen = 1
-    echo "Stack offset won't be reset."
-  endif
-  call s:Yank.update_register()
 endfun
 
 

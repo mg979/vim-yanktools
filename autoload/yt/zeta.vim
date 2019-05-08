@@ -23,7 +23,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#zeta#paste_with_key(key, plug, visual, format)
+function! yt#zeta#paste_with_key(key, plug, format)
     let Z = g:yanktools.zeta
     if Z.empty() | return | endif
 

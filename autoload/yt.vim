@@ -138,12 +138,16 @@ endfunction
 " Delete                                                                   {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#delete(count, register)
+function! yt#delete(count, register, visual)
+  if a:visual
+    call s:deleting()
+    return "\"" . a:register . 'd'
+  endif
+
   let n = a:count > 1 ? string(a:count) : ''
-  if s:VM() | return a:register.n.'d' | endif
   let s:register = a:register
   set opfunc=yt#del_opfunc
-  return n.'g@'
+  return ":\<c-u>\<cr>".n.'g@'
 endfunction
 
 function! yt#del_opfunc(type)
@@ -154,13 +158,8 @@ function! yt#del_opfunc(type)
   execute "normal! \"".s:register."d"
 endfunction
 
-function! yt#delete_visual(register)
-  if !s:VM() | call s:deleting() | endif
-  return "\"" . a:register . 'd'
-endfunction
-
 function! yt#delete_line(count, register)
-  if !s:VM() | call s:deleting() | endif
+  call s:deleting()
   return yt#delete(1, a:register).'_'
 endfunction
 
@@ -282,7 +281,7 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:is_being_formatted()
-  let all = g:yanktools_auto_format_all
+  let all = g:yanktools_autoindent
   let this = s:v.format_this
   return (all && !this) || (!all && this)
 endfunction
@@ -290,7 +289,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:is_moving_at_end()
-  return g:yanktools_move_cursor_after_paste || s:v.move_this
+  return g:yanktools_move_after || s:v.move_this
 endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

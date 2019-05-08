@@ -36,11 +36,11 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#extras#toggle_autoformat()
-  if g:yanktools_auto_format_all
-    let g:yanktools_auto_format_all = 0
+  if g:yanktools_autoindent
+    let g:yanktools_autoindent = 0
     echo "Autoindent is now disabled."
   else
-    let g:yanktools_auto_format_all = 1
+    let g:yanktools_autoindent = 1
     echo "Autoindent is now enabled."
   endif
 endfunction
@@ -186,7 +186,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yt#extras#help()
-  let key = get(g:, 'yanktools_options_prefix', "yu")
+  let key = get(g:, 'yanktools_options_key', "yu")
   echohl Title | echo "Yanktools commands:\n\n"
   for [ m, cmd ] in [
         \  ['s',   "Save current [register]" ],

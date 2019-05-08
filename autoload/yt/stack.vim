@@ -64,16 +64,12 @@ fun! s:size() dict
   return len(self.stack)
 endfun
 
-fun! s:empty() dict
+fun! s:is_empty() dict
   " check size and print message if empty
   if !self.size()
     call s:F.msg('Stack is empty')
     return 1
   endif
-endfun
-
-fun! s:reset_offset() dict
-  if !self.frozen | let self.offset = 0 | endif
 endfun
 
 fun! s:set_at_offset(n) dict
@@ -88,6 +84,7 @@ endfun
 
 fun! s:synched() dict
   " verify that stack and register are synched
+  " that is, the register content must match the current stack offset
   if s:F.get_register()[1] != self.stack[self.offset].text
     call self.update_register()
     return 0
@@ -133,9 +130,8 @@ let s:Yank  = {
       \ 'move_offset': function('s:move_offset'),
       \ 'size': function('s:size'),
       \ 'update_register': function('s:update_register'),
-      \ 'reset_offset': function('s:reset_offset'),
       \ 'set_at_offset': function('s:set_at_offset'),
-      \ 'empty': function('s:empty'),
+      \ 'is_empty': function('s:is_empty'),
       \ 'get': function('s:get'),
       \ 'show_current': function('s:show_current'),
       \ 'synched': function('s:synched'),
@@ -144,7 +140,7 @@ let s:Yank  = {
 
 let s:Zeta  = {'name': 'Zeta', 'offset': 0, 'frozen': 0,
       \ 'clear': function('s:clear_stack'),
-      \ 'empty': function('s:empty'),
+      \ 'is_empty': function('s:is_empty'),
       \ 'size': function('s:size'),
       \ 'get': function('s:get'),
       \ 'update_register': function('s:update_register'),

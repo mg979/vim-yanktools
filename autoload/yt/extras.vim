@@ -89,7 +89,7 @@ endfunction
 
 function! yt#extras#yanks()
   let yanks = [] | let i = 0
-  for yank in s:Y
+  for yank in s:Y.stack
     let line = substitute(yank.text, '\V\n', '^M', 'g')
     if len(line) > 80 | let line = line[:80] . '…' | endif
     if i < 10 | let spaces = "    " | else | let spaces = "   " | endif
@@ -140,7 +140,7 @@ endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#extras#select_yank()
-  if s:Y.empty() | return | endif
+  if s:Y.is_empty() | return | endif
 
   if exists('g:loaded_fzf')
     return fzf#run({'source': yt#extras#yanks(),

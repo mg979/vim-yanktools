@@ -101,4 +101,13 @@ fun! s:Funcs.dismiss_preview() abort
   let s:v.pwline = -1
 endfun
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:Funcs.ensure_cursor_moved() abort
+  let oldww = &whichwrap
+  set whichwrap=h,l
+  normal! hl
+  let &whichwrap = oldww
+endfun
+
 

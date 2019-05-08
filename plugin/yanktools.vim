@@ -14,7 +14,7 @@ call yt#funcs#init()
 call yt#stack#init()
 
 let g:yanktools_move_after = get(g:, 'yanktools_move_after', 0)
-let g:yanktools_autoindent         = get(g:, 'yanktools_autoindent', 0)
+let g:yanktools_autoindent = get(g:, 'yanktools_autoindent', 0)
 
 
 
@@ -79,8 +79,8 @@ nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", "(P
 xnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", "(Paste_P)", 1, 0)
 nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", "(Paste_P)", 0, 1)
 
-nnoremap <silent>         <Plug>(SwapPasteNext)       :call yt#swap_paste(1, "P")<cr>
-nnoremap <silent>         <Plug>(SwapPastePrevious)   :call yt#swap_paste(0, "P")<cr>
+nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
+nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>
 
 nnoremap <silent>         <Plug>(ChooseNext)          :call yt#offset(1)<cr>
 nnoremap <silent>         <Plug>(ChoosePrevious)      :call yt#offset(0)<cr>
@@ -94,18 +94,18 @@ xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank_with_key("y")
 xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#del_with_key("d")
 xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 0)<cr>
 
-nnoremap <silent>         <Plug>(ToggleAutoIndent)    :ToggleAutoIndent<cr>
+nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
 nnoremap <silent>         <Plug>(FreezeYank)          :call yt#stack#freeze()<cr>
-nnoremap <silent>         <Plug>(ClearYankStack)      :call yt#extras#clear_yanks(0)<cr>
-nnoremap <silent>         <Plug>(ClearZetaStack)      :call yt#extras#clear_yanks(1)<cr>
-nnoremap <silent>         <Plug>(Yanks)               :call yt#extras#show_yanks('y')<cr>
-nnoremap <silent>         <Plug>(ZetaYanks)           :call yt#extras#show_yanks('z')<cr>
-nnoremap <silent>         <Plug>(ConvertYankType)     :call yt#extras#convert_yank_type()<cr>
-nnoremap <silent>         <Plug>(YanktoolsHelp)       :call yt#extras#help()<cr>
+nnoremap <silent>         <Plug>(ClearYankStack)      :<c-u>call yt#extras#clear_yanks(0)<cr>
+nnoremap <silent>         <Plug>(ClearZetaStack)      :<c-u>call yt#extras#clear_yanks(1)<cr>
+nnoremap <silent>         <Plug>(Yanks)               :<c-u>call yt#extras#show_yanks('y')<cr>
+nnoremap <silent>         <Plug>(ZetaYanks)           :<c-u>call yt#extras#show_yanks('z')<cr>
+nnoremap <silent>         <Plug>(ConvertYankType)     :<c-u>call yt#extras#convert_yank_type()<cr>
+nnoremap <silent>         <Plug>(YanktoolsHelp)       :<c-u>call yt#extras#help()<cr>
 nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current(v:register)<cr>
-nnoremap <silent>         <Plug>(InteractivePaste)         :InteractivePaste<cr>
-nnoremap <silent>         <Plug>(ToggleRecordYanks)   :ToggleRecordYanks<cr>
-nnoremap <silent>         <Plug>(RedirectedYanks)     :call yt#extras#show_yanks('x')<cr>
+nnoremap <silent>         <Plug>(InteractivePaste)    :<c-u>InteractivePaste<cr>
+nnoremap <silent>         <Plug>(ToggleRecordYanks)   :<c-u>ToggleRecordYanks<cr>
+nnoremap <silent>         <Plug>(RedirectedYanks)     :<c-u>call yt#extras#show_yanks('x')<cr>
 
 
 

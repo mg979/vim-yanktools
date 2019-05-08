@@ -53,7 +53,8 @@ fun! s:check_swap()
   " s:v.has_changed must be 0 because this must run after on_text_change()
   if s:has_pasted && !s:v.has_changed
         \ && getpos('.') != s:post_paste_pos
-    call s:Y.reset_offset()
+    " reset stack (if not frozen)
+    if !s:Y.frozen | let s:Y.offset = 0 | endif
     let s:has_pasted = 0
     let s:post_paste_pos = getpos('.')
     let s:last_paste_tick = b:changedtick
@@ -69,16 +70,13 @@ function! yt#on_text_change()
   if s:v.has_yanked     | call s:update_yanks() | endif
   if !s:v.has_changed   | return                | endif
 
-  " reset changed state in any case
-  let s:v.has_changed = 0
-
   " restore register if necessary
   if s:v.restoring | call s:F.restore_register() | endif
 
-  " autoformat / move cursor, ensure CursorMoved runs
+  " autoformat / move cursor, and ensure CursorMoved is triggered
   if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
-  if s:is_moving_at_end()     | execute "keepjumps normal! `]"
-  else                        | execute "normal! hl"              | endif
+  if s:is_moving_at_end()     | execute "keepjumps normal! `]"    | endif
+  call s:F.ensure_cursor_moved()
 
   " update repeat.vim
   call s:F.set_repeat()
@@ -217,9 +215,7 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#swap_paste(forward, key)
-  if s:Y.empty()
-    return
-  endif
+  if s:Y.is_empty() | return | endif
 
   " store register (unless stack is frozen)
   if !s:Y.frozen | call s:F.store_register() | endif
@@ -232,9 +228,6 @@ function! yt#swap_paste(forward, key)
   endif
 
   "---------------------------------------------------------------------------
-
-  " enable lazyredraw for better statusline message
-  let s:v.lz = &lazyredraw | set lz
 
   " move stack offset and get return message code
   let msg = s:Y.move_offset(a:forward, 1)
@@ -266,7 +259,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! yt#offset(next)
-  if s:Y.empty() | return | endif
+  if s:Y.is_empty() | return | endif
 
   " move stack offset and set register
   call s:Y.move_offset(a:next)
@@ -297,6 +290,9 @@ endfun
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:msg(n)
+  " enable lazyredraw for better statusline message
+  let s:v.lz = &lazyredraw | set lz
+
   redraw
   echo "Yank stack position: " . (s:Y.offset + 1) . "/" . s:Y.size()
   if a:n

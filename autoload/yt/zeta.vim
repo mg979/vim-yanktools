@@ -25,7 +25,7 @@ endfunction
 
 function! yt#zeta#paste_with_key(key, plug, format)
     let Z = g:yanktools.zeta
-    if Z.empty() | return | endif
+    if Z.is_empty() | return | endif
 
     " set vars
     let s:v.format_this = a:format

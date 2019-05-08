@@ -87,12 +87,12 @@ nnoremap <silent>         <Plug>(ChooseNext)          :<c-u>call yt#offset(v:cou
 nnoremap <silent>         <Plug>(ChoosePrevious)      :<c-u>call yt#offset(v:count1 * -1)<cr>
 
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
-nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete("d")
-nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#delete("d").'_'
+nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 0)
+xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 1)
+nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#delete_line(v:count, v:register)
 nnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '(ZetaPaste_P)')<cr>
 xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
-xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete("d")
 xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 
 nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>

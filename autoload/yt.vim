@@ -36,15 +36,16 @@ let s:Z = g:yanktools.zeta
 
 function! yt#check_yanks()
   """This function is called on CursorMoved/CursorHold/TextYankPost.
-  if s:v.has_yanked
-    call s:update_yanks()
-  endif
+  call s:update_yanks()
   call s:check_swap()
 endfunction
 
 fun! s:update_yanks()
-  if s:v.zeta            | call s:Z.update_stack()
-  else                   | call s:Y.update_stack()
+  if s:v.has_yanked
+    if s:v.zeta            | call s:Z.update_stack()
+    else                   | call s:Y.update_stack()
+    endif
+    let s:v.has_yanked = 0
   endif
 endfun
 
@@ -63,10 +64,10 @@ endfun
 
 function! yt#on_text_change()
   """This function is called on TextChanged event."""
-  if s:VM() | return s:reset_vars() | endif
+  call s:update_yanks()
 
-  if s:v.has_yanked     | call s:update_yanks() | endif
-  if !s:v.has_changed   | return                | endif
+  if !s:v.has_changed | return                | endif
+  if s:VM()           | return s:reset_vars() | endif
 
   " restore register if necessary
   if s:v.restoring | call s:F.restore_register() | endif

@@ -86,14 +86,14 @@ nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0
 nnoremap <silent>         <Plug>(ChooseNext)          :<c-u>call yt#offset(v:count1)<cr>
 nnoremap <silent>         <Plug>(ChoosePrevious)      :<c-u>call yt#offset(v:count1 * -1)<cr>
 
-nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank_with_key("y")
-nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#del_with_key("d")
-nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#del_with_key("dd")
-nnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 0)<cr>
-nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste_with_key('P', '(ZetaPaste_P)', 0)<cr>
-xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank_with_key("y")
-xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#del_with_key("d")
-xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste_with_key('p', '(ZetaPaste_p)', 0)<cr>
+nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
+nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete("d")
+nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#delete("d").'_'
+nnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
+nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '(ZetaPaste_P)')<cr>
+xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
+xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete("d")
+xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 
 nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
 nnoremap <silent>         <Plug>(SetYank)             :<c-u>call yt#extras#set_offset(v:count)<cr>

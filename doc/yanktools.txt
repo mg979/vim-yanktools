@@ -8,7 +8,6 @@ Usage................................................|yanktools-usage|
 Other commands.......................................|yanktools-misc|
 Recording mode.......................................|yanktools-recording|
 Cycle yank stack.....................................|yanktools-cycle|
-Offset freeze........................................|yanktools-freeze|
 Preview stacks.......................................|yanktools-preview|
 Register redirection.................................|yanktools-redirection|
 Replace operator.....................................|yanktools-replace|
@@ -140,7 +139,7 @@ OTHER COMMANDS                                                  *yanktools-misc*
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
   `yui`      interactive paste
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
-  `yuf`      toggle offset freeze
+  `yuf`      toggle stack index freeze (reset stack index after swap)
   `yuai`     toggle autoindent
   `yuxs`     clear yank stack
   `yuxz`     clear zeta stack
@@ -172,17 +171,8 @@ If you press another paste key (p, [p, ]p...), the stack will be cycled
 keeping the properties of that paste command (before or after, move cursor at
 end, autoindent, etc).
 
-
-
-OFFSET FREEZE                                                 *yanktools-freeze*
-==============================================================================
-
-Default mapping: `yuf`
-
-Once a swap is performed, the position in the stack will change: this change
-is kept, so that next pastes will have the same text content. If you prefer
-that the stack index is reset after a swap is completed and the cursor is
-moved away, turn off the offset 'freezing'.
+After a swap, stack index isn't reset by default. Use the 'yuf' command to
+toggle stack index 'freezing'.
 
 
 

@@ -48,7 +48,7 @@ endfun
 
 fun! s:move_offset(forward, ...) dict
   " if the stack wasn't synched, use current offset first
-  if !self.synched() | return | endif
+  if self.frozen && !self.synched() | return | endif
 
   let self.offset += (a:forward ? 1 : -1)
   if self.offset >= self.size()
@@ -176,28 +176,26 @@ endfun
 let g:yanktools.yank = s:Yank
 let g:yanktools.zeta = s:Zeta
 let g:yanktools.current_stack = s:Yank
-let s:frozen = 1
 
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 
 fun! yt#stack#init()
   """Initialize stacks.
-  call g:yanktools.yank.clear()
-  call g:yanktools.zeta.clear()
+  call s:Yank.clear()
+  call s:Zeta.clear()
 endfun
 
 fun! yt#stack#freeze()
-  if s:frozen
-    let g:yanktools.yank.frozen = 0
-    let g:yanktools.yank.offset = 0
-    echo "Stack offsets will be reset."
+  if s:Yank.frozen
+    let s:Yank.frozen = 0
+    let s:Yank.offset = 0
+    echo "Stack offset will be reset."
   else
-    let g:yanktools.yank.frozen = 1
-    echo "Stack offsets won't be reset."
+    let s:Yank.frozen = 1
+    echo "Stack offset won't be reset."
   endif
-  call g:yanktools.yank.update_register()
-  let s:frozen = !s:frozen
+  call s:Yank.update_register()
 endfun
 
 

@@ -221,6 +221,9 @@ function! yt#swap_paste(forward, key)
     return
   endif
 
+  " store register (unless stack is frozen)
+  if !s:Y.frozen | call s:F.store_register() | endif
+
   if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
     " ensure current stack offset is correct
     call s:Y.synched()
@@ -250,9 +253,8 @@ function! yt#swap_paste(forward, key)
   let s:post_paste_pos = getpos('.')
 
   " restore register (unless stack is frozen)
-  if !s:Y.frozen
-    call s:F.restore_register()
-  endif
+  if !s:Y.frozen | call s:F.restore_register() | endif
+
   call s:F.dismiss_preview()
   call s:msg(msg)
 endfunction

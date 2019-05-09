@@ -17,6 +17,29 @@ let g:yanktools_move_after = get(g:, 'yanktools_move_after', 0)
 let g:yanktools_autoindent = get(g:, 'yanktools_autoindent', 0)
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Persistance                                                               {{{1
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+au VimEnter * call s:check_persistance()
+
+fun! s:check_persistance()
+  if exists('g:YANKTOOLS_PERSIST') && !get(g:, 'yanktools_persistance', 0)
+    unlet g:YANKTOOLS_PERSIST
+  elseif exists('g:YANKTOOLS_PERSIST')
+    let g:yanktools.yank.stack = deepcopy(g:YANKTOOLS_PERSIST)
+    let g:yanktools_persistance = 1
+  elseif get(g:, 'yanktools_persistance', 0)
+    let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
+  endif
+  if get(g:, 'yanktools_persistance', 0)
+    augroup yanktools_persist
+      au!
+      au BufWrite,VimLeave * let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
+    augroup END
+  endif
+endfun
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommands                                                              {{{1
@@ -46,11 +69,12 @@ command! Yanks              call yt#extras#show_yanks('y')
 command! ZetaYanks          call yt#extras#show_yanks('z')
 command! ClearYankStack     call yt#extras#clear_yanks(0)
 command! ClearZetaStack     call yt#extras#clear_yanks(1)
-command! ToggleAutoIndent   call yt#extras#toggle_autoformat()
-command! ToggleRecordYanks  call yt#extras#toggle_recording()
+command! ToggleAutoIndent   call yt#extras#toggle_autoindent()
+command! InteractivePaste   call yt#extras#select_yank()
+command! YanksPreview       call yt#preview#start()
+command! YanksPersistance   call yt#extras#toggle_persistance()
 
-com! -bang InteractivePaste call yt#extras#select_yank()
-com! -bang YanksPreview     call yt#preview#start()
+com! -bang ToggleRecordYanks call yt#extras#toggle_recording(<bang>0)
 
 
 
@@ -108,7 +132,7 @@ nnoremap <silent>         <Plug>(YanktoolsHelp)       :<c-u>call yt#extras#help(
 nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current(v:register)<cr>
 nnoremap <silent>         <Plug>(InteractivePaste)    :<c-u>InteractivePaste<cr>
 nnoremap <silent>         <Plug>(YanksPreview)        :<c-u>YanksPreview<cr>
-nnoremap <silent>         <Plug>(ToggleRecordYanks)   :<c-u>ToggleRecordYanks<cr>
+nnoremap <silent>         <Plug>(ToggleRecordYanks)   :<c-u>call yt#extras#toggle_recording(1)<cr>
 nnoremap <silent>         <Plug>(RedirectedYanks)     :<c-u>call yt#extras#show_yanks('x')<cr>
 
 
@@ -278,7 +302,7 @@ endif
 if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'ai', '<Plug>(ToggleAutoIndent)')
   call s:nmaparg(s:opt.'o', '<Plug>(SetYank)')
-  call s:nmaparg(s:opt.'xs', '<Plug>(ClearYankStack)')
+  call s:nmaparg(s:opt.'xy', '<Plug>(ClearYankStack)')
   call s:nmaparg(s:opt.'xz', '<Plug>(ClearZetaStack)')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')
   call s:nmaparg(s:opt.'Z',  '<Plug>(ZetaYanks)')

@@ -35,7 +35,7 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#toggle_autoformat()
+function! yt#extras#toggle_autoindent()
   if g:yanktools_autoindent
     let g:yanktools_autoindent = 0
     echo "Autoindent is now disabled."
@@ -61,7 +61,7 @@ let s:to_map = [
 " in the case of Y = y$, remap it anyway, and restore the old mappings
 " afterwards
 
-fun! yt#extras#toggle_recording(...)
+fun! yt#extras#toggle_recording(msg)
   let s:v.is_recording = !s:v.is_recording
   if s:v.is_recording
     let [ s:mapped, s:map_failed ] = [ [], [] ]
@@ -80,7 +80,7 @@ fun! yt#extras#toggle_recording(...)
     for k in s:map_failed
       echom "[yanktools] failed because of existing mapping:" k[2]."map" k[0] k[1]
     endfor
-    if !a:0 | call s:F.msg("Recording has been enabled", 1) | endif
+    if a:msg | call s:F.msg("Recording has been enabled", 1) | endif
   else
     for k in s:mapped
       exe "silent!" k[2]."unmap" k[0]
@@ -91,7 +91,7 @@ fun! yt#extras#toggle_recording(...)
       endif
       unlet s:had_Y
     endif
-    if !a:0 | call s:F.msg("Recording has been disabled") | endif
+    if a:msg | call s:F.msg("Recording has been disabled") | endif
   endif
 endfun
 
@@ -221,7 +221,7 @@ fun! yt#extras#help()
         \  ['c',   "Convert Yank Type" ],
         \  ['r',   "Toggle Record Mode" ],
         \  ['ai',  "Toggle Auto Indent" ],
-        \  ['xs',  "Clear Yank Stacks" ],
+        \  ['xy',  "Clear Yank Stacks" ],
         \  ['xz',  "Clear Zeta Stack" ],
         \  ['i',   "Interactive Paste" ],
         \  ['p',   "Yanks Preview" ],
@@ -230,5 +230,22 @@ fun! yt#extras#help()
         \ ]
     echohl Type | echo key.m."\t" | echohl None | echon cmd
   endfor
+endfun
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! yt#extras#toggle_persistance() abort
+  let g:yanktools_persistance = !get(g:, 'yanktools_persistance', 0)
+  if g:yanktools_persistance
+    let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
+    augroup yanktools_persist
+      au!
+      au BufWrite,VimLeave * let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
+    augroup END
+  else
+    autocmd! yanktools_persist
+    augroup! yanktools_persist
+    unlet g:YANKTOOLS_PERSIST
+  endif
 endfun
 

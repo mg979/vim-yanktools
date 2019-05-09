@@ -15,7 +15,10 @@ Zeta stack...........................................|yanktools-zeta|
 Repeatability........................................|yanktools-repeat|
 Preview stacks.......................................|yanktools-preview|
 Interactive paste....................................|yanktools-interactive|
+Options..............................................|yanktools-options|
 Mappings.............................................|yanktools-mappings|
+Ex commands..........................................|yanktools-ex|
+Persistance..........................................|yanktools-persistance|
 Credits..............................................|yanktools-credits|
 License..............................................|yanktools-license|
 
@@ -69,6 +72,8 @@ FEATURES LIST                                               *yanktools-features*
 * Convert yank type: convert selected register to/from blockwise.
 
 * |repeat-vim| support: for most paste operations.
+
+* optional persistance
 
 
 
@@ -140,7 +145,7 @@ Recommended settings:
 
 
 
-OTHER COMMANDS                                                  *yanktools-misc*
+COMMANDS                                                    *yanktools-commands*
 ==============================================================================
 
   Mappings for special commands/options use `yu`:
@@ -152,7 +157,7 @@ OTHER COMMANDS                                                  *yanktools-misc*
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
   `yuo`      set stack offset (index) to [count] (0 if not given)
   `yuai`     toggle autoindent
-  `yuxs`     clear yank stack
+  `yuxy`     clear yank stack
   `yuxz`     clear zeta stack
   `yuY`      display yank stack
   `yuZ`      display zeta stack
@@ -325,6 +330,11 @@ where you can use the following mappings:
 OPTIONS                                                      *yanktools-options*
 ==============================================================================
 
+                                                     *g:yanktools_persistance*
+  Default: 0
+
+Enabled/Disable yank stack persistance across vim restarts.
+
                                                       *g:yanktools_autoindent*
   Default: 0
 
@@ -434,11 +444,44 @@ Plug                                   |  Modes  | Default                    ~
 <Plug>(InteractivePaste)               |   n     |  yui
 <Plug>(ToggleRecordYanks)              |   n     |  yur
 <Plug>(ToggleAutoIndent)               |   n     |  yuai
-<Plug>(ClearYankStack)                 |   n     |  yuxs
+<Plug>(ClearYankStack)                 |   n     |  yuxy
 <Plug>(ClearZetaStack)                 |   n     |  yuxz
 <Plug>(Yanks)                          |   n     |  yuY
 <Plug>(ZetaYanks)                      |   n     |  yuZ
 <Plug>(YanktoolsHelp)                  |   n     |  yu?
+
+
+
+EX COMMANDS                                                       *yanktools-ex*
+==============================================================================
+
+A few ex commands are defined:
+
+  :Yanks                  same as `yuY`
+  :ZetaYanks              same as `yuZ`
+  :ClearYankStack         same as `yuxy`
+  :ClearZetaStack         same as `yuxz`
+  :ToggleAutoIndent       same as `yuai`
+  :InteractivePaste       same as `yui`
+  :YanksPreview           same as `yup`
+  :ToggleRecordYanks[!]   same as `yur`, verbose with <bang>
+
+
+
+PERSISTANCE                                              *yanktools-persistance*
+==============================================================================
+
+Add to the vimrc:
+>
+  let g:yanktools_persistance = 1
+
+Activate in the current session with:
+
+  :YanksPersistance
+
+But for this command to be effective at vim restart, you must also add
+|g:yanktools_persistance| to your vimrc. It is still useful if you want to
+start saving the stack in your current session.
 
 
 

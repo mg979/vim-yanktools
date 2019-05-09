@@ -24,7 +24,7 @@ let s:v.pwline       = 0
 
 let s:v.is_recording = 0
 if get(g:, 'yanktools_start_in_record_mode', 0)
-  call yt#extras#toggle_recording(1)
+  call yt#extras#toggle_recording(0)
 endif
 
 let s:Y = g:yanktools.yank

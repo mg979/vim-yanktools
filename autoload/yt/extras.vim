@@ -114,6 +114,9 @@ function! yt#extras#select_yank_fzf(yank)
   let index = substitute(index, "]", "", "")
   let index = substitute(index, " ", "", "g")
   call s:Y.set_at_offset(index)
+  if s:F.is_preview_open()
+    call yt#preview#update()
+  endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -154,6 +157,9 @@ function! yt#extras#select_yank()
     return fzf#run({'source': yt#extras#yanks(),
           \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
+  elseif s:F.is_preview_open()
+    call s:F.msg('Press p or P to paste current item.', 1)
+    return
   endif
 
   echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
@@ -182,17 +188,6 @@ endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#pclose()
-  if s:v.pwline
-    pclose!
-    autocmd! yanktools_preview
-    augroup! yanktools_preview
-    let s:v.pwline = 0
-  endif
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 fun! yt#extras#help()
   let key = get(g:, 'yanktools_options_key', "yu")
   echohl Title | echo "Yanktools commands:\n\n"
@@ -204,9 +199,9 @@ fun! yt#extras#help()
         \  ['xs',  "Clear Yank Stacks" ],
         \  ['xz',  "Clear Zeta Stack" ],
         \  ['i',   "Interactive Paste" ],
+        \  ['p',   "Yanks Preview" ],
         \  ['Y',   "Display Yanks" ],
-        \  ['Z',   "Display Zeta Yanks" ],
-        \  ['f',   "Toggle Freeze Offset\n\n" ],
+        \  ['Z',   "Display Zeta Yanks\n\n" ],
         \ ]
     echohl Type | echo key.m."\t" | echohl None | echon cmd
   endfor

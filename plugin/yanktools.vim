@@ -50,6 +50,7 @@ command! ToggleAutoIndent   call yt#extras#toggle_autoformat()
 command! ToggleRecordYanks  call yt#extras#toggle_recording()
 
 com! -bang InteractivePaste call yt#extras#select_yank()
+com! -bang YanksPreview     call yt#preview#start()
 
 
 
@@ -107,6 +108,7 @@ nnoremap <silent>         <Plug>(ConvertYankType)     :<c-u>call yt#extras#conve
 nnoremap <silent>         <Plug>(YanktoolsHelp)       :<c-u>call yt#extras#help()<cr>
 nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current(v:register)<cr>
 nnoremap <silent>         <Plug>(InteractivePaste)    :<c-u>InteractivePaste<cr>
+nnoremap <silent>         <Plug>(YanksPreview)        :<c-u>YanksPreview<cr>
 nnoremap <silent>         <Plug>(ToggleRecordYanks)   :<c-u>ToggleRecordYanks<cr>
 nnoremap <silent>         <Plug>(RedirectedYanks)     :<c-u>call yt#extras#show_yanks('x')<cr>
 
@@ -246,6 +248,8 @@ call s:nmap('<M-P>', '<Plug>(SwapPastePrevious)')
 
 call s:nmap(']y', '<Plug>(ChooseNext)')
 call s:nmap('[y', '<Plug>(ChoosePrevious)')
+call s:nmap(']Y', '<Plug>(ChooseLast)')
+call s:nmap('[Y', '<Plug>(ChooseFirst)')
 
 
 
@@ -284,6 +288,7 @@ if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'s', '<Plug>(YankSaveCurrent)')
   call s:nmaparg(s:opt.'?', '<Plug>(YanktoolsHelp)')
   call s:nmaparg(s:opt.'r', '<Plug>(ToggleRecordYanks)')
+  call s:nmaparg(s:opt.'p', '<Plug>(YanksPreview)')
 endif
 
 

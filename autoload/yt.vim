@@ -235,7 +235,7 @@ fun! yt#offset(count)
   call s:Y.update_register()
 
   " show register in preview
-  call s:Y.show_current()
+  call yt#preview#show(0)
 endfun
 
 

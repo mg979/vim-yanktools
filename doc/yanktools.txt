@@ -8,12 +8,12 @@ Usage................................................|yanktools-usage|
 Other commands.......................................|yanktools-misc|
 Recording mode.......................................|yanktools-recording|
 Cycle yank stack.....................................|yanktools-cycle|
-Preview stacks.......................................|yanktools-preview|
 Register redirection.................................|yanktools-redirection|
 Replace operator.....................................|yanktools-replace|
 Duplicate text.......................................|yanktools-duplicate|
-Zeta mode............................................|yanktools-zeta|
-Repeat..............................................|.yanktools-repeat|
+Zeta stack...........................................|yanktools-zeta|
+Repeatability........................................|yanktools-repeat|
+Preview stacks.......................................|yanktools-preview|
 Interactive paste....................................|yanktools-interactive|
 Mappings.............................................|yanktools-mappings|
 Credits..............................................|yanktools-credits|
@@ -40,15 +40,16 @@ FEATURES LIST                                               *yanktools-features*
 
 
 * Stacks: yanks and deletions are stored in a list, that can be cycled at
-  cursor position, back and forth, with a specific keybinding. It keeps the
-  properties of the last paste command (autoformat, paste before, etc).
+  cursor position, back and forth, with a specific keybinding, swapping
+  elements of the stack, and keeping properties of the last paste command
+  (autoformat, paste before, etc).
 
 * Manual and Recording modes: stacks will be filled with specific mappings, or
   automatically at every yank/delete operation, respectively. Can be toggled.
 
 * Black hole redirection: `c`, `C`, `x`, `X`, <del>
 
-* Swap-&-paste or preview (in preview window) yank stack entries
+* Swap-&-paste: also in preview window (with syntax highlighting)
 
 * Paste in visual mode won't change the default register.
 
@@ -60,10 +61,10 @@ FEATURES LIST                                               *yanktools-features*
   back, and pasting them removes them from the stack as well. You can populate
   the stack both by yanking and deleting.
 
-* Autoindent: you can toggle it, or use a prefix to the normal
-  mappings to perform a single indented paste.
+* Autoindent: you can toggle it, or use mappings to perform a single indented
+  paste.
 
-* Interactive paste (also with |fzf-vim|)
+* Interactive paste: with preview window or |fzf-vim|
 
 * Convert yank type: convert selected register to/from blockwise.
 
@@ -78,7 +79,8 @@ The main concept is to have a dedicated stack, where yanks and deletions can
 be stored and later accessed, so to have a `clipboard history` in vim.
 
 The main difference between this and other plugins of this kind, is that
-saving yanks and deletions in the stack isn't an automatic process.
+saving yanks and deletions in the stack isn't an automatic process, at least
+by default.
 
 Adding a new item (yank or deletion) to the yank stack is the result of
 either:
@@ -87,13 +89,14 @@ either:
 * saving a register directly in the stack
 * enabling the `recording mode`, that allows automatic addition to the stack
 
-For simplicity, the default key used by this plugin is the `s` key.
-This key is used for both saving into the stack, and for the replace operator.
+A main key should be defined, and this key will used for both saving into the
+stack, and for the replace operator. I recommend the 's' key.
+>
+  let g:yanktools_main_key = 's'
 
-This will remap the default vim `s` key. If this is a problem for you, read
-|yanktools-mappings|.
+Read |yanktools-mappings| for more details.
 
-Defined operators and their default behaviour:
+Defined operators and their default behaviour (assuming 's' as main key):
 
   `sy`  (yank & save)    add yanked text to the yank stack
   `sd`  (delete & save)  add deleted text to the yank stack
@@ -106,7 +109,7 @@ Further notes:
 - `change` and `x` commands redirect to the _ register (unless specified)
 
 Other normal mode mappings:
-  
+
   `]p`           paste after the cursor and autoindent
   `[p`           paste before the cursor and autoindent
   <M-p>        cycle the stack (+1) and paste
@@ -124,9 +127,9 @@ Visual mode mappings:
 Zeta mode (|yanktools-zeta|):
 
  Normal                 Visual ~
-  `yz`        yank         `ZY` 
-  `dz`        delete       `ZD` 
-  `zp`        paste        `ZP` 
+  `yz`        yank         `ZY`
+  `dz`        delete       `ZD`
+  `zp`        paste        `ZP`
 
 
 
@@ -137,6 +140,7 @@ OTHER COMMANDS                                                  *yanktools-misc*
 
   `yus`      save current [register] into the yank stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
+  `yup`      interactive paste with preview
   `yui`      interactive paste
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
   `yuo`      set stack offset (index) to [count] (0 if not given)
@@ -173,19 +177,6 @@ end, autoindent, etc).
 
 
 
-PREVIEW YANK STACKS                                          *yanktools-preview*
-==============================================================================
-
-By pressing `]y` or `[y`, you will move to a different position in the stack,
-and also open a preview window with the current entry. This window closes if
-you move the cursor, or paste the entry.
-
-You can preview items also by pressing `yY` (normal stack) or `yZ` (zeta stack).
-
-You can set an arbitrary index in the stack with [count]`yuo`
-
-
-
 REGISTER REDIRECTION                                     *yanktools-redirection*
 ==============================================================================
 
@@ -212,11 +203,11 @@ The `replace line` command can have two different behaviours:
 - `srr` will instead replace each line in [count] with the register
   content.
 
-Plugs and default mappings:
-
-  <Plug>(ReplaceOperator)           s       repeatable
-  <Plug>(ReplaceLineSingle)         ss      replace [count] lines
-  <Plug>(ReplaceLineMulti)          srr     replace each of [count] lines
+         Plug                  Mapping           replaces...~
+------------------------------------------------------------------------------
+  <Plug>(ReplaceOperator)      s                 text object
+  <Plug>(ReplaceLineSingle)    ss                [count] lines
+  <Plug>(ReplaceLineMulti)     srr               each of [count] lines
 
 
 
@@ -236,7 +227,7 @@ the default register. Repeatable.
 
 
 
-ZETA MODE                                                       *yanktools-zeta*
+ZETA STACK                                                      *yanktools-zeta*
 ==============================================================================
 
 By postponing the `z` key to a yank/delete command, you can create a disposable
@@ -255,21 +246,68 @@ Note: visual mode uses uppercase Z mappings -> `ZY`, `ZD`, `ZP`
 
 
 
-REPEAT.VIM                                                *yanktools-repeat-vim*
+REPEATABILITY                                                 *yanktools-repeat*
 ==============================================================================
 
-This plugin supports |repeat-vim| for most `paste` operations. This means that
-you can press |dot| to repeat the last paste command while keeping the same
-formatting options of the last command.
+These commands are repeatable:
+
+* replace and duplicate operators
+* delete and save in stack (both regular and zeta)
+
+|repeat-vim| is supported for most `paste` operations. This means that you can
+press |dot| to repeat the last paste command while keeping the same formatting
+options of the last command.
 
 Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
 stack, until the stack is consumed.
+
+Without |repeat-vim|, paste operations are repeatable, but without options,
+and zeta paste is not repeatable.
+
+
+
+PREVIEW YANK STACKS                                          *yanktools-preview*
+==============================================================================
+
+By pressing `]y` or `[y`, you will move to a different position in the stack,
+and also open a preview window with the current entry. This window closes if
+you move the cursor, or paste the entry.
+
+Similarly by pressing `]Y` or `[Y`, you will move the end/start of the stack.
+
+You can list stack items by pressing `yuY` (normal stack) or `yuZ` (zeta stack).
+You can set an arbitrary index in the stack with [count]`yuo`.
+
+
+
+INTERACTIVE PASTE                                        *yanktools-interactive*
+==============================================================================
+
+By pressing `yui`, you will enter interactive paste. It will use |fzf-vim| if
+available.
+
+By pressing `yup`, you will open the preview of the current stack item,
+toghether with the list of the stack contents. You'll be put in this buffer,
+where you can use the following mappings:
+
+  q         quit
+  ]y, J     next item
+  [y, K     previous item
+  ]Y, H     first item
+  [Y, L     last item
+  <cr>      item at current line
+  p         paste (p) current item
+  P         paste (P) current item
+  [p        paste (p) current item and indent
+  ]p        paste (P) current item and indent
+  i         (fzf only) fuzzy select item
+  <tab>     go to original window
 
 
 
 OPTIONS                                                      *yanktools-options*
 ==============================================================================
-                                                    
+
                                                       *g:yanktools_autoindent*
   Default: 0
 
@@ -297,6 +335,11 @@ Enable/disable vim-repeat integration.
 Text bigger than this number of characters will never be added to the yank
 stack. The zeta stack ignores this restriction.
 
+                                                     *g:yanktools_time_format*
+  Default: '%H:%M'
+
+The format for |strftime()|, that is the time of the yank, displayed in th
+preview window statusline.
 
 
 MAPPINGS                                                    *yanktools-mappings*
@@ -315,7 +358,7 @@ need to assign them by yourself.
   Default: ''
 
 Unless mappings are disabled, you must set this variable, or you will get an
-error before entering vim. The content of this variable will be the default 
+error before entering vim. The content of this variable will be the default
 prefix for yank, delete and replace operators. Recommended value: 's'.
 
                                                      *g:yanktools_options_key*
@@ -358,6 +401,8 @@ Plug                                   |  Modes  | Default                    ~
 <Plug>(SwapPastePrevious)              |   n     |  <M-d>
 <Plug>(ChooseNext)                     |   n     |  ]y
 <Plug>(ChoosePrevious)                 |   n     |  [y
+<Plug>(ChooseLast)                     |   n     |  ]Y
+<Plug>(ChooseFirst)                    |   n     |  [Y
                                        |         |
 <Plug>(ZetaYank)                       |   n x   |  yz / ZY
 <Plug>(ZetaDelete)                     |   n x   |  yz / ZD
@@ -367,9 +412,9 @@ Plug                                   |  Modes  | Default                    ~
                                        |         |
 <Plug>(YankSaveCurrent)                |   n     |  yus
 <Plug>(ConvertYankType)                |   n     |  yuc
+<Plug>(YanksPreview)                   |   n     |  yup
 <Plug>(InteractivePaste)               |   n     |  yui
 <Plug>(ToggleRecordYanks)              |   n     |  yur
-<Plug>(FreezeYank)                     |   n     |  yuf
 <Plug>(ToggleAutoIndent)               |   n     |  yuai
 <Plug>(ClearYankStack)                 |   n     |  yuxs
 <Plug>(ClearZetaStack)                 |   n     |  yuxz

@@ -29,7 +29,7 @@ fun! s:update_stack(...) dict
   let type = r[2]
 
   if !s:too_big(text) && text =~ '[[:graph:]]'
-    let item = {'text': text, 'type': type, 'ft': &ft}
+    let item = {'text': text, 'type': type, 'ft': &ft, 'time': localtime()}
     let ix = index(self.stack, item)
     call insert(self.stack, ix == - 1 ?
           \     item : remove(self.stack, ix))
@@ -97,26 +97,6 @@ fun! s:synched() dict
   return 1
 endfun
 
-fun! s:show_current() dict
-  let item = self.get()
-  let text = split(item.text, '\n')
-  let ft = &ft
-  let nl = len(text) < 15 ? len(text) : 15
-  pclose!
-  exe "botright" nl."new"
-  setlocal bt=nofile bh=wipe noswf nobl
-  setlocal previewwindow
-  let pos = (self.offset+1).'/'.self.size()
-  let &l:statusline = '%#Visual# Pos. '.pos.'  %#Tabline# ft '.item.ft
-  put =text
-  1d _
-  1
-  exe 'setf' item.ft
-  wincmd p
-  let s:v.pwline = line('.')
-  call s:preview()
-endfun
-
 fun! s:get(...) dict
   return self.size() ? self.stack[a:0 ? a:1 : self.offset] : {}
 endfun
@@ -138,7 +118,6 @@ let s:Yank  = {
       \ 'set_at_offset': function('s:set_at_offset'),
       \ 'is_empty': function('s:is_empty'),
       \ 'get': function('s:get'),
-      \ 'show_current': function('s:show_current'),
       \ 'synched': function('s:synched'),
       \}
 
@@ -154,7 +133,8 @@ let s:Zeta  = {'name': 'Zeta', 'offset': 0,
 fun! s:Zeta.update_stack() dict
   " duplicate yanks will be added to this stack nonetheless
   let r = s:F.get_register()
-  call add(self.stack, {'text': r[1], 'type': r[2]})
+  call add(self.stack,
+        \{'text': r[1], 'type': r[2], 'ft': &ft, 'time': localtime()})
   if s:v.restoring
     call s:F.restore_register()
   endif
@@ -196,13 +176,5 @@ endfun
 fun! s:too_big(text)
   " hitting text size limit
   return strchars(a:text) > get(g:, 'yanktools_max_text_size', 1000)
-endfun
-
-fun s:preview(...)
-  augroup yanktools_preview
-    au!
-    au CursorMoved * if line('.') != s:v.pwline
-          \        |   call yt#extras#pclose() | endif
-  augroup END
 endfun
 

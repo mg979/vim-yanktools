@@ -111,4 +111,9 @@ fun! s:Funcs.ensure_cursor_moved() abort
   let &whichwrap = oldww
 endfun
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+fun! s:Funcs.is_preview_open()
+  return s:v.pwline != 0
+endfun
 

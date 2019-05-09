@@ -225,7 +225,13 @@ fun! yt#offset(count)
   if s:Y.is_empty() | return | endif
 
   " move stack offset and set register
-  call s:Y.move_offset(a:count)
+  if a:count == 'last'
+    let s:Y.offset = s:Y.size() - 1
+  elseif a:count == 'first'
+    let s:Y.offset = 0
+  else
+    call s:Y.move_offset(a:count)
+  endif
   call s:Y.update_register()
 
   " show register in preview

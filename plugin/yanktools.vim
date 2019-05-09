@@ -85,6 +85,8 @@ nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0
 
 nnoremap <silent>         <Plug>(ChooseNext)          :<c-u>call yt#offset(v:count1)<cr>
 nnoremap <silent>         <Plug>(ChoosePrevious)      :<c-u>call yt#offset(v:count1 * -1)<cr>
+nnoremap <silent>         <Plug>(ChooseLast)          :<c-u>call yt#offset('last')<cr>
+nnoremap <silent>         <Plug>(ChooseFirst)         :<c-u>call yt#offset('first')<cr>
 
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 0)

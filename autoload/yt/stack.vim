@@ -176,7 +176,6 @@ endfun
 
 let g:yanktools.yank = s:Yank
 let g:yanktools.zeta = s:Zeta
-let g:yanktools.current_stack = s:Yank
 
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs

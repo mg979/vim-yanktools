@@ -131,6 +131,13 @@ Zeta mode (|yanktools-zeta|):
   `dz`        delete       `ZD`
   `zp`        paste        `ZP`
 
+Recommended settings:
+>
+  " make 'S' replace until the end of the line
+  let g:yanktools_main_key = 's'
+  nmap      S s$
+  nnoremap  Y y$
+
 
 
 OTHER COMMANDS                                                  *yanktools-misc*
@@ -160,6 +167,16 @@ Default mapping: `yur`
 
 By enabling this mode, all yanks and deletions done with the default keys (|y|
 and |d|) will be saved in the yank stack. It can be toggled.
+
+Note: this works by temporarily mapping yank and delete keys to plugs. 
+By temporarily, I mean that they will be unmapped when you toggle off
+recording mode. If you remapped those commands already, you'll get a message
+in the command line, and those keys won't be mapped.
+A single exception is made for:
+>
+  n[nore]map Y y$
+
+that is, you will not be notified if you have such a mapping.
 
 
 
@@ -205,9 +222,9 @@ The `replace line` command can have two different behaviours:
 
          Plug                  Mapping           replaces...~
 ------------------------------------------------------------------------------
-  <Plug>(ReplaceOperator)      s                 text object
-  <Plug>(ReplaceLineSingle)    ss                [count] lines
-  <Plug>(ReplaceLineMulti)     srr               each of [count] lines
+  <Plug>(Replace)              s                 text object
+  <Plug>(ReplaceLine)          ss                [count] lines
+  <Plug>(ReplaceLines)         srr               each of [count] lines
 
 
 
@@ -219,10 +236,10 @@ the default register. Repeatable.
 
          Plug                  Mapping           duplicates...~
 ------------------------------------------------------------------------------
-  <Plug>(DuplicateOperator)    yd                text object
+  <Plug>(Duplicate)            yd                text object
   <Plug>(DuplicateLine)        ydd               the same line [count] times
   <Plug>(DuplicateLines)       <M-d>             [count] lines
-  <Plug>(DuplicateVisual)      <M-d>             visual selection
+  <Plug>(Duplicate)            <M-d>             visual selection
 
 
 
@@ -391,10 +408,11 @@ Plug                                   |  Modes  | Default                    ~
 <Plug>(Paste_P)                        |   n x   |  P
 <Plug>(PasteIndent_p)                  |   n     |  ]p
 <Plug>(PasteIndent_P)                  |   n     |  [p
-<Plug>(ReplaceOperator)                |   n     |  s
-<Plug>(ReplaceLineSingle)              |   n     |  ss
-<Plug>(ReplaceLineMulti)               |   n     |  srr
+<Plug>(Replace)                        |   n     |  s
+<Plug>(ReplaceLine)                    |   n     |  ss
+<Plug>(ReplaceLines)                   |   n     |  srr
 <Plug>(Duplicate)                      |   n x   |  yd / <M-d>
+<Plug>(DuplicateLine)                  |   n     |  ydd
 <Plug>(DuplicateLines)                 |   n     |  <M-d>
                                        |         |
 <Plug>(SwapPasteNext)                  |   n     |  <M-d>

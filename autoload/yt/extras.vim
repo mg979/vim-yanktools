@@ -47,25 +47,50 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let s:to_map = [
+    \ ['y',  '<Plug>(Yank)',    'n'],
+    \ ['Y',  '<Plug>(Yank)$',   'n'],
+    \ ['y',  '<Plug>(Yank)',    'x'],
+    \ ['d',  '<Plug>(Cut)',     'n'],
+    \ ['D',  '<Plug>(Cut)$',    'n'],
+    \ ['dd', '<Plug>(CutLine)', 'n'],
+    \ ['d',  '<Plug>(Cut)',     'x'],
+    \ ]
+
+" if recording is turned on, map plugs, but don't overwrite existing mappings
+" in the case of Y = y$, remap it anyway, and restore the old mappings
+" afterwards
+
 fun! yt#extras#toggle_recording(...)
   let s:v.is_recording = !s:v.is_recording
   if s:v.is_recording
-    nmap y  <Plug>(Yank)
-    nmap Y  <Plug>(Yank)$
-    xmap y  <Plug>(Yank)
-    nmap d  <Plug>(Cut)
-    nmap D  <Plug>(Cut)$
-    nmap dd <Plug>(CutLine)
-    xmap d  <Plug>(CutVisual)
+    let [ s:mapped, s:map_failed ] = [ [], [] ]
+    for k in s:to_map
+      if empty(maparg(k[0], k[2]))
+        exe k[2]."map" k[0] k[1]
+        call add(s:mapped, k)
+      elseif k[0] ==# 'Y' && maparg(k[0], k[2]) ==# 'y$'
+        " make an exception for nmap Y y$
+        let s:had_Y = maparg(k[0], k[2], 0, 1).noremap + 1
+        exe k[2]."map" k[0] k[1]
+      else
+        call add(s:map_failed, k)
+      endif
+    endfor
+    for k in s:map_failed
+      echom "[yanktools] failed because of existing mapping:" k[2]."map" k[0] k[1]
+    endfor
     if !a:0 | call s:F.msg("Recording has been enabled", 1) | endif
   else
-    silent! nunmap y
-    silent! nunmap Y
-    silent! xunmap y
-    silent! nunmap d
-    silent! nunmap D
-    silent! nunmap dd
-    silent! xunmap d
+    for k in s:mapped
+      exe "silent!" k[2]."unmap" k[0]
+    endfor
+    if exists('s:had_Y')
+      if s:had_Y == 1 | nmap Y y$
+      else            | nnoremap Y y$
+      endif
+      unlet s:had_Y
+    endif
     if !a:0 | call s:F.msg("Recording has been disabled") | endif
   endif
 endfun

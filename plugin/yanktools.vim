@@ -65,9 +65,9 @@ nnoremap <silent><expr>   <Plug>(Cut)                 yt#delete(v:count, v:regis
 xnoremap <silent><expr>   <Plug>(Cut)                 yt#delete(v:count, v:register, 1)
 nnoremap <silent><expr>   <Plug>(CutLine)             yt#delete_line(v:count, v:register)
 
-nnoremap <silent><expr>   <Plug>(ReplaceOperator)     yt#replace#operator(v:count, v:register)
-nnoremap <silent><expr>   <Plug>(ReplaceLineSingle)   yt#replace#line(v:count, v:register, 0)
-nnoremap <silent><expr>   <Plug>(ReplaceLineMulti)    yt#replace#line(v:count, v:register, 1)
+nnoremap <silent><expr>   <Plug>(Replace)             yt#replace#operator(v:count, v:register)
+nnoremap <silent><expr>   <Plug>(ReplaceLine)         yt#replace#line(v:count, v:register, 0)
+nnoremap <silent><expr>   <Plug>(ReplaceLines)        yt#replace#line(v:count, v:register, 1)
 
 nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#operator(v:count)
 nnoremap <silent><expr>   <Plug>(DuplicateLine)       yt#duplicate#lines(v:count, 1)
@@ -76,10 +76,9 @@ xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 
 nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 0, 0)
 xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 1, 0)
-nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_with_key("p", "(Paste_p)", 0, 1)
+nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_with_key("p", "(PasteIndent_p)", 0, 1)
 nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", "(Paste_P)", 0, 0)
-xnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", "(Paste_P)", 1, 0)
-nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", "(Paste_P)", 0, 1)
+nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", "(PasteIndent_P)", 0, 1)
 
 nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
 nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>
@@ -205,9 +204,9 @@ call s:nmap(s:map.'dd', '<Plug>(CutLine)')
 " Replace operator                                                          {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call s:nmap(s:map,          '<Plug>(ReplaceOperator)')
-call s:nmap(s:map.s:map,    '<Plug>(ReplaceLineSingle)')
-call s:nmap(s:map.'rr',     '<Plug>(ReplaceLineMulti)')
+call s:nmap(s:map,          '<Plug>(Replace)')
+call s:nmap(s:map.s:map,    '<Plug>(ReplaceLine)')
+call s:nmap(s:map.'rr',     '<Plug>(ReplaceLines)')
 
 
 

@@ -1,18 +1,24 @@
 ### Yanktools
 
-----------------------------------------------------------------------------
+<!-- vim-markdown-toc GFM -->
 
+* [Installation](#installation)
+* [Features list](#features-list)
+* [Introduction](#introduction)
+* [Usage](#usage)
+* [Pictures](#pictures)
+* [Credits](#credits)
+* [License](#license)
 
-### Introduction
-
-Yanktools is a plugin inspired by vim-yankstack and vim-easyclip.
+<!-- vim-markdown-toc -->
 
 ----------------------------------------------------------------------------
 
 
 ### Installation
 
-Use [vim-plug](https://github.com/junegunn/vim-plug) or any other Vim plugin manager.
+Use [vim-plug](https://github.com/junegunn/vim-plug) or any other plugin
+manager.
 
 With vim-plug:
 
@@ -61,6 +67,9 @@ With vim-plug:
 
 ----------------------------------------------------------------------------
 
+### Introduction
+
+Yanktools is a plugin inspired by vim-yankstack and vim-easyclip.
 
 The main concept is to have a dedicated stack, where yanks and deletions can
 be stored and later accessed, so to have a "clipboard history" in vim.
@@ -76,8 +85,63 @@ either:
 * saving a register directly in the stack
 * enabling the `recording mode`, that allows automatic addition to the stack
 
+
+----------------------------------------------------------------------------
+
+
+### Usage
+
 A main key should be defined, and this key will used for both saving into the
 stack, and for the replace operator. I recommend the 's' key.
+
+      let g:yanktools_main_key = 's'
+
+Read the documentation for more details.
+
+Defined operators and their default behaviour (assuming 's' as main key):
+
+||||
+|-|-|-|
+| <kbd>sy</kbd> | yank & save   | add yanked text to the yank stack |
+| <kbd>sd</kbd> | delete & save | add deleted text to the yank stack |
+| <kbd>s</kbd>  | replace       | replace text object with register |
+| <kbd>yd</kbd> | duplicate     | duplicate text object |
+
+Other normal mode mappings:
+
+|||
+|-|-|
+| <kbd>]p</kbd>        |  paste after the cursor and autoindent |
+| <kbd>[p</kbd>        |  paste before the cursor and autoindent |
+| <kbd>M-p</kbd>     |  cycle the stack (+1) and paste |
+| <kbd>M-P</kbd>     |  cycle the stack (-1) and paste |
+| <kbd>]y</kbd>        |  cycle the stack (+1) and open preview window |
+| <kbd>[y</kbd>        |  cycle the stack (-1) and open preview window |
+
+Visual mode mappings:
+
+|||
+|-|-|
+| <kbd>sy</kbd>        |  yank & save |
+| <kbd>sd</kbd>        |  delete & save |
+| <kbd>x</kbd> <kbd>Del</kbd> |    black hole deletion |
+| <kbd>M-d</kbd>     |  duplicate |
+
+Zeta mode:
+
+|Normal||Visual|
+|-|-|-|
+| <kbd>yz</kbd>        | yank         | <kbd>ZY</kbd> |
+| <kbd>dz</kbd>        | delete       | <kbd>ZD</kbd> |
+| <kbd>zp</kbd>        | paste        | <kbd>ZP</kbd> |
+
+Recommended settings:
+ 
+    " make 'S' replace until the end of the line
+    let g:yanktools_main_key = 's'
+    nmap      S s$
+    nnoremap  Y y$
+
 
 Full documentation with `:help yanktools.txt`
 

@@ -24,6 +24,7 @@ fun! s:update_stack(...) dict
   "   entry must not be too big
   "   must contain printable characters
   "   if entry is duplicate, put it upfront removing the previous one
+  "   if stack size exceeds size limit, remove one entry from the tail
   let r = s:F.get_register(a:0 ? a:1 : '"')
   let text = r[1]
   let type = r[2]
@@ -33,6 +34,9 @@ fun! s:update_stack(...) dict
     let ix = index(self.stack, item)
     call insert(self.stack, ix == - 1 ?
           \     item : remove(self.stack, ix))
+  endif
+  if self.size() > get(g:, 'yanktools_max_stack_size', 100)
+    unlet self.stack[-1]
   endif
 endfun
 

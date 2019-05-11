@@ -108,10 +108,12 @@ Defined operators and their default behaviour (assuming 's' as main key):
   `s`   (replace)        replace text object with register
   `yd`  (duplicate)      duplicate text object
 
-Further notes:
+Visual mode mappings:
 
-- yank and delete commands add the text to the yank stack
-- `change` and `x` commands redirect to the _ register (unless specified)
+  `sy`           yank & save
+  `sd`           delete & save
+  `x` <del>      black hole deletion
+  <M-d>        duplicate
 
 Other normal mode mappings:
 
@@ -121,13 +123,6 @@ Other normal mode mappings:
   <M-P>        cycle the stack (-1) and paste
   `]y`           cycle the stack (+1) and open preview window
   `[y`           cycle the stack (-1) and open preview window
-
-Visual mode mappings:
-
-  `sy`           yank & save
-  `sd`           delete & save
-  `x` <del>      black hole deletion
-  <M-d>        duplicate
 
 Zeta mode (|yanktools-zeta|):
 
@@ -155,13 +150,18 @@ COMMANDS                                                    *yanktools-commands*
   `yup`      interactive paste with preview
   `yui`      interactive paste
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
-  `yuo`      set stack offset (index) to [count] (0 if not given)
+  `yu0`      set stack offset (index) to {first} + [count]
+  `yul`      set stack offset (index) to {last} - [count]
   `yuai`     toggle autoindent
   `yuxy`     clear yank stack
   `yuxz`     clear zeta stack
   `yuY`      display yank stack
   `yuZ`      display zeta stack
   `yu?`      print this list of mappings
+
+Note: `yu0` selects index 0, the 'first' element of the stack: that actually
+means the last inserted element. So 2`yu0` selects 'two elements before the
+last inserted'. Press `yuY` to understand better what this means.
 
 
 

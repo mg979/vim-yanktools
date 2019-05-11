@@ -122,7 +122,8 @@ xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 
 nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
-nnoremap <silent>         <Plug>(SetYank)             :<c-u>call yt#extras#set_offset(v:count)<cr>
+nnoremap <silent>         <Plug>(SetYankFirst)        :<c-u>call yt#extras#set_offset(v:count, 1)<cr>
+nnoremap <silent>         <Plug>(SetYankLast)         :<c-u>call yt#extras#set_offset(v:count, 0)<cr>
 nnoremap <silent>         <Plug>(ClearYankStack)      :<c-u>call yt#extras#clear_yanks(0)<cr>
 nnoremap <silent>         <Plug>(ClearZetaStack)      :<c-u>call yt#extras#clear_yanks(1)<cr>
 nnoremap <silent>         <Plug>(Yanks)               :<c-u>call yt#extras#show_yanks('y')<cr>
@@ -301,7 +302,8 @@ endif
 
 if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'ai', '<Plug>(ToggleAutoIndent)')
-  call s:nmaparg(s:opt.'o', '<Plug>(SetYank)')
+  call s:nmaparg(s:opt.'0', '<Plug>(SetYankFirst)')
+  call s:nmaparg(s:opt.'l', '<Plug>(SetYankLast)')
   call s:nmaparg(s:opt.'xy', '<Plug>(ClearYankStack)')
   call s:nmaparg(s:opt.'xz', '<Plug>(ClearZetaStack)')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')

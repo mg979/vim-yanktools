@@ -112,10 +112,17 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#extras#set_offset(ix)
+fun! yt#extras#set_offset(ix, first)
   if s:Y.is_empty() | return | endif
-  call s:Y.set_at_offset(a:ix)
-  call s:F.msg("Yank stack set at index " . s:Y.offset, 1)
+  if a:first
+    call s:Y.set_at_offset(a:ix)
+  else
+    let ix = ( a:ix * -1 ) - 1
+    let ix = range(s:Y.size())[ix]
+    call s:Y.set_at_offset(ix)
+  endif
+  let [ current, size ] = [ s:Y.offset, s:Y.size() - 1 ]
+  call s:F.msg("Yank stack set at index " . current . '/' . size, 1)
 endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -225,6 +232,8 @@ fun! yt#extras#help()
         \  ['xz',  "Clear Zeta Stack" ],
         \  ['i',   "Interactive Paste" ],
         \  ['p',   "Yanks Preview" ],
+        \  ['0',   "Set yank index: first" ],
+        \  ['l',   "Set yank index: last" ],
         \  ['Y',   "Display Yanks" ],
         \  ['Z',   "Display Zeta Yanks\n\n" ],
         \ ]

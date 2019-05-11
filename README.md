@@ -107,6 +107,15 @@ Defined operators and their default behaviour (assuming 's' as main key):
 | <kbd>s</kbd>  | replace       | replace text object with register |
 | <kbd>yd</kbd> | duplicate     | duplicate text object |
 
+Visual mode mappings:
+
+|||
+|-|-|
+| <kbd>sy</kbd>        |  yank & save |
+| <kbd>sd</kbd>        |  delete & save |
+| <kbd>x</kbd> <kbd>Del</kbd> |    black hole deletion |
+| <kbd>M-d</kbd>     |  duplicate |
+
 Other normal mode mappings:
 
 |||
@@ -117,15 +126,6 @@ Other normal mode mappings:
 | <kbd>M-P</kbd>     |  cycle the stack (-1) and paste |
 | <kbd>]y</kbd>        |  cycle the stack (+1) and open preview window |
 | <kbd>[y</kbd>        |  cycle the stack (-1) and open preview window |
-
-Visual mode mappings:
-
-|||
-|-|-|
-| <kbd>sy</kbd>        |  yank & save |
-| <kbd>sd</kbd>        |  delete & save |
-| <kbd>x</kbd> <kbd>Del</kbd> |    black hole deletion |
-| <kbd>M-d</kbd>     |  duplicate |
 
 Zeta mode:
 

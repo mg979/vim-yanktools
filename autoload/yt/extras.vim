@@ -156,13 +156,9 @@ endfunction
 function! yt#extras#convert_yank_type()
   let r = v:register | let text = getreg(r) | let type = getregtype(r)
 
-  if type[:0] ==# ""
+  if type[:0] ==# "\<C-V>"
     call setreg(r, text, "V")
     echo "Register ".r." converted to linewise yank."
-    if r ==# s:F.default_reg()
-      call remove(s:Y.stack, 0)
-      call s:Y.update_stack()
-    endif
     return
   endif
 
@@ -172,12 +168,8 @@ function! yt#extras#convert_yank_type()
     let maxl = max(l)
   endfor
 
-  call setreg(r, text, "".maxl)
+  call setreg(r, text, "\<C-V>".maxl)
   echo "Register ".r." converted to blockwise yank."
-  if r ==# s:F.default_reg()
-    call remove(s:Y.stack, 0)
-    call s:Y.update_stack()
-  endif
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

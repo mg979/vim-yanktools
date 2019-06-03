@@ -217,17 +217,17 @@ fun! yt#extras#help()
   echohl Title | echo "Yanktools commands:\n\n"
   for [ m, cmd ] in [
         \  ['s',   "Save current [register]" ],
-        \  ['c',   "Convert Yank Type" ],
-        \  ['r',   "Toggle Record Mode" ],
-        \  ['ai',  "Toggle Auto Indent" ],
-        \  ['xy',  "Clear Yank Stacks" ],
-        \  ['xz',  "Clear Zeta Stack" ],
-        \  ['i',   "Interactive Paste" ],
-        \  ['p',   "Yanks Preview" ],
-        \  ['0',   "Set yank index: first" ],
-        \  ['l',   "Set yank index: last" ],
-        \  ['Y',   "Display Yanks" ],
-        \  ['Z',   "Display Zeta Yanks\n\n" ],
+        \  ['c',   "Convert yank type" ],
+        \  ['r',   "Toggle recording mode" ],
+        \  ['ai',  "Toggle auto indent" ],
+        \  ['xy',  "Clear yank stack" ],
+        \  ['xz',  "Clear zeta stack" ],
+        \  ['i',   "Interactive paste" ],
+        \  ['p',   "Yanks preview" ],
+        \  ['0',   "Set yank index: first [ + count]" ],
+        \  ['l',   "Set yank index: last [ - count]" ],
+        \  ['Y',   "Display yanks" ],
+        \  ['Z',   "Display zeta yanks\n\n" ],
         \ ]
     echohl Type | echo key.m."\t" | echohl None | echon cmd
   endfor

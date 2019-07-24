@@ -168,8 +168,10 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#redirect(key, register)
-  let reg = a:register == s:F.default_reg() ? '_' : a:register
-  return '"' . reg . a:key
+  if a:register == s:F.default_reg()
+    call s:F.store_register()
+  endif
+  return '"' . a:register . a:key
 endfunction
 
 

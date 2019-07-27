@@ -127,6 +127,7 @@ endfunction
 function! s:autocmd(...) abort
   augroup yanktools_preview
     au!
+    au TabLeave    * call yt#preview#close()
     au CursorMoved * call s:can_close_preview()
   augroup END
 endfunction
@@ -174,22 +175,22 @@ fun! s:goto_offset() abort
 endfun
 
 fun! s:next(count) abort
-  exe "normal ".a:count."\<Plug>(ChooseNext)"
+  exe "normal ".a:count."\<Plug>(YankNext)"
   call s:goto_offset()
 endfun
 
 fun! s:prev(count) abort
-  exe "normal ".a:count."\<Plug>(ChoosePrevious)"
+  exe "normal ".a:count."\<Plug>(YankPrevious)"
   call s:goto_offset()
 endfun
 
 fun! s:first() abort
-  exe "normal \<Plug>(ChooseFirst)"
+  exe "normal \<Plug>(YankFirst)"
   call s:goto_offset()
 endfun
 
 fun! s:last() abort
-  exe "normal \<Plug>(ChooseLast)"
+  exe "normal \<Plug>(YankLast)"
   call s:goto_offset()
 endfun
 

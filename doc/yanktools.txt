@@ -121,8 +121,10 @@ Other normal mode mappings:
   `[p`           paste before the cursor and autoindent
   <M-p>        cycle the stack (+1) and paste
   <M-P>        cycle the stack (-1) and paste
-  `]y`           cycle the stack (+1) and open preview window
-  `[y`           cycle the stack (-1) and open preview window
+  `]y`           cycle the stack (+1)
+  `[y`           cycle the stack (-1)
+  `]Y`           cycle the stack (+1) (with preview window)
+  `[Y`           cycle the stack (-1) (with preview window)
 
 Zeta mode (|yanktools-zeta|):
 
@@ -292,13 +294,15 @@ PREVIEW YANK STACKS                                          *yanktools-preview*
 ==============================================================================
 
 By pressing `]y` or `[y`, you will move to a different position in the stack,
-and also open a preview window with the current entry. This window closes if
-you move the cursor, or paste the entry.
+the first line of which will be echoed in the command line.
 
-Similarly by pressing `]Y` or `[Y`, you will move the end/start of the stack.
+Pressing `]Y` or `[Y` will do the same, but it will also open a preview window
+with the current entry. This window closes if you move the cursor to
+a different line, change tab, or paste the entry. If the preview window is
+open, `]y` or `[y` will keep use it instead.
 
 You can list stack items by pressing `yuY` (normal stack) or `yuZ` (zeta stack).
-You can set an arbitrary index in the stack with [count]`yuo`.
+You can set an arbitrary index in the stack with [count]`yu0`.
 
 
 
@@ -309,14 +313,14 @@ By pressing `yui`, you will enter interactive paste. It will use |fzf-vim| if
 available.
 
 By pressing `yup`, you will open the preview of the current stack item,
-toghether with the list of the stack contents. You'll be put in this buffer,
+together with the list of the stack contents. You'll be put in this buffer,
 where you can use the following mappings:
 
   q         quit
-  ]y, J     next item
-  [y, K     previous item
-  ]Y, H     first item
-  [Y, L     last item
+  J, ]y     next item
+  K, [y     previous item
+  H, ]Y     first item
+  L, [Y     last item
   <cr>      item at current line
   p         paste (p) current item
   P         paste (P) current item
@@ -433,10 +437,12 @@ Plug                                   |  Modes  | Default                    ~
                                        |         |
 <Plug>(SwapPasteNext)                  |   n     |  <M-d>
 <Plug>(SwapPastePrevious)              |   n     |  <M-d>
-<Plug>(ChooseNext)                     |   n     |  ]y
-<Plug>(ChoosePrevious)                 |   n     |  [y
-<Plug>(ChooseLast)                     |   n     |  ]Y
-<Plug>(ChooseFirst)                    |   n     |  [Y
+<Plug>(YankNext)                       |   n     |  ]y
+<Plug>(YankPrevious)                   |   n     |  [y
+<Plug>(YankViewLast)                   |   n     |  ]Y
+<Plug>(YankViewFirst)                  |   n     |  [Y
+<Plug>(YankLast)                       |   n     |
+<Plug>(YankFirst)                      |   n     |
                                        |         |
 <Plug>(ZetaYank)                       |   n x   |  yz / ZY
 <Plug>(ZetaDelete)                     |   n x   |  yz / ZD

@@ -223,7 +223,7 @@ endfunction
 " Choose offset                                                            {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#offset(count)
+fun! yt#offset(preview, count)
   if s:Y.is_empty() | return | endif
 
   " move stack offset and set register
@@ -231,13 +231,21 @@ fun! yt#offset(count)
     let s:Y.offset = s:Y.size() - 1
   elseif a:count == 'first'
     let s:Y.offset = 0
-  else
+  elseif s:Y.synched()
     call s:Y.move_offset(a:count)
   endif
   call s:Y.update_register()
 
   " show register in preview
-  call yt#preview#show(0)
+  if a:preview || exists('s:v.pwwin')
+    echo "\r"
+    call yt#preview#show(0)
+  else
+    echohl Label
+    echo printf('[%d/%d] ', s:Y.offset+1, s:Y.size())
+    echohl None
+    echon split(s:Y.get().text, '\n')[0][:(&columns-10)]
+  endif
 endfun
 
 

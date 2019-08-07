@@ -167,9 +167,17 @@ endfunction
 " Redirect                                                                 {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" if a register is specified, no change from vim, otherwise:
+" c - unnamed register (") is restored after change, register '-' is not
+" x - is redirected to the black hole
+
 function! yt#redirect(key, register)
   if a:register == s:F.default_reg()
+    if index(['x', 'X', "\<Del>"], a:key) >= 0
+      return '"_' . a:key
+    endif
     call s:F.store_register()
+    return a:key
   endif
   return '"' . a:register . a:key
 endfunction

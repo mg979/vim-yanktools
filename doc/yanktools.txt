@@ -325,10 +325,10 @@ together with the list of the stack contents. You'll be put in this buffer,
 where you can use the following mappings:
 
   q         quit
-  J, ]y     next item
-  K, [y     previous item
-  H, ]Y     first item
-  L, [Y     last item
+  j, ]y     next item
+  k, [y     previous item
+  J, ]Y     first item
+  K, [Y     last item
   <cr>      item at current line
   p         paste (p) current item
   P         paste (P) current item

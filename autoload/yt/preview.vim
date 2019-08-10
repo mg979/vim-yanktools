@@ -100,19 +100,19 @@ endfunction
 
 function! s:maps() abort
   nnoremap <nowait><buffer><silent> q     :call yt#preview#close()<cr>
-  nmap     <nowait><buffer><silent> J     :<c-u>call <sid>next(v:count1)<cr>
-  nmap     <nowait><buffer><silent> K     :<c-u>call <sid>prev(v:count1)<cr>
-  nmap     <nowait><buffer><silent> L     :<c-u>call <sid>last()<cr>
-  nmap     <nowait><buffer><silent> H     :<c-u>call <sid>first()<cr>
+  nmap     <nowait><buffer><silent> j     :<c-u>call <sid>next(v:count1)<cr>
+  nmap     <nowait><buffer><silent> k     :<c-u>call <sid>prev(v:count1)<cr>
+  nmap     <nowait><buffer><silent> J     :<c-u>call <sid>last()<cr>
+  nmap     <nowait><buffer><silent> K     :<c-u>call <sid>first()<cr>
   nmap     <nowait><buffer><silent> <cr>  :<c-u>call <sid>update_line()<cr>
   nmap     <nowait><buffer>         p     <tab>p
   nmap     <nowait><buffer>         P     <tab>P
   nmap     <nowait><buffer>         [p    <tab><Plug>(PasteIndent_p)
   nmap     <nowait><buffer>         ]p    <tab><Plug>(PasteIndent_P)
-  nmap     <nowait><buffer>         ]y    J
-  nmap     <nowait><buffer>         [y    K
-  nmap     <nowait><buffer>         ]Y    L
-  nmap     <nowait><buffer>         [Y    H
+  nmap     <nowait><buffer>         ]y    j
+  nmap     <nowait><buffer>         [y    k
+  nmap     <nowait><buffer>         ]Y    J
+  nmap     <nowait><buffer>         [Y    K
   nmap     <nowait><buffer>         i     <Plug>(InteractivePaste)
   nnoremap <nowait><buffer><silent> <tab> :exe g:yanktools.vars.pwwin.'wincmd w'<cr>
 endfunction

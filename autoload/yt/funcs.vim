@@ -99,7 +99,9 @@ endfun
 
 fun! s:Funcs.dismiss_preview() abort
   " this will force dismissal of preview window
-  let s:v.pwline = -1
+  if s:v.pwline
+    let s:v.pwline = -1
+  endif
 endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

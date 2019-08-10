@@ -61,7 +61,7 @@ function! yt#zeta#paste(key, plug)
   endif
 
   " backup register
-  let r = s:F.store_register()
+  call s:F.store_register()
 
   " pop an item from the stack and perform paste
   call Z.pop_stack()
@@ -69,5 +69,20 @@ function! yt#zeta#paste(key, plug)
 
   call s:F.restore_register()
   call s:F.msg("There are " . len(Z.stack) . " entries left in the zeta stack.")
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yt#zeta#visual_paste()
+  let Z = g:yanktools.zeta
+  if Z.is_empty() | return | endif
+
+  " backup register
+  call s:F.store_register()
+
+  " pop an item from the stack and perform paste
+  call Z.pop_stack()
+  call s:F.msg("There are " . len(Z.stack) . " entries left in the zeta stack.")
+  return 'p'
 endfunction
 

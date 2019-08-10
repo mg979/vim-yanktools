@@ -103,15 +103,15 @@ Read |yanktools-mappings| for more details.
 
 Defined operators and their default behaviour (assuming 's' as main key):
 
-  `sy`  (yank & save)    add yanked text to the yank stack
-  `sd`  (delete & save)  add deleted text to the yank stack
-  `s`   (replace)        replace text object with register
+  `sy`  (save yank)      add yanked text to the yank stack
+  `sd`  (save delete)    add deleted text to the yank stack
+  `s`   (substitute)     replace text object with register
   `yd`  (duplicate)      duplicate text object
 
 Visual mode mappings:
 
-  `sy`           yank & save
-  `sd`           delete & save
+  `sy`           save yank
+  `sd`           save delete
   `x` <del>      black hole deletion
   <M-d>        duplicate
 
@@ -204,12 +204,17 @@ end, autoindent, etc).
 REGISTER REDIRECTION                                     *yanktools-redirection*
 ==============================================================================
 
-By default, `c`, `C`, `x`, `X` and `<Del>` redirect to the black hole register.
+By default, ``x`, `X` and `<Del>` redirect to the black hole register.
+Neither the unnamed or the small-delete register (|quote-|) are overwritten.
+
+`c` and `C` work normally, except that the unnamed register isn't overwritten.
+Repeating changes with the . command will overwrite it though.
+
 In visual mode, the pasted text will not overwrite the default register.
 
 You can still specify a register and it will override the default redirection:
 >
-  cc     will change the line while redirecting to black hole register
+  cc     will change the line while restoring the unnamed register
   "xcc   will change the line while using register "x"
 
 

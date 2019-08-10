@@ -121,7 +121,7 @@ nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#delete_line(v:coun
 nnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '(ZetaPaste_P)')<cr>
 xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
-xnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
+xnoremap <silent><expr>   <Plug>(ZetaPaste)           yt#zeta#visual_paste()
 
 nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
 nnoremap <silent>         <Plug>(SetYankFirst)        :<c-u>call yt#extras#set_offset(v:count, 1)<cr>
@@ -293,7 +293,7 @@ if get(g:, 'yanktools_map_zeta', 1)
 
   call s:nmap('zp', '<Plug>(ZetaPaste_p)')
   call s:nmap('zP', '<Plug>(ZetaPaste_P)')
-  call s:xmap('ZP', '<Plug>(ZetaPaste_p)')
+  call s:xmap('ZP', '<Plug>(ZetaPaste)')
 endif
 
 

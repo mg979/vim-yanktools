@@ -128,7 +128,7 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#extras#yanks()
-  let yanks = [] | let i = 0
+  let yanks = [] | let i = 1
   for yank in s:Y.stack
     let line = substitute(yank.text, '\V\n', '^M', 'g')
     if len(line) > 80 | let line = line[:80] . '…' | endif
@@ -141,10 +141,7 @@ function! yt#extras#yanks()
 endfunction
 
 function! yt#extras#select_yank_fzf(yank)
-  let index = a:yank[:4]
-  let index = substitute(index, "[", "", "")
-  let index = substitute(index, "]", "", "")
-  let index = substitute(index, " ", "", "g")
+  let index = str2nr(matchstr(a:yank, '\d\+')) - 1
   call s:Y.set_at_offset(index)
   if s:F.is_preview_open()
     call yt#preview#update()

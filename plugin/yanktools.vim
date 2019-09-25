@@ -309,7 +309,6 @@ endif
 if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'ai', '<Plug>(ToggleAutoIndent)')
   call s:nmaparg(s:opt.'0', '<Plug>(SetYankFirst)')
-  call s:nmaparg(s:opt.'l', '<Plug>(SetYankLast)')
   call s:nmaparg(s:opt.'xy', '<Plug>(ClearYankStack)')
   call s:nmaparg(s:opt.'xz', '<Plug>(ClearZetaStack)')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')

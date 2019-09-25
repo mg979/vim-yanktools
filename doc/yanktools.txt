@@ -105,6 +105,7 @@ Defined operators and their default behaviour (assuming 's' as main key):
 
   `sy`  (save yank)      add yanked text to the yank stack
   `sd`  (save delete)    add deleted text to the yank stack
+  `sc`  (save change)    add changed text to the yank stack
   `s`   (substitute)     replace text object with register
   `yd`  (duplicate)      duplicate text object
 
@@ -153,7 +154,6 @@ COMMANDS                                                    *yanktools-commands*
   `yui`      interactive paste
   `yur`      toggle recording mode (all yanks/deletions will be recorded)
   `yu0`      set stack offset (index) to {first} + [count]
-  `yul`      set stack offset (index) to {last} - [count]
   `yuai`     toggle autoindent
   `yuxy`     clear yank stack
   `yuxz`     clear zeta stack
@@ -212,10 +212,13 @@ Repeating changes with the . command will overwrite it though.
 
 In visual mode, the pasted text will not overwrite the default register.
 
-You can still specify a register and it will override the default redirection:
+You can still specify a register and it will skip redirection:
 >
   cc     will change the line while restoring the unnamed register
   "xcc   will change the line while using register "x"
+
+Finally, you can save the changed text in the stack with `sc` + text object.
+See |yanktools-usage|.
 
 
 

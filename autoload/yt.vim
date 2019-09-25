@@ -155,11 +155,6 @@ function! yt#del_opfunc(type)
   execute "normal! \"".s:register."d"
 endfunction
 
-function! yt#delete_line(count, register)
-  call s:deleting()
-  return yt#delete(a:count, a:register, 0).'_'
-endfunction
-
 
 
 
@@ -171,12 +166,13 @@ endfunction
 " c - unnamed register (") is restored after change, register '-' is not
 " x - is redirected to the black hole
 
-function! yt#redirect(key, register)
+function! yt#redirect(key, register, save)
   if a:register == s:F.default_reg()
     if index(['x', 'X', "\<Del>"], a:key) >= 0
       return '"_' . a:key
     endif
     call s:F.store_register()
+    let s:v.has_yanked = a:save
     return a:key
   endif
   return '"' . a:register . a:key

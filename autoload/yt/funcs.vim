@@ -90,6 +90,7 @@ endfun
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:Funcs.msg(txt, ...) abort
+  redraw
   exe "echohl" ( !a:0 ? "WarningMsg" : "StorageClass" )
   echo a:txt
   echohl None

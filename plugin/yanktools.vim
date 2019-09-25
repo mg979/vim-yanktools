@@ -87,7 +87,8 @@ xnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")
 
 nnoremap <silent><expr>   <Plug>(Cut)                 yt#delete(v:count, v:register, 0)
 xnoremap <silent><expr>   <Plug>(Cut)                 yt#delete(v:count, v:register, 1)
-nnoremap <silent><expr>   <Plug>(CutLine)             yt#delete_line(v:count, v:register)
+nnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:register, 1)
+xnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:register, 1)
 
 nnoremap <silent><expr>   <Plug>(Replace)             yt#replace#operator(v:count, v:register)
 nnoremap <silent><expr>   <Plug>(ReplaceLine)         yt#replace#line(v:count, v:register, 0)
@@ -196,14 +197,14 @@ endfunction
 
 
 if get(g:, 'yanktools_black_hole', 1)
-  nnoremap <expr> c     yt#redirect('c', v:register)
-  nnoremap <expr> C     yt#redirect('C', v:register)
-  xnoremap <expr> c     yt#redirect('c', v:register)
-  nnoremap <expr> x     yt#redirect('x', v:register)
-  nnoremap <expr> X     yt#redirect('X', v:register)
-  xnoremap <expr> x     yt#redirect('d', v:register)
-  nnoremap <expr> <del> yt#redirect('x', v:register)
-  xnoremap <expr> <del> yt#redirect('d', v:register)
+  nnoremap <expr> c     yt#redirect('c', v:register, 0)
+  nnoremap <expr> C     yt#redirect('C', v:register, 0)
+  xnoremap <expr> c     yt#redirect('c', v:register, 0)
+  nnoremap <expr> x     yt#redirect('x', v:register, 0)
+  nnoremap <expr> X     yt#redirect('X', v:register, 0)
+  xnoremap <expr> x     yt#redirect('d', v:register, 0)
+  nnoremap <expr> <del> yt#redirect('x', v:register, 0)
+  xnoremap <expr> <del> yt#redirect('d', v:register, 0)
 endif
 
 
@@ -223,7 +224,10 @@ call s:nmap(s:map.'Y',  '<Plug>(Yank)$')
 
 call s:nxmap(s:map.'d', '<Plug>(Cut)')
 call s:nmap(s:map.'D',  '<Plug>(Cut)$')
-call s:nmap(s:map.'dd', '<Plug>(CutLine)')
+call s:nmap(s:map.'dd', '<Plug>(Cut)_')
+call s:nxmap(s:map.'c', '<Plug>(Change)')
+call s:nmap(s:map.'C',  '<Plug>(Change)$')
+call s:nmap(s:map.'cc', '<Plug>(Change)_')
 
 
 

@@ -50,11 +50,11 @@ FEATURES LIST                                               *yanktools-features*
 * Manual and Recording modes: stacks will be filled with specific mappings, or
   automatically at every yank/delete operation, respectively. Can be toggled.
 
-* Black hole redirection: `c`, `C`, `x`, `X`, <del>
+* Black hole redirection: `x`, `X`, <del>
+
+* Unnamed register restoring: `c`, `C`, visual paste
 
 * Swap-&-paste: also in preview window (with syntax highlighting)
-
-* Paste in visual mode won't change the default register.
 
 * Replace operator: replace text objects with register. Repeatable.
 
@@ -71,9 +71,6 @@ FEATURES LIST                                               *yanktools-features*
 
 * Convert yank type: convert selected register to/from blockwise.
 
-* |repeat-vim| support: for most paste operations.
-
-* optional persistance
 
 
 
@@ -113,6 +110,7 @@ Visual mode mappings:
 
   `sy`           save yank
   `sd`           save delete
+  `sc`           save change
   `x` <del>      black hole deletion
   <M-d>        duplicate
 
@@ -136,10 +134,11 @@ Zeta mode (|yanktools-zeta|):
 
 Recommended settings:
 >
-  " make 'S' replace until the end of the line
   let g:yanktools_main_key = 's'
+
+  " make 'S' replace until the end of the line
   nmap      S s$
-  nnoremap  Y y$
+  nmap      Y y$
 
 
 
@@ -165,6 +164,10 @@ Note: `yu0` selects index 0, the 'first' element of the stack: that actually
 means the last inserted element. So 2`yu0` selects 'two elements before the
 last inserted'. Press `yuY` to understand better what this means.
 
+Note: with the `yuY` and `yuZ` mappings, the current yank and zeta stack will
+be displayed, and you will be able to delete an index from them, if desired.
+
+
 
 
 RECORDING MODE                                             *yanktools-recording*
@@ -175,7 +178,7 @@ Default mapping: `yur`
 By enabling this mode, all yanks and deletions done with the default keys (|y|
 and |d|) will be saved in the yank stack. It can be toggled.
 
-Note: this works by temporarily mapping yank and delete keys to plugs. 
+Note: this works by temporarily mapping yank and delete keys to plugs.
 By temporarily, I mean that they will be unmapped when you toggle off
 recording mode. If you remapped those commands already, you'll get a message
 in the command line, and those keys won't be mapped.
@@ -184,6 +187,7 @@ A single exception is made for:
   n[nore]map Y y$
 
 that is, you will not be notified if you have such a mapping.
+
 
 
 
@@ -204,7 +208,7 @@ end, autoindent, etc).
 REGISTER REDIRECTION                                     *yanktools-redirection*
 ==============================================================================
 
-By default, ``x`, `X` and `<Del>` redirect to the black hole register.
+By default, `x`, `X` and `<Del>` redirect to the black hole register.
 Neither the unnamed or the small-delete register (|quote-|) are overwritten.
 
 `c` and `C` work normally, except that the unnamed register isn't overwritten.

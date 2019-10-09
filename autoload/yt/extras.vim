@@ -7,7 +7,7 @@ let s:Y = g:yanktools.yank
 let s:Z = g:yanktools.zeta
 
 function! yt#extras#show_yanks(type)
-  let t = a:type == 'x' ? 'Redirected ' : a:type == 'z' ? 'Zeta ' : ''
+  let t = a:type == 'z' ? 'Zeta ' : ''
   let i = 0
   let stack  = a:type == 'z' ? s:Z.stack : s:Y.stack
   let offset = a:type == 'z' ? s:Z.offset : s:Y.offset
@@ -19,6 +19,12 @@ function! yt#extras#show_yanks(type)
     call s:show_yank(yank, i==str2nr(offset)? (string(i) . '<') : i)
     let i += 1
   endfor
+  echo 'Press a valid index to delete it, or another key to continue'
+  let c = getchar() - 48
+  if c >= 0 && c < len(stack)
+    call remove(stack, c)
+  endif
+  redraw
 endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -80,7 +86,7 @@ fun! yt#extras#toggle_recording(msg)
     for k in s:map_failed
       echom "[yanktools] failed because of existing mapping:" k[2]."map" k[0] k[1]
     endfor
-    if a:msg | call s:F.msg("Recording has been enabled", 1) | endif
+    if a:msg | call s:F.msg("[yanktools] Recording has been enabled", 1) | endif
   else
     for k in s:mapped
       exe "silent!" k[2]."unmap" k[0]
@@ -91,7 +97,7 @@ fun! yt#extras#toggle_recording(msg)
       endif
       unlet s:had_Y
     endif
-    if a:msg | call s:F.msg("Recording has been disabled") | endif
+    if a:msg | call s:F.msg("[yanktools] Recording has been disabled") | endif
   endif
 endfun
 
@@ -222,7 +228,6 @@ fun! yt#extras#help()
         \  ['i',   "Interactive paste" ],
         \  ['p',   "Yanks preview" ],
         \  ['0',   "Set yank index: first [ + count]" ],
-        \  ['l',   "Set yank index: last [ - count]" ],
         \  ['Y',   "Display yanks" ],
         \  ['Z',   "Display zeta yanks\n\n" ],
         \ ]

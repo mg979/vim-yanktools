@@ -178,7 +178,8 @@ endfun
 
 
 fun! s:too_big(text)
-  " hitting text size limit
-  return strchars(a:text) > get(g:, 'yanktools_max_text_size', 1000)
+  " hitting text size limit, but only for recording mode
+  return !s:v.is_recording ? 0
+        \ : strchars(a:text) > get(g:, 'yanktools_max_text_size', 1000)
 endfun
 

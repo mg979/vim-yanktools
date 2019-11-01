@@ -184,6 +184,8 @@ function! yt#extras#select_yank()
     return fzf#run({'source': yt#extras#yanks(),
           \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
+  elseif exists('*Finder') && exists('*FileFinder')
+    return yt#extras#select_yank_fzf(Finder(yt#extras#yanks(), 'Select yank'))
   elseif s:F.is_preview_open()
     call s:F.msg('Press p or P to paste current item.', 1)
     return

@@ -246,29 +246,27 @@ fun! yt#offset(preview, count)
     call yt#preview#show(0)
 
   elseif has('nvim') && exists('*nvim_open_win')
-    if exists('s:float')
-      silent! exe 'bw' s:float
-    endif
+    silent! call execute('bw '.s:float) " dismiss previous popup
+
+    let txt = split(s:Y.get().text, '\n')
     let s:float = nvim_create_buf(v:false, v:true)
-    let comment = &commentstring =~ '%s$' ? &commentstring[:-3] : '//'
-    let title = printf('%s [%d/%d] ', comment, s:Y.offset+1, s:Y.size())
-    let txt = [title, ''] + split(s:Y.get().text, '\n')
     call nvim_buf_set_lines(s:float, 0, -1, v:true, txt)
     let opts = {'relative': 'cursor', 'width': 80, 'height': len(txt),
           \ 'col': 0, 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
     let win = nvim_open_win(s:float, 0, opts)
     call setbufvar(s:float, '&filetype', s:Y.get().ft)
+    echo printf('[%d/%d] ', s:Y.offset+1, s:Y.size())
     augroup yt_float
       au!
-      au CursorMoved * exe 'silent!' s:float . 'bw!' | exe 'au! yt_float' | aug! yt_float
+      au CursorMoved * exe 'silent!' s:float . 'bw!'
+            \| exe 'au! yt_float' | aug! yt_float | echo "\r"
     augroup END
 
   elseif exists('*popup_atcursor')
-    if exists('s:id')
-      silent! call popup_close(s:id)
-    endif
+    silent! call popup_close(s:id) " dismiss previous popup
+
     let title = printf(' [%d/%d] ', s:Y.offset+1, s:Y.size())
-    let height = len(split(s:Y.get().text, '\n')) + 3
+    let height = len(split(s:Y.get().text, '\n')) + 4
     let s:id = popup_atcursor(split(s:Y.get().text, '\n'),
           \{'title': title, 'pos': 'topleft', 'line': 'cursor-'.height,
           \ 'padding': [1,1,1,1], 'border':[1,1,1,1],

@@ -33,10 +33,10 @@ function! yt#preview#show(sidebuf) abort
   if a:sidebuf
     call s:sidebuf()
   elseif exists('s:v.pwsidebuf')
-    exe s:v.pwsidebufwin . 'wincmd w'
-    exe "normal! \<c-w>50|"
+    exe 'noautocmd' s:v.pwsidebufwin . 'wincmd w'
+    exe "noautocmd normal! \<c-w>50|"
   else
-    exe s:v.pwwin . 'wincmd w'
+    exe 'noautocmd' s:v.pwwin . 'wincmd w'
   endif
   call s:autocmd()
 endfunction
@@ -51,11 +51,11 @@ function! s:preview() abort
 
   " decide the window height
   if exists('s:v.pwsidebuf')    " sidebuf is open: no change
-    rightbelow vnew
+    noautocmd rightbelow vnew
   elseif exists('s:cursPos')    " sidebuf will open: set to 15
-    botright 15new
+    noautocmd botright 15new
   else                          " not using sidebuf: use text lines (max 15)
-    exe "botright" nl."new"
+    exe "noautocmd botright" nl."new"
   endif
   setlocal bt=nofile bh=wipe noswf nobl
   setlocal previewwindow
@@ -72,8 +72,8 @@ endfunction
 
 function! s:sidebuf() abort
   " open the side buffer, with the list of the stack items
-  leftabove vnew
-  exe "normal! \<c-w>50|"
+  noautocmd leftabove vnew
+  exe "noautocmd normal! \<c-w>50|"
   setlocal bt=nofile bh=wipe noswf nobl nonu signcolumn=yes
   let &l:statusline = '%#Tabline#'
 

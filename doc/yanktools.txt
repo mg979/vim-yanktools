@@ -437,10 +437,6 @@ Plug                                   |  Modes  | Default                    ~
 <Plug>(SwapPastePrevious)              |   n     |  <M-d>
 <Plug>(YankNext)                       |   n     |  ]y
 <Plug>(YankPrevious)                   |   n     |  [y
-<Plug>(YankViewLast)                   |   n     |  ]Y
-<Plug>(YankViewFirst)                  |   n     |  [Y
-<Plug>(YankLast)                       |   n     |
-<Plug>(YankFirst)                      |   n     |
                                        |         |
 <Plug>(ZetaYank)                       |   n x   |  yz / ZY
 <Plug>(ZetaDelete)                     |   n x   |  yz / ZD
@@ -450,7 +446,6 @@ Plug                                   |  Modes  | Default                    ~
                                        |         |
 <Plug>(YankSaveCurrent)                |   n     |  yus
 <Plug>(ConvertYankType)                |   n     |  yuc
-<Plug>(YanksPreview)                   |   n     |  yup
 <Plug>(InteractivePaste)               |   n     |  yui
 <Plug>(ToggleRecordYanks)              |   n     |  yur
 <Plug>(ToggleAutoIndent)               |   n     |  yuai
@@ -458,6 +453,8 @@ Plug                                   |  Modes  | Default                    ~
 <Plug>(ClearZetaStack)                 |   n     |  yuxz
 <Plug>(Yanks)                          |   n     |  yuY
 <Plug>(ZetaYanks)                      |   n     |  yuZ
+<Plug>(YankViewNext)                   |   n     |  yup
+<Plug>(YanksPreview)                   |   n     |  yuP
 <Plug>(YanktoolsHelp)                  |   n     |  yu?
 
 
@@ -473,7 +470,7 @@ A few ex commands are defined:
   :ClearZetaStack         same as `yuxz`
   :ToggleAutoIndent       same as `yuai`
   :InteractivePaste       same as `yui`
-  :YanksPreview           same as `yup`
+  :YanksPreview           same as `yuP`
   :ToggleRecordYanks[!]   same as `yur`, verbose with <bang>
 
 

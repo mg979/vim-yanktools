@@ -278,8 +278,6 @@ call s:nmap('<M-P>', '<Plug>(SwapPastePrevious)')
 
 call s:nmap(']y', '<Plug>(YankNext)')
 call s:nmap('[y', '<Plug>(YankPrevious)')
-call s:nmap(']Y', '<Plug>(YankViewNext)')
-call s:nmap('[Y', '<Plug>(YankViewPrevious)')
 
 
 
@@ -318,7 +316,8 @@ if get(g:, 'yanktools_map_commands', 1)
   call s:nmaparg(s:opt.'s', '<Plug>(YankSaveCurrent)')
   call s:nmaparg(s:opt.'?', '<Plug>(YanktoolsHelp)')
   call s:nmaparg(s:opt.'r', '<Plug>(ToggleRecordYanks)')
-  call s:nmaparg(s:opt.'p', '<Plug>(YanksPreview)')
+  call s:nmaparg(s:opt.'p', '<Plug>(YankViewNext)')
+  call s:nmaparg(s:opt.'P', '<Plug>(YanksPreview)')
 endif
 
 

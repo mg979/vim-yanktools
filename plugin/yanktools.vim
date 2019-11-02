@@ -7,6 +7,14 @@ endif
 
 "------------------------------------------------------------------------------
 
+let s:map = get(g:, 'yanktools_main_key', '')
+
+if empty(s:map)
+  echohl ErrorMsg
+  echomsg 'g:yanktools_main_key HAS NOT BEEN SET, plugin disabled.'
+  finish
+endif
+
 let g:loaded_yanktools = 1
 
 let g:yanktools = {'vars': {}}
@@ -150,19 +158,6 @@ if get(g:, 'yanktools_no_mappings', 0)
 endif
 
 let s:opt = get(g:, 'yanktools_options_key', 'yu')
-let s:map = get(g:, 'yanktools_main_key', '')
-
-if empty(s:map)
-  echohl ErrorMsg
-  echomsg '=================================================================='
-  echomsg 'g:yanktools_main_key HAS NOT BEEN SET.'
-  echomsg ' '
-  echomsg 'Yanktools has been updated and you should read the documentation, '
-  echomsg 'because of the extensive changes that have been made.'
-  echomsg '=================================================================='
-  unlet g:loaded_yanktools
-  finish
-endif
 
 function! s:nmap(key, plug)
   if !hasmapto(a:plug, 'n')

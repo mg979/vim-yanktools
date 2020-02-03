@@ -159,23 +159,18 @@ endfunction
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Redirect                                                                 {{{1
+" Preserve unnamed register                                                {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" if a register is specified, no change from vim, otherwise:
-" c - unnamed register (") is restored after change, register '-' is not
-" x - is redirected to the black hole
+" if a register is specified, no change from vim
+" otherwise unnamed register (") is restored after change
 
 function! yt#redirect(key, register, save)
   if a:register == s:F.default_reg()
-    if index(['x', 'X', "\<Del>"], a:key) >= 0
-      return '"_' . a:key
-    endif
     call s:F.store_register()
     let s:v.has_yanked = a:save
-    return a:key
   endif
-  return '"' . a:register . a:key
+  return a:key
 endfunction
 
 

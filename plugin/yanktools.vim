@@ -90,6 +90,7 @@ com! -bang ToggleRecordYanks call yt#extras#toggle_recording(<bang>0)
 " Plugs                                                                     {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+nnoremap <silent><expr>   <Plug>(PreserveRegister)    yt#redirect('', v:register, 0)
 nnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")
 xnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")
 
@@ -187,17 +188,16 @@ endfunction
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Black Hole                                                                {{{1
+" Register preservation                                                     {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
-if get(g:, 'yanktools_black_hole', 1)
+if get(g:, 'yanktools_preserve_unnamed', 1)
   nnoremap <expr> c     yt#redirect('c', v:register, 0)
   nnoremap <expr> C     yt#redirect('C', v:register, 0)
   xnoremap <expr> c     yt#redirect('c', v:register, 0)
   nnoremap <expr> x     yt#redirect('x', v:register, 0)
   nnoremap <expr> X     yt#redirect('X', v:register, 0)
-  xnoremap <expr> x     yt#redirect('d', v:register, 0)
   nnoremap <expr> <del> yt#redirect('x', v:register, 0)
   xnoremap <expr> <del> yt#redirect('d', v:register, 0)
 endif

@@ -5,10 +5,10 @@ YANKTOOLS - TABLE OF CONTENTS                                      *yanktools*
 
 Features.............................................|yanktools-features|
 Usage................................................|yanktools-usage|
+Unnamed register preservation........................|yanktools-unnamed|
 Other commands.......................................|yanktools-misc|
 Recording mode.......................................|yanktools-recording|
 Cycle yank stack.....................................|yanktools-cycle|
-Register redirection.................................|yanktools-redirection|
 Replace operator.....................................|yanktools-replace|
 Duplicate text.......................................|yanktools-duplicate|
 Zeta stack...........................................|yanktools-zeta|
@@ -50,16 +50,14 @@ FEATURES LIST                                             *yanktools-features*
 * Manual and Recording modes: stacks will be filled with specific mappings, or
   automatically at every yank/delete operation, respectively. Can be toggled.
 
-* Black hole redirection: `x`, `X`, <del>
-
-* Unnamed register restoring: `c`, `C`, visual paste
+* Preservation of unnamed register: `c`, `C`, `x`, `X`, <del>, visual paste
 
 * Swap-&-paste: cycle among stack elements, or show them in popup/preview
   window.
 
 * Replace operator: replace text objects with register. Repeatable.
 
-* Duplicate operator: lines, text objects or from visual mode. Repeatable.
+* Duplicate operator: without altering registers. Repeatable.
 
 * Zeta mode: a disposable yank stack, from which items are taken from the
   back, and pasting them removes them from the stack as well. You can populate
@@ -112,7 +110,7 @@ Visual mode mappings:
   `sy`           save yank
   `sd`           save delete
   `sc`           save change
-  `x` <del>      black hole deletion
+  <Del>        black hole deletion
   <M-d>        duplicate
 
 Other normal mode mappings:
@@ -140,6 +138,36 @@ Recommended settings:
   " make 'S' replace until the end of the line
   nmap      S s$
   nmap      Y y$
+
+
+
+
+UNNAMED REGISTER PRESERVATION                              *yanktools-unnamed*
+==============================================================================
+
+In vim, keys `c`, `x`, and related mappings cause the unnamed register to be
+overwritten, along with (usually) the small-delete register (|quote-|).
+The same happens with visual paste.
+
+By default this plugin preserves the unnamed register, restoring it to the old
+value. To disable this behaviour and keep vim default:
+>
+  let g:yanktools_preserve_unnamed = 0
+
+How is this different from this?
+>
+  nnoremap c "_c
+
+you won't be able to specify another register, any change operation will
+redirect to the black hole register (|quote_|) in any case.
+
+This way, instead, you can still specify a register:
+>
+  cc     will restore the unnamed register
+  "xcc   will work normally (overwriting unnamed and "x register)
+
+Finally, you can save the changed text in the stack with `sc` + text object.
+
 
 
 
@@ -203,27 +231,6 @@ entry of the stack (the last yanked item), using 'P' (paste before).
 If you press another paste key (p, [p, ]p...), the stack will be cycled
 keeping the properties of that paste command (before or after, move cursor at
 end, autoindent, etc).
-
-
-
-REGISTER REDIRECTION                                   *yanktools-redirection*
-==============================================================================
-
-By default, `x`, `X` and `<Del>` redirect to the black hole register.
-Neither the unnamed or the small-delete register (|quote-|) are overwritten.
-
-`c` and `C` work normally, except that the unnamed register isn't overwritten.
-Repeating changes with the . command will overwrite it though.
-
-In visual mode, the pasted text will not overwrite the default register.
-
-You can still specify a register and it will skip redirection:
->
-  cc     will change the line while restoring the unnamed register
-  "xcc   will change the line while using register "x"
-
-Finally, you can save the changed text in the stack with `sc` + text object.
-See |yanktools-usage|.
 
 
 
@@ -349,11 +356,10 @@ only assigned if the corresponding <Plug> hasn't been assigned by you.
 
                               This will be the prefix for special commands.
 
-*g:yanktools_black_hole*        Default: 1
+*g:yanktools_preserve_unnamed*  Default: 1
 
-                              Map c/x/<del> so that they use the black hole
-                              register by default (|_|), unless a specific
-                              register is provided.
+                              Enable unnamed register preservation, see
+                              |yanktools-unnamed|.
 
 *g:yanktools_map_zeta*          Default: 1
 

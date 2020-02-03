@@ -40,15 +40,14 @@ With vim-plug:
   or automatically at every yank/delete operation, respectively. Can be
   toggled.
 
-* __Black hole redirection__: c, C, x, X, Del
+* __Preservation of unnamed register__: c, C, x, X, Del, visual paste
 
-* __Swap-&-paste__: also in preview/popup window (with syntax highlighting)
-
-* __Visual mode__: paste in visual mode won't overwrite the unnamed register.
+* __Swap-&-paste__: cycle among stack elements, or show them in popup/preview
+  window.
 
 * __Replace operator__: replace text objects with register. Repeatable.
 
-* __Duplicate operator__: lines, text objects or from visual mode. Repeatable.
+* __Duplicate operator__: without altering registers. Repeatable.
 
 * __Zeta stack__: a disposable yank stack, from which items are taken from the
   back, and pasting them removes them from the stack as well. You can populate
@@ -83,7 +82,7 @@ either:
 
 * a yank/deletion performed with a specific mapping
 * saving a register directly in the stack
-* enabling the `recording mode`, that allows automatic addition to the stack
+* enabling the _recording mode_, that allows automatic addition to the stack
 
 
 ----------------------------------------------------------------------------
@@ -109,12 +108,12 @@ Defined operators and their default behaviour (assuming 's' as main key):
 
 Visual mode mappings:
 
-| mapping                    | name                 |
-|----------------------------|----------------------|
-|<kbd>sy</kbd>               | yank & save          |
-|<kbd>sd</kbd>               | delete & save        |
-|<kbd>x</kbd> <kbd>Del</kbd> | black hole deletion  |
-|<kbd>M-d</kbd>              | duplicate            |
+| mapping        | name                       |
+|----------------|----------------------------|
+|<kbd>sy</kbd>   | yank & save                |
+|<kbd>sd</kbd>   | delete & save              |
+|<kbd>Del</kbd>  | preserve unnamed register  |
+|<kbd>M-d</kbd>  | duplicate                  |
 
 Other normal mode mappings:
 
@@ -136,7 +135,7 @@ Zeta mode:
 | <kbd>zp</kbd>        | paste        | <kbd>ZP</kbd> |
 
 Example settings:
- 
+
     " make 'S' replace until the end of the line
     let g:yanktools_main_key = 's'
     nmap      S s$

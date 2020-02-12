@@ -161,26 +161,28 @@ endif
 let s:opt = get(g:, 'yanktools_options_key', 'yu')
 
 function! s:nmap(key, plug)
-  if !hasmapto(a:plug, 'n')
+  if empty(maparg(a:key, 'n'))
     exe 'nmap' a:key a:plug
   endif
 endfunction
 
 function! s:nmaparg(key, plug)
-  if !hasmapto(a:plug) && empty(maparg(a:key, 'n'))
+  if empty(maparg(a:key, 'n'))
     exe 'nmap' a:key a:plug
   endif
 endfunction
 
 function! s:nxmap(key, plug)
-  if !hasmapto(a:plug)
+  if empty(maparg(a:key, 'n'))
     exe 'nmap' a:key a:plug
+  endif
+  if empty(maparg(a:key, 'x'))
     exe 'xmap' a:key a:plug
   endif
 endfunction
 
 function! s:xmap(key, plug)
-  if !hasmapto(a:plug, 'v')
+  if empty(maparg(a:key, 'x'))
     exe 'xmap' a:key a:plug
   endif
 endfunction

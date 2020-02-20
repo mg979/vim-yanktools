@@ -100,23 +100,44 @@ endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#paste_with_key(key, plug, visual, format)
+function! yt#paste_with_key(key, visual)
   if a:visual | call s:F.store_register() | endif
-  if a:format | let s:v.format_this = 1   | endif
 
   " set paste variables
   let s:v.has_changed = 1 | let s:has_pasted = 1
 
-  " set repeat.vim plug
-  let s:v.plug = [a:plug, v:count1, v:register]
-
   " set last_paste_key and remember format_this option (used by swap)
   let s:last_paste_key = a:key
-  let s:last_paste_format_this = s:v.format_this
+  let s:last_paste_format_this = 0
 
   call s:F.dismiss_preview()
   return a:key
 endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+function! yt#paste_indent(key)
+  " set paste variables
+  let s:v.has_changed = 1 | let s:has_pasted = 1
+
+  " set last_paste_key and remember format_this option (used by swap)
+  let s:last_paste_key = a:key
+  let s:last_paste_format_this = 1
+
+  call s:F.dismiss_preview()
+
+  let s:paste_count = v:count
+  let &operatorfunc = 'yt#paste_' . (a:key ==# 'P' ? 'above' : 'below')
+  return 'g@^'
+endfunction
+
+fun! yt#paste_above(type)
+  exe 'normal!' s:paste_count . 'P`[=`]`['
+endfun
+
+fun! yt#paste_below(type)
+  exe 'normal!' s:paste_count . 'p`[=`]`]'
+endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

@@ -108,11 +108,11 @@ nnoremap <silent><expr>   <Plug>(DuplicateLine)       yt#duplicate#lines(v:count
 nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate#lines(v:count, 0)
 xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 
-nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 0, 0)
-xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", "(Paste_p)", 1, 0)
-nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_with_key("p", "(PasteIndent_p)", 0, 1)
-nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", "(Paste_P)", 0, 0)
-nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", "(PasteIndent_P)", 0, 1)
+nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 0)
+xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 1)
+nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", 0)
+nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_indent("p")
+nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_indent("P")
 
 nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
 nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>

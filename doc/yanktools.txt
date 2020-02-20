@@ -297,16 +297,11 @@ These commands are repeatable:
 
 * replace and duplicate operators
 * delete and save in stack (both regular and zeta)
+* paste (indented or not)
 
-|repeat-vim| is supported for most `paste` operations. This means that you can
-press |dot| to repeat the last paste command while keeping the same formatting
-options of the last command.
+That is, most commands are repeatable, except `zeta-paste`, that is only
+repeatable with |repeat-vim|.
 
-Zeta mode is also supported: press "|.|" (dot) to continue pasting from the zeta
-stack, until the stack is consumed.
-
-Without |repeat-vim|, paste operations are repeatable, but without options,
-and zeta paste is not repeatable.
 
 
 

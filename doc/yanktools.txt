@@ -19,7 +19,7 @@ Options..............................................|yanktools-options|
 Plugs................................................|yanktools-plugs|
 Ex commands..........................................|yanktools-ex|
 Persistance..........................................|yanktools-persistance|
-Credits..............................................|yanktools-credits|
+Related projects.....................................|yanktools-related|
 License..............................................|yanktools-license|
 
 
@@ -493,13 +493,13 @@ start saving the stack in your current session.
 
 
 
-CREDITS                                                    *yanktools-credits*
+RELATED PROJECTS                                           *yanktools-related*
 ==============================================================================
 
-Bram Moolenaar for Vim
-Steve Vermeulen for |vim-easyclip|
-Max Brunsfeld for |vim-yankstack|
-
+vim-easyclip                    https://github.com/svermeulen/vim-easyclip
+vim-yankstack                   https://github.com/maxbrunsfeld/vim-yankstack
+nvim-miniyank                   https://github.com/bfredl/nvim-miniyank  
+vim-yank-queue                  https://github.com/fvictorio/vim-yank-queue
 
 
 LICENSE                                                    *yanktools-license*

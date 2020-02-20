@@ -7,7 +7,7 @@
 * [Introduction](#introduction)
 * [Usage](#usage)
 * [Pictures](#pictures)
-* [Credits](#credits)
+* [Related projects](#related-projects)
 * [License](#license)
 
 <!-- vim-markdown-toc -->
@@ -156,10 +156,6 @@ Interactive paste with fzf:
 
 ![Imgur](https://i.imgur.com/SE0TDg4.png)
 
-Choose stack item:
-
-![Imgur](https://i.imgur.com/NAIVBRp.gif)
-
 Preview with popup (vim 8.1 or neovim 0.4)
 
 ![Imgur](https://i.imgur.com/mcYEnhF.gif)
@@ -167,11 +163,12 @@ Preview with popup (vim 8.1 or neovim 0.4)
 ----------------------------------------------------------------------------
 
 
-### Credits
+### Related projects
 
-Bram Moolenaar for Vim  
-Steve Vermeulen for vim-easyclip  
-Max Brunsfeld for vim-yankstack  
+[vim-easyclip](https://github.com/svermeulen/vim-easyclip)  
+[vim-yankstack](https://github.com/maxbrunsfeld/vim-yankstack)  
+[nvim-miniyank](https://github.com/bfredl/nvim-miniyank)  
+[vim-yank-queue](https://github.com/fvictorio/vim-yank-queue)  
 
 
 ----------------------------------------------------------------------------

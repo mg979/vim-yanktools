@@ -7,16 +7,6 @@ let s:Funcs = {}
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:Funcs.set_repeat() abort
-  if get(g:, 'yanktools_repeat', 1) && !empty(s:v.plug)
-    let p = s:v.plug
-    silent! call repeat#setreg("\<Plug>".p[0], p[2])
-    silent! call repeat#set("\<Plug>".p[0], p[1])
-  endif
-endfun
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 fun! s:Funcs.default_reg() abort
   " get default register
 

@@ -49,8 +49,9 @@ function! yt#zeta#paste(key, plug)
   let Z = g:yanktools.zeta
   if Z.is_empty() | return | endif
 
-  " set vars
-  let s:v.plug = [a:plug, v:count, s:F.default_reg()]
+  " update repeat.vim
+  silent! call repeat#setreg("\<Plug>".a:plug, s:F.default_reg())
+  silent! call repeat#set("\<Plug>".a:plug, v:count)
 
   if a:key ==# 'p'
     let s:v.move_this = 1

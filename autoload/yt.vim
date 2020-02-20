@@ -15,7 +15,6 @@ let s:v.replacing    = 0
 let s:v.restoring    = 0
 let s:v.format_this  = 0
 let s:v.has_changed  = 0
-let s:v.plug         = []
 let s:v.move_this    = 0
 let s:v.zeta         = 0
 let s:v.has_yanked   = 0
@@ -76,9 +75,6 @@ function! yt#on_text_change()
   if s:is_being_formatted()   | execute "keepjumps normal! `[=`]" | endif
   if s:is_moving_at_end()     | execute "keepjumps normal! `]"    | endif
   call s:F.ensure_cursor_moved()
-
-  " update repeat.vim
-  call s:F.set_repeat()
 
   " record position and tick (used by swap)
   let s:last_paste_tick = b:changedtick | let s:post_paste_pos = getpos('.')
@@ -342,7 +338,6 @@ fun! s:reset_vars()
   let s:v.restoring = 0
   let s:v.zeta = 0
   let s:v.has_yanked = 0
-  let s:v.plug = []
   call s:F.updatetime(1)
 endfun
 

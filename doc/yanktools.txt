@@ -173,16 +173,16 @@ COMMANDS                                                  *yanktools-commands*
   Mappings for special commands/options use `yu`:
 
   `yus`      save current [register] into the yank stack
+  `yua`      select an item from the automatic stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
   `yup`      interactive paste with preview
   `yui`      interactive paste
   `yu0`      set stack offset (index) to {first} + [count]
-  `yuai`     toggle autoindent
+  `yu=`      toggle autoindent
   `yuxy`     clear yank stack
   `yuxz`     clear zeta stack
   `yuY`      display yank stack
   `yuZ`      display zeta stack
-  `yuA`      select an item from the automatic stack
   `yu?`      print this list of mappings
 
 Note: `yu0` selects index 0, the 'first' element of the stack: that actually
@@ -191,8 +191,6 @@ last inserted'. Press `yuY` to understand better what this means.
 
 Note: with the `yuY` and `yuZ` mappings, the current yank and zeta stack will
 be displayed, and you will be able to delete an index from them, if desired.
-With the `yuA` mapping, you'll be able to select an item from the automatic
-stack and transfer it to the main stack (also updating the current register).
 
 
 
@@ -200,7 +198,7 @@ stack and transfer it to the main stack (also updating the current register).
 AUTOMATIC STACK                                               *yanktools-auto*
 ==============================================================================
 
-Default mapping: `yuA`
+Default mapping: `yua`
 
 As it has been said, items are saved into the main yank stack only when using
 the specific mapping, and not for every yank/delete operation. This is so that
@@ -211,7 +209,7 @@ additional stack, that is filled automatically with every yank/delete
 operations. By default it records the last 10 operations, you can change this
 value with the option |g:yanktools_auto_stack_size|.
 
-Items in this stack can be accessed with the mapping `yuA`: when you select an
+Items in this stack can be accessed with the mapping `yua`: when you select an
 item, it writes the current unnamed register, so that it can be immediately
 pasted, and it is also transferred to the main yank stack.
 

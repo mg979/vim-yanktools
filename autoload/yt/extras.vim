@@ -195,8 +195,9 @@ fun! yt#extras#help()
   echohl Title | echo "Yanktools commands:\n\n"
   for [ m, cmd ] in [
         \  ['s',   "Save current [register]" ],
+        \  ['a',   "Select an item from the automatic stack" ],
         \  ['c',   "Convert yank type" ],
-        \  ['ai',  "Toggle auto indent" ],
+        \  ['=',   "Toggle auto indent" ],
         \  ['xy',  "Clear yank stack" ],
         \  ['xz',  "Clear zeta stack" ],
         \  ['i',   "Interactive paste" ],

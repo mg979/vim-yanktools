@@ -166,7 +166,7 @@ endfunction
 
 function! s:nmapcmd(key, cmd)
   if empty(maparg(a:key, 'n'))
-    exe 'nnoremap' a:key printf(':<c-u>%s<cr>', a:cmd)
+    exe 'nnoremap <silent>' a:key printf(':<c-u>%s<cr>', a:cmd)
   endif
 endfunction
 
@@ -300,11 +300,11 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if get(g:, 'yanktools_map_commands', 1)
-  call s:nmapcmd(s:opt.'ai', 'ToggleAutoIndent')
+  call s:nmapcmd(s:opt.'=', 'ToggleAutoIndent')
   call s:nmapcmd(s:opt.'xy', 'ClearYankStack')
   call s:nmapcmd(s:opt.'xz', 'ClearZetaStack')
   call s:nmapcmd(s:opt.'i', 'InteractivePaste')
-  call s:nmapcmd(s:opt.'A',  'AutoYanks')
+  call s:nmapcmd(s:opt.'a',  'AutoYanks')
   call s:nmapcmd(s:opt.'P',  'YanksPreview')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')
   call s:nmaparg(s:opt.'Z',  '<Plug>(ZetaYanks)')

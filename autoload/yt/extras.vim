@@ -5,6 +5,7 @@ let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 let s:Y = g:yanktools.yank
 let s:Z = g:yanktools.zeta
+let s:A = g:yanktools.auto
 
 function! yt#extras#show_yanks(type)
   let t = a:type == 'z' ? 'Zeta ' : ''
@@ -53,56 +54,6 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let s:to_map = [
-    \ ['y',  '<Plug>(Yank)',    'n'],
-    \ ['Y',  '<Plug>(Yank)$',   'n'],
-    \ ['y',  '<Plug>(Yank)',    'x'],
-    \ ['d',  '<Plug>(Cut)',     'n'],
-    \ ['D',  '<Plug>(Cut)$',    'n'],
-    \ ['dd', '<Plug>(CutLine)', 'n'],
-    \ ['d',  '<Plug>(Cut)',     'x'],
-    \ ]
-
-" if recording is turned on, map plugs, but don't overwrite existing mappings
-" in the case of Y = y$, remap it anyway, and restore the old mappings
-" afterwards
-
-fun! yt#extras#toggle_recording(msg)
-  let s:v.is_recording = !s:v.is_recording
-  if s:v.is_recording
-    let [ s:mapped, s:map_failed ] = [ [], [] ]
-    for k in s:to_map
-      if empty(maparg(k[0], k[2]))
-        exe k[2]."map" k[0] k[1]
-        call add(s:mapped, k)
-      elseif k[0] ==# 'Y' && maparg(k[0], k[2]) ==# 'y$'
-        " make an exception for nmap Y y$
-        let s:had_Y = maparg(k[0], k[2], 0, 1).noremap + 1
-        exe k[2]."map" k[0] k[1]
-      else
-        call add(s:map_failed, k)
-      endif
-    endfor
-    for k in s:map_failed
-      echom "[yanktools] failed because of existing mapping:" k[2]."map" k[0] k[1]
-    endfor
-    if a:msg | call s:F.msg("[yanktools] Recording has been enabled", 1) | endif
-  else
-    for k in s:mapped
-      exe "silent!" k[2]."unmap" k[0]
-    endfor
-    if exists('s:had_Y')
-      if s:had_Y == 1 | nmap Y y$
-      else            | nnoremap Y y$
-      endif
-      unlet s:had_Y
-    endif
-    if a:msg | call s:F.msg("[yanktools] Recording has been disabled") | endif
-  endif
-endfun
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 function! s:show_yank(yank, index)
   let index = printf("%-4s", a:index)
   let line = substitute(a:yank.text, '\V\n', '^M', 'g')
@@ -133,9 +84,9 @@ endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-function! yt#extras#yanks()
+function! s:yanks(stack)
   let yanks = [] | let i = 1
-  for yank in s:Y.stack
+  for yank in a:stack.stack
     let line = substitute(yank.text, '\V\n', '^M', 'g')
     if len(line) > 80 | let line = line[:80] . '…' | endif
     if i < 10 | let spaces = "    " | else | let spaces = "   " | endif
@@ -146,11 +97,33 @@ function! yt#extras#yanks()
   return yanks
 endfunction
 
-function! yt#extras#select_yank_fzf(yank)
+function! s:fzf_yank(yank)
   let index = str2nr(matchstr(a:yank, '\d\+')) - 1
   call s:Y.set_at_offset(index)
   if s:F.is_preview_open()
     call yt#preview#update()
+  endif
+endfunction
+
+function! s:fzf_auto_yanks(yank)
+  let index = str2nr(matchstr(a:yank, '\d\+')) - 1
+  call s:A.transfer_yank(index)
+endfunction
+
+function! s:interactive(stack)
+  echohl WarningMsg | echo "--- Select Yank ---" | echohl None
+  let i = 0
+  for yank in a:stack.stack
+    call s:show_yank(yank, i)
+    let i += 1
+  endfor
+
+  let ix = input('Index: ')
+  if empty(ix) || ix < 0 || ix >= len(a:stack.stack)
+    echoerr "\nInvalid yank index given"
+    return -1
+  else
+    return ix
   endif
 endfunction
 
@@ -177,41 +150,41 @@ endfunction
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+function! yt#extras#auto_yanks()
+  if s:A.is_empty() | return | endif
+
+  if exists('g:loaded_fzf')
+    return fzf#run({'source': s:yanks(s:A),
+          \ 'sink': function('s:fzf_auto_yanks'), 'down': '30%',
+          \ 'options': '--prompt "Auto Yanks >>>   "'})
+  elseif exists('*Finder') && exists('*FileFinder')
+    return s:fzf_yank(Finder(s:yanks(s:A), 'Auto yanks'))
+  else
+    let ix = s:interactive(s:A)
+    if ix != -1
+      call s:A.transfer_yank(str2nr(ix))
+    endif
+  endif
+endfunction
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 function! yt#extras#select_yank()
   if s:Y.is_empty() | return | endif
 
   if exists('g:loaded_fzf')
-    return fzf#run({'source': yt#extras#yanks(),
-          \ 'sink': function('yt#extras#select_yank_fzf'), 'down': '30%',
+    return fzf#run({'source': s:yanks(s:Y),
+          \ 'sink': function('s:fzf_yank'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
   elseif exists('*Finder') && exists('*FileFinder')
-    return yt#extras#select_yank_fzf(Finder(yt#extras#yanks(), 'Select yank'))
+    return s:fzf_yank(Finder(s:yanks(s:Y), 'Select yank'))
   elseif s:F.is_preview_open()
     call s:F.msg('Press p or P to paste current item.', 1)
     return
-  endif
-
-  echohl WarningMsg | echo "--- Interactive Paste ---" | echohl None
-  let i = 0
-  for yank in s:Y.stack
-    call s:show_yank(yank, i)
-    let i += 1
-  endfor
-
-  let indexStr = input('Index: ')
-  if indexStr =~ '\v^\s*$' | return | endif
-
-  if indexStr !~ '\v^\s*\d+\s*'
-    echo "\n"
-    echoerr "Invalid yank index given"
   else
-    let index = str2nr(indexStr)
-
-    if index < 0 || index >= len(s:Y.stack)
-      echo "\n" | echoerr "Yank index out of bounds"
-    else
-      call s:Y.set_at_offset(index)
-    endif
+    let ix = s:interactive(s:Y)
+    if ix != -1
+    call s:Y.set_at_offset(str2nr(ix))
   endif
 endfunction
 
@@ -223,7 +196,6 @@ fun! yt#extras#help()
   for [ m, cmd ] in [
         \  ['s',   "Save current [register]" ],
         \  ['c',   "Convert yank type" ],
-        \  ['r',   "Toggle recording mode" ],
         \  ['ai',  "Toggle auto indent" ],
         \  ['xy',  "Clear yank stack" ],
         \  ['xz',  "Clear zeta stack" ],

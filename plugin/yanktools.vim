@@ -57,10 +57,10 @@ augroup plugin-yanktools
   autocmd!
   autocmd TextChanged * call yt#on_text_change()
   autocmd InsertEnter * call yt#on_text_change()
+  autocmd CursorMoved * call yt#check_swap()
 
   if exists("##TextYankPost")
     autocmd TextYankPost * call yt#check_yanks()
-    autocmd CursorMoved  * call yt#check_yanks()
   else
     autocmd CursorMoved  * call yt#check_yanks()
     autocmd CursorHold   * call yt#check_yanks()
@@ -79,10 +79,9 @@ command! ClearYankStack     call yt#extras#clear_yanks(0)
 command! ClearZetaStack     call yt#extras#clear_yanks(1)
 command! ToggleAutoIndent   call yt#extras#toggle_autoindent()
 command! InteractivePaste   call yt#extras#select_yank()
+command! AutoYanks          call yt#extras#auto_yanks()
 command! YanksPreview       call yt#preview#start()
 command! YanksPersistance   call yt#extras#toggle_persistance()
-
-com! -bang ToggleRecordYanks call yt#extras#toggle_recording(<bang>0)
 
 
 
@@ -133,20 +132,13 @@ nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '
 xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 xnoremap <silent><expr>   <Plug>(ZetaPaste)           yt#zeta#visual_paste()
 
-nnoremap <silent>         <Plug>(ToggleAutoIndent)    :<c-u>ToggleAutoIndent<cr>
 nnoremap <silent>         <Plug>(SetYankFirst)        :<c-u>call yt#extras#set_offset(v:count, 1)<cr>
 nnoremap <silent>         <Plug>(SetYankLast)         :<c-u>call yt#extras#set_offset(v:count, 0)<cr>
-nnoremap <silent>         <Plug>(ClearYankStack)      :<c-u>call yt#extras#clear_yanks(0)<cr>
-nnoremap <silent>         <Plug>(ClearZetaStack)      :<c-u>call yt#extras#clear_yanks(1)<cr>
 nnoremap <silent>         <Plug>(Yanks)               :<c-u>call yt#extras#show_yanks('y')<cr>
 nnoremap <silent>         <Plug>(ZetaYanks)           :<c-u>call yt#extras#show_yanks('z')<cr>
 nnoremap <silent>         <Plug>(ConvertYankType)     :<c-u>call yt#extras#convert_yank_type()<cr>
 nnoremap <silent>         <Plug>(YanktoolsHelp)       :<c-u>call yt#extras#help()<cr>
 nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current(v:register)<cr>
-nnoremap <silent>         <Plug>(InteractivePaste)    :<c-u>InteractivePaste<cr>
-nnoremap <silent>         <Plug>(YanksPreview)        :<c-u>YanksPreview<cr>
-nnoremap <silent>         <Plug>(ToggleRecordYanks)   :<c-u>call yt#extras#toggle_recording(1)<cr>
-nnoremap <silent>         <Plug>(RedirectedYanks)     :<c-u>call yt#extras#show_yanks('x')<cr>
 
 
 
@@ -169,6 +161,12 @@ endfunction
 function! s:nmaparg(key, plug)
   if empty(maparg(a:key, 'n'))
     exe 'nmap' a:key a:plug
+  endif
+endfunction
+
+function! s:nmapcmd(key, cmd)
+  if empty(maparg(a:key, 'n'))
+    exe 'nnoremap' a:key printf(':<c-u>%s<cr>', a:cmd)
   endif
 endfunction
 
@@ -302,19 +300,20 @@ endif
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if get(g:, 'yanktools_map_commands', 1)
-  call s:nmaparg(s:opt.'ai', '<Plug>(ToggleAutoIndent)')
-  call s:nmaparg(s:opt.'0', '<Plug>(SetYankFirst)')
-  call s:nmaparg(s:opt.'xy', '<Plug>(ClearYankStack)')
-  call s:nmaparg(s:opt.'xz', '<Plug>(ClearZetaStack)')
+  call s:nmapcmd(s:opt.'ai', 'ToggleAutoIndent')
+  call s:nmapcmd(s:opt.'xy', 'ClearYankStack')
+  call s:nmapcmd(s:opt.'xz', 'ClearZetaStack')
+  call s:nmapcmd(s:opt.'i', 'InteractivePaste')
+  call s:nmapcmd(s:opt.'A',  'AutoYanks')
+  call s:nmapcmd(s:opt.'P',  'YanksPreview')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')
   call s:nmaparg(s:opt.'Z',  '<Plug>(ZetaYanks)')
-  call s:nmaparg(s:opt.'i', '<Plug>(InteractivePaste)')
+  call s:nmaparg(s:opt.'0', '<Plug>(SetYankFirst)')
   call s:nmaparg(s:opt.'c', '<Plug>(ConvertYankType)')
   call s:nmaparg(s:opt.'s', '<Plug>(YankSaveCurrent)')
   call s:nmaparg(s:opt.'?', '<Plug>(YanktoolsHelp)')
   call s:nmaparg(s:opt.'r', '<Plug>(ToggleRecordYanks)')
   call s:nmaparg(s:opt.'p', '<Plug>(YankViewNext)')
-  call s:nmaparg(s:opt.'P', '<Plug>(YanksPreview)')
 endif
 
 

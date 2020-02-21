@@ -7,7 +7,7 @@ Features.............................................|yanktools-features|
 Usage................................................|yanktools-usage|
 Unnamed register preservation........................|yanktools-unnamed|
 Other commands.......................................|yanktools-misc|
-Recording mode.......................................|yanktools-recording|
+Automatic stack......................................|yanktools-auto|
 Cycle yank stack.....................................|yanktools-cycle|
 Replace operator.....................................|yanktools-replace|
 Duplicate text.......................................|yanktools-duplicate|
@@ -47,9 +47,6 @@ FEATURES LIST                                             *yanktools-features*
   elements of the stack, and keeping properties of the last paste command
   (autoformat, paste before, etc).
 
-* Manual and Recording modes: stacks will be filled with specific mappings, or
-  automatically at every yank/delete operation, respectively. Can be toggled.
-
 * Preservation of unnamed register: `c`, `C`, `x`, `X`, <del>, visual paste
 
 * Swap-&-paste: cycle among stack elements, or show them in popup/preview
@@ -79,16 +76,15 @@ USAGE                                                        *yanktools-usage*
 The main concept is to have a dedicated stack, where yanks and deletions can
 be stored and later accessed, so to have a `clipboard history` in vim.
 
-The main difference between this and other plugins of this kind, is that
-saving yanks and deletions in the stack isn't an automatic process, at least
-by default.
+There are two yank stacks, the `main stack`, where items are added manually,
+and a small `automatic stack`, where the most recent yanks are remembered, and
+you can transfer items from this stack to the main one.
 
-Adding a new item (yank or deletion) to the yank stack is the result of
-either:
+Saving yanks and deletions in the stack is the result of either:
 
 * a yank/deletion performed with a specific mapping
 * saving a register directly in the stack
-* enabling the `recording mode`, that allows automatic addition to the stack
+* transferring a yank from the automatic stack
 
 A main key should be defined, and this key will used for both saving into the
 stack, and for the replace operator. I recommend the 's' key.
@@ -180,13 +176,13 @@ COMMANDS                                                  *yanktools-commands*
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
   `yup`      interactive paste with preview
   `yui`      interactive paste
-  `yur`      toggle recording mode (all yanks/deletions will be recorded)
   `yu0`      set stack offset (index) to {first} + [count]
   `yuai`     toggle autoindent
   `yuxy`     clear yank stack
   `yuxz`     clear zeta stack
   `yuY`      display yank stack
   `yuZ`      display zeta stack
+  `yuA`      select an item from the automatic stack
   `yu?`      print this list of mappings
 
 Note: `yu0` selects index 0, the 'first' element of the stack: that actually
@@ -195,27 +191,29 @@ last inserted'. Press `yuY` to understand better what this means.
 
 Note: with the `yuY` and `yuZ` mappings, the current yank and zeta stack will
 be displayed, and you will be able to delete an index from them, if desired.
+With the `yuA` mapping, you'll be able to select an item from the automatic
+stack and transfer it to the main stack (also updating the current register).
 
 
 
 
-RECORDING MODE                                           *yanktools-recording*
+AUTOMATIC STACK                                               *yanktools-auto*
 ==============================================================================
 
-Default mapping: `yur`
+Default mapping: `yuA`
 
-By enabling this mode, all yanks and deletions done with the default keys (|y|
-and |d|) will be saved in the yank stack. It can be toggled.
+As it has been said, items are saved into the main yank stack only when using
+the specific mapping, and not for every yank/delete operation. This is so that
+the main stack only contains the items that you're actually interested in.
 
-Note: this works by temporarily mapping yank and delete keys to plugs.
-By temporarily, I mean that they will be unmapped when you toggle off
-recording mode. If you remapped those commands already, you'll get a message
-in the command line, and those keys won't be mapped.
-A single exception is made for:
->
-  n[nore]map Y y$
+If your vim/nvim version supports the |TextYankPost| autocommand, there is an
+additional stack, that is filled automatically with every yank/delete
+operations. By default it records the last 10 operations, you can change this
+value with the option |g:yanktools_auto_stack_size|.
 
-that is, you will not be notified if you have such a mapping.
+Items in this stack can be accessed with the mapping `yuA`: when you select an
+item, it writes the current unnamed register, so that it can be immediately
+pasted, and it is also transferred to the main yank stack.
 
 
 
@@ -384,26 +382,14 @@ OPTIONS                                                    *yanktools-options*
                               operator, zeta paste) use this method by
                               default.
 
-*g:yanktools_record_mode*       Default: 0
-
-                              If you want |yanktools-recording| mode to be
-                              enabled by default (already at vim start).
-
 *g:yanktools_repeat*            Default: 1
 
                               Enable/disable vim-repeat integration.
 
-*g:yanktools_max_text_size*     Default: 1000
+*g:yanktools_auto_stack_size*   Default: 10
 
-                              Text bigger than this number of characters will
-                              never be added to the yank stack. Only valid in
-                              recording mode.
-
-*g:yanktools_max_stack_size*    Default: 100
-
-                              If the stack size exceeds this limit, adding
-                              a new element will cause an element to be
-                              removed from the tail of the stack.
+                              Max size for the automatic stack, before items
+                              start to be removed when another is being added.
 
 
 

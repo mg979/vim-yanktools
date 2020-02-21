@@ -36,10 +36,6 @@ With vim-plug:
   elements of the stack, and keeping properties of the last paste command
   (autoformat, paste before, etc).
 
-* __Manual and Recording modes__: stacks will be filled with specific mappings,
-  or automatically at every yank/delete operation, respectively. Can be
-  toggled.
-
 * __Preservation of unnamed register__: c, C, x, X, Del, visual paste
 
 * __Swap-&-paste__: cycle among stack elements, or show them in popup/preview
@@ -73,16 +69,16 @@ Yanktools is a plugin inspired by vim-yankstack and vim-easyclip.
 The main concept is to have a dedicated stack, where yanks and deletions can
 be stored and later accessed, so to have a "clipboard history" in vim.
 
-The main difference between this and other plugins of this kind, is that
-saving yanks and deletions in the stack isn't an automatic process, at least by
-default.
+There are differences between this and other plugins of this kind. Here you
+have a main yank stack where text is not saved automatically with each yank,
+but manually:
 
-Adding a new item (yank or deletion) to the yank stack is the result of
-either:
-
-* a yank/deletion performed with a specific mapping
+* yanks/deletions performed with specific mappings
 * saving a register directly in the stack
-* enabling the _recording mode_, that allows automatic addition to the stack
+
+There is also a small automatic stack, where yanked text is recorded
+automatically, but it's small in size (10 items by default). Yanks that are
+selected from this stack are also transferred to the main stack.
 
 
 ----------------------------------------------------------------------------

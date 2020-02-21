@@ -21,34 +21,30 @@ let s:v.has_yanked   = 0
 let s:v.updatetime   = &updatetime
 let s:v.pwline       = 0
 
-let s:v.is_recording = 0
-if get(g:, 'yanktools_record_mode', 0)
-  call yt#extras#toggle_recording(0)
-endif
-
 let s:Y = g:yanktools.yank
 let s:Z = g:yanktools.zeta
+let s:A = g:yanktools.auto
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Autocommand calls                                                        {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#check_yanks()
-  """This function is called on CursorMoved/CursorHold/TextYankPost.
-  call s:update_yanks()
-  call s:check_swap()
+  """This function is called on TextYankPost.
+  if s:VM()             | return
+  elseif s:v.has_yanked | call s:update_yanks()
+  else                  | call s:A.update_stack()
+  endif
 endfunction
 
 fun! s:update_yanks()
-  if s:v.has_yanked
-    if s:v.zeta            | call s:Z.update_stack()
-    else                   | call s:Y.update_stack()
-    endif
-    let s:v.has_yanked = 0
+  if s:v.zeta            | call s:Z.update_stack()
+  else                   | call s:Y.update_stack()
   endif
+  let s:v.has_yanked = 0
 endfun
 
-fun! s:check_swap()
+fun! yt#check_swap()
   " reset swap state if cursor moved after finishing swap
   " s:v.has_changed must be 0 because this must run after on_text_change()
   if s:has_pasted && !s:v.has_changed
@@ -63,8 +59,7 @@ endfun
 
 function! yt#on_text_change()
   """This function is called on TextChanged event."""
-  call s:update_yanks()
-
+  if s:v.has_yanked   | call s:update_yanks() | endif
   if !s:v.has_changed | return                | endif
   if s:VM()           | return s:reset_vars() | endif
 
@@ -238,6 +233,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Choose offset                                                            {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" mappings: ]y, [y
 
 fun! yt#offset(preview, count)
   if s:Y.is_empty() | return | endif

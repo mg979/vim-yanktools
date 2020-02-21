@@ -25,7 +25,7 @@ fun! s:update_stack(...) dict
   let type = r[2]
 
   " text must contain printable characters
-  if !s:too_big(text) && text =~ '[[:graph:]]'
+  if text =~ '[[:graph:]]'
     let item = {'text': text, 'type': type, 'ft': &ft}
     " if entry is duplicate, put it upfront removing the previous one
     let ix = index(self.stack, item)
@@ -34,8 +34,11 @@ fun! s:update_stack(...) dict
     endif
     call insert(self.stack, item)
   endif
-  if self.size() > get(g:, 'yanktools_max_stack_size', 100)
-    unlet self.stack[-1]
+  " if auto-stack size exceeds limit, remove entries from the tail
+  if self is s:Auto
+    while self.size() > get(g:, 'yanktools_auto_stack_size', 10)
+      unlet self.stack[-1]
+    endwhile
   endif
 endfun
 
@@ -125,6 +128,17 @@ let s:Yank  = {
       \}
 
 
+let s:Auto  = {
+      \ 'name': 'Auto', 'offset': 0,
+      \ 'size': function('s:size'),
+      \ 'is_empty': function('s:is_empty'),
+      \ 'clear': function('s:clear_stack'),
+      \ 'get': function('s:get'),
+      \ 'update_stack': function('s:update_stack'),
+      \ 'update_register': function('s:update_register'),
+      \}
+
+
 let s:Zeta  = {'name': 'Zeta', 'offset': 0,
       \ 'clear': function('s:clear_stack'),
       \ 'is_empty': function('s:is_empty'),
@@ -148,6 +162,12 @@ fun! s:Zeta.pop_stack() abort
     call remove(self.stack, self.offset)
 endfun
 
+fun! s:Auto.transfer_yank(ix) abort
+  call self.update_register(a:ix)
+  call s:Yank.update_stack()
+  call remove(self.stack, a:ix)
+endfun
+
 
 
 
@@ -158,6 +178,7 @@ endfun
 
 let g:yanktools.yank = s:Yank
 let g:yanktools.zeta = s:Zeta
+let g:yanktools.auto = s:Auto
 
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
@@ -166,18 +187,6 @@ fun! yt#stack#init()
   """Initialize stacks.
   call s:Yank.clear()
   call s:Zeta.clear()
-endfun
-
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Helpers                                                                  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-fun! s:too_big(text)
-  " hitting text size limit, but only for recording mode
-  return !s:v.is_recording ? 0
-        \ : strchars(a:text) > get(g:, 'yanktools_max_text_size', 1000)
+  call s:Auto.clear()
 endfun
 

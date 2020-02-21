@@ -60,7 +60,7 @@ function! s:preview() abort
   setlocal bt=nofile bh=wipe noswf nobl
   setlocal previewwindow
   let pos = (s:Y.offset+1).'/'.s:Y.size()
-  let &l:statusline = '%#Visual# Pos. '.pos.'  %#Tabline# ft ' . item . ft
+  let &l:statusline = '%#Visual# Pos. '.pos.'  %#Tabline# ft ' . item.ft
   silent put =text
   1d _
   1

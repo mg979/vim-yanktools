@@ -405,11 +405,6 @@ OPTIONS                                                    *yanktools-options*
                               a new element will cause an element to be
                               removed from the tail of the stack.
 
-*g:yanktools_time_format*       Default: '%H:%M'
-
-                              The format for |strftime()|, that is the time of
-                              the yank, displayed in the preview window
-                              statusline.
 
 
 PLUGS                                                        *yanktools-plugs*

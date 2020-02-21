@@ -20,20 +20,19 @@ endfun
 "----------------------------------------
 
 fun! s:update_stack(...) dict
-  " Conditions: to be added to the stack
-  "   entry must not be too big
-  "   must contain printable characters
-  "   if entry is duplicate, put it upfront removing the previous one
-  "   if stack size exceeds size limit, remove one entry from the tail
   let r = s:F.get_register(a:0 ? a:1 : '"')
   let text = r[1]
   let type = r[2]
 
+  " text must contain printable characters
   if !s:too_big(text) && text =~ '[[:graph:]]'
-    let item = {'text': text, 'type': type, 'ft': &ft, 'time': localtime()}
+    let item = {'text': text, 'type': type, 'ft': &ft}
+    " if entry is duplicate, put it upfront removing the previous one
     let ix = index(self.stack, item)
-    call insert(self.stack, ix == - 1 ?
-          \     item : remove(self.stack, ix))
+    if ix >= 0
+      call remove(self.stack, ix)
+    endif
+    call insert(self.stack, item)
   endif
   if self.size() > get(g:, 'yanktools_max_stack_size', 100)
     unlet self.stack[-1]
@@ -137,8 +136,7 @@ let s:Zeta  = {'name': 'Zeta', 'offset': 0,
 fun! s:Zeta.update_stack() dict
   " duplicate yanks will be added to this stack nonetheless
   let r = s:F.get_register()
-  call add(self.stack,
-        \{'text': r[1], 'type': r[2], 'ft': &ft, 'time': localtime()})
+  call add(self.stack, {'text': r[1], 'type': r[2], 'ft': &ft})
   if s:v.restoring
     call s:F.restore_register()
   endif

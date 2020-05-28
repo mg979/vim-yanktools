@@ -348,7 +348,7 @@ endfun
 "------------------------------------------------------------------------------
 
 fun! s:VM() abort
-  return exists('g:Vm') && g:Vm.is_active
+  return exists('g:Vm') && g:Vm.buffer
 endfun
 
 

@@ -7,7 +7,7 @@ let s:F = g:yanktools.Funcs
 
 function! yt#duplicate#visual()
   call s:F.store_register()
-  return "y`]pgv"
+  return "y`[P`[".mode()."`]"
 endfunction
 
 function! yt#duplicate#lines(count, single)

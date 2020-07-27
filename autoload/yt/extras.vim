@@ -153,12 +153,12 @@ endfunction
 function! yt#extras#auto_yanks()
   if s:A.is_empty() | return | endif
 
-  if exists('g:loaded_fzf')
+  if exists('g:loaded_finder')
+    return s:fzf_auto_yanks(Finder(s:yanks(s:A), 'Auto yanks', {'matchadd':[['NonText', '\%<6c']]}))
+  elseif exists('g:loaded_fzf')
     return fzf#run({'source': s:yanks(s:A),
           \ 'sink': function('s:fzf_auto_yanks'), 'down': '30%',
           \ 'options': '--prompt "Auto Yanks >>>   "'})
-  elseif exists('*Finder') && exists('*FileFinder')
-    return s:fzf_yank(Finder(s:yanks(s:A), 'Auto yanks'))
   else
     let ix = s:interactive(s:A)
     if ix != -1
@@ -172,12 +172,12 @@ endfunction
 function! yt#extras#select_yank()
   if s:Y.is_empty() | return | endif
 
-  if exists('g:loaded_fzf')
+  if exists('g:loaded_finder')
+    return s:fzf_yank(Finder(s:yanks(s:Y), 'Select yank', {'matchadd':[['NonText', '\%<6c']]}))
+  elseif exists('g:loaded_fzf')
     return fzf#run({'source': s:yanks(s:Y),
           \ 'sink': function('s:fzf_yank'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
-  elseif exists('*Finder') && exists('*FileFinder')
-    return s:fzf_yank(Finder(s:yanks(s:Y), 'Select yank'))
   elseif s:F.is_preview_open()
     call s:F.msg('Press p or P to paste current item.', 1)
     return

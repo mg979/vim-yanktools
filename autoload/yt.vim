@@ -31,9 +31,9 @@ let s:A = g:yanktools.auto
 
 function! yt#check_yanks()
   """This function is called on TextYankPost.
-  if s:VM()             | return
-  elseif s:v.has_yanked | call s:update_yanks()
-  else                  | call s:A.update_stack()
+  if s:VM() && !s:v.zeta | return
+  elseif s:v.has_yanked  | call s:update_yanks()
+  else                   | call s:A.update_stack()
   endif
 endfunction
 
@@ -348,7 +348,7 @@ endfun
 "------------------------------------------------------------------------------
 
 fun! s:VM() abort
-  return exists('g:Vm') && g:Vm.buffer
+  return exists('b:visual_multi')
 endfun
 
 

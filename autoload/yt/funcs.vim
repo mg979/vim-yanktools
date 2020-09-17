@@ -88,15 +88,6 @@ endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:Funcs.dismiss_preview() abort
-  " this will force dismissal of preview window
-  if s:v.pwline
-    let s:v.pwline = -1
-  endif
-endfun
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 fun! s:Funcs.ensure_cursor_moved() abort
   let oldww = &whichwrap
   set whichwrap=h,l
@@ -106,7 +97,39 @@ endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! s:Funcs.is_preview_open()
-  return s:v.pwline != 0
+fun! s:Funcs.popup(stack) abort
+    if has('nvim') && exists('*nvim_open_win')
+        silent! call execute('bw '.s:float) " dismiss previous popup
+
+        let txt = split(a:stack.get().text, '\n')
+        let s:float = nvim_create_buf(v:false, v:true)
+        call nvim_buf_set_lines(s:float, 0, -1, v:true, txt)
+        let opts = {'relative': 'cursor', 'width': 80, 'height': len(txt),
+                    \ 'col': 0, 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
+        let win = nvim_open_win(s:float, 0, opts)
+        call setbufvar(s:float, '&filetype', a:stack.get().ft)
+        echo printf('[%d/%d] ', a:stack.offset+1, a:stack.size())
+        augroup yt_float
+            au!
+            au CursorMoved * exe 'silent!' s:float . 'bw!'
+                        \| exe 'au! yt_float' | aug! yt_float | echo "\r"
+        augroup END
+        return 1
+
+    elseif exists('*popup_atcursor')
+        silent! call popup_close(s:id) " dismiss previous popup
+
+        let title = printf(' [%d/%d] ', a:stack.offset+1, a:stack.size())
+        let height = len(split(a:stack.get().text, '\n')) + 4
+        let s:id = popup_atcursor(split(a:stack.get().text, '\n'),
+                    \{'title': title, 'pos': 'topleft', 'line': 'cursor-'.height,
+                    \ 'padding': [1,1,1,1], 'border':[1,1,1,1],
+                    \ 'borderchars': [' '], 'borderhighlight': ['PmenuSel'],
+                    \})
+        call setbufvar(winbufnr(s:id), '&filetype', a:stack.get().ft)
+        return 1
+    else
+        return 0
+    endif
 endfun
 

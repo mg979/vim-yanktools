@@ -100,9 +100,6 @@ endfunction
 function! s:fzf_yank(yank)
   let index = str2nr(matchstr(a:yank, '\d\+')) - 1
   call s:Y.set_at_offset(index)
-  if s:F.is_preview_open()
-    call yt#preview#update()
-  endif
 endfunction
 
 function! s:fzf_auto_yanks(yank)
@@ -178,9 +175,6 @@ function! yt#extras#select_yank()
     return fzf#run({'source': s:yanks(s:Y),
           \ 'sink': function('s:fzf_yank'), 'down': '30%',
           \ 'options': '--prompt "Select Yank >>>   "'})
-  elseif s:F.is_preview_open()
-    call s:F.msg('Press p or P to paste current item.', 1)
-    return
   else
     let ix = s:interactive(s:Y)
     if ix != -1
@@ -201,7 +195,6 @@ fun! yt#extras#help()
         \  ['xy',  "Clear yank stack" ],
         \  ['xz',  "Clear zeta stack" ],
         \  ['i',   "Interactive paste" ],
-        \  ['p',   "Yanks preview" ],
         \  ['0',   "Set yank index: first [ + count]" ],
         \  ['Y',   "Display yanks" ],
         \  ['Z',   "Display zeta yanks\n\n" ],

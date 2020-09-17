@@ -19,7 +19,6 @@ let s:v.move_this    = 0
 let s:v.zeta         = 0
 let s:v.has_yanked   = 0
 let s:v.updatetime   = &updatetime
-let s:v.pwline       = 0
 
 let s:Y = g:yanktools.yank
 let s:Z = g:yanktools.zeta
@@ -101,7 +100,6 @@ function! yt#paste_with_key(key, visual)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = 0
 
-  call s:F.dismiss_preview()
   return a:key
 endfunction
 
@@ -114,8 +112,6 @@ function! yt#paste_indent(key)
   " set last_paste_key and remember format_this option (used by swap)
   let s:last_paste_key = a:key
   let s:last_paste_format_this = 1
-
-  call s:F.dismiss_preview()
 
   let s:paste_count = v:count
   let &operatorfunc = 'yt#paste_' . (a:key ==# 'P' ? 'above' : 'below')
@@ -224,7 +220,6 @@ function! yt#swap_paste(forward, key)
   " update position, because using non recursive paste
   let s:post_paste_pos = getpos('.')
 
-  call s:F.dismiss_preview()
   call s:msg(result)
 endfunction
 
@@ -234,56 +229,19 @@ endfunction
 " Choose offset                                                            {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" mappings: ]y, [y
+" mappings: ]y, [y,
 
-fun! yt#offset(preview, count)
+fun! yt#offset(count)
   if s:Y.is_empty() | return | endif
 
   " move stack offset and set register
-  if a:count == 'last'
-    let s:Y.offset = s:Y.size() - 1
-  elseif a:count == 'first'
-    let s:Y.offset = 0
-  elseif s:Y.synched()
+  if s:Y.synched()
     call s:Y.move_offset(a:count)
   endif
   call s:Y.update_register()
 
-  " show register in preview, popup, or command line
-  if a:preview || exists('s:v.pwwin')
-    echo "\r"
-    call yt#preview#show(0)
-
-  elseif has('nvim') && exists('*nvim_open_win')
-    silent! call execute('bw '.s:float) " dismiss previous popup
-
-    let txt = split(s:Y.get().text, '\n')
-    let s:float = nvim_create_buf(v:false, v:true)
-    call nvim_buf_set_lines(s:float, 0, -1, v:true, txt)
-    let opts = {'relative': 'cursor', 'width': 80, 'height': len(txt),
-          \ 'col': 0, 'row': 1, 'anchor': 'NW', 'style': 'minimal'}
-    let win = nvim_open_win(s:float, 0, opts)
-    call setbufvar(s:float, '&filetype', s:Y.get().ft)
-    echo printf('[%d/%d] ', s:Y.offset+1, s:Y.size())
-    augroup yt_float
-      au!
-      au CursorMoved * exe 'silent!' s:float . 'bw!'
-            \| exe 'au! yt_float' | aug! yt_float | echo "\r"
-    augroup END
-
-  elseif exists('*popup_atcursor')
-    silent! call popup_close(s:id) " dismiss previous popup
-
-    let title = printf(' [%d/%d] ', s:Y.offset+1, s:Y.size())
-    let height = len(split(s:Y.get().text, '\n')) + 4
-    let s:id = popup_atcursor(split(s:Y.get().text, '\n'),
-          \{'title': title, 'pos': 'topleft', 'line': 'cursor-'.height,
-          \ 'padding': [1,1,1,1], 'border':[1,1,1,1],
-          \ 'borderchars': [' '], 'borderhighlight': ['PmenuSel'],
-          \})
-    call setbufvar(winbufnr(s:id), '&filetype', s:Y.get().ft)
-
-  else
+  " show register in popup or command line
+  if !s:F.popup(s:Y)
     echohl Label
     echo printf('[%d/%d] ', s:Y.offset+1, s:Y.size())
     echohl None

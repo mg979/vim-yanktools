@@ -71,7 +71,6 @@ command! ClearZetaStack     call yt#extras#clear_yanks(1)
 command! ToggleAutoIndent   call yt#extras#toggle_autoindent()
 command! InteractivePaste   call yt#extras#select_yank()
 command! AutoYanks          call yt#extras#auto_yanks()
-command! YanksPreview       call yt#preview#start()
 command! YanksPersistance   call yt#extras#toggle_persistance()
 
 
@@ -109,12 +108,8 @@ nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_indent("P")
 nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
 nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>
 
-nnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(0, v:count1)<cr>
-nnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(0, v:count1 * -1)<cr>
-nnoremap <silent>         <Plug>(YankViewNext)        :<c-u>call yt#offset(1, v:count1)<cr>
-nnoremap <silent>         <Plug>(YankViewPrevious)    :<c-u>call yt#offset(1, v:count1 * -1)<cr>
-nnoremap <silent>         <Plug>(YankLast)            :<c-u>call yt#offset(1, 'last')<cr>
-nnoremap <silent>         <Plug>(YankFirst)           :<c-u>call yt#offset(1, 'first')<cr>
+nnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(v:count1)<cr>
+nnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(v:count1 * -1)<cr>
 
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 0)
@@ -292,7 +287,6 @@ if !empty(s:opt)
   call s:nmapcmd(s:opt.'xz', 'ClearZetaStack')
   call s:nmapcmd(s:opt.'i',  'InteractivePaste')
   call s:nmapcmd(s:opt.'a',  'AutoYanks')
-  call s:nmapcmd(s:opt.'P',  'YanksPreview')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')
   call s:nmaparg(s:opt.'Z',  '<Plug>(ZetaYanks)')
   call s:nmaparg(s:opt.'0',  '<Plug>(SetYankFirst)')

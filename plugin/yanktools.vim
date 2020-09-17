@@ -79,7 +79,6 @@ command! YanksPersistance   call yt#extras#toggle_persistance()
 " Plugs                                                                     {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-nnoremap <silent><expr>   <Plug>(PreserveRegister)    yt#redirect('', v:register, 0)
 nnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")
 xnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")
 
@@ -96,14 +95,14 @@ nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#operator(v:co
 nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate#lines(v:count)
 xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 
-nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 0)
-xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 1)
-nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", 0)
-nnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 0)
-xnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 1)
-nnoremap <silent><expr>   <Plug>(Paste_gP)            yt#paste_with_key("gP", 0)
-nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_indent("p")
-nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_indent("P")
+nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 0, 0)
+xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 1, 0)
+nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", 0, 0)
+nnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 0, 0)
+xnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 1, 0)
+nnoremap <silent><expr>   <Plug>(Paste_gP)            yt#paste_with_key("gP", 0, 0)
+nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_with_key("p", 0, 1)
+nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", 0, 1)
 
 nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
 nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>

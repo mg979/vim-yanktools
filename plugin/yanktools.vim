@@ -13,7 +13,7 @@ let g:yanktools = {'vars': {}}
 call yt#funcs#init()
 call yt#stack#init()
 
-let g:yanktools_autoindent = get(g:, 'yanktools_autoindent', 0)
+let g:yanktools_autoindent = 0
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

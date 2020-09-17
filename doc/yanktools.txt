@@ -14,7 +14,6 @@ Duplicate text.......................................|yanktools-duplicate|
 Zeta stack...........................................|yanktools-zeta|
 Repeatability........................................|yanktools-repeat|
 Control stacks.......................................|yanktools-control|
-Mappings.............................................|yanktools-mappings|
 Options..............................................|yanktools-options|
 Plugs................................................|yanktools-plugs|
 Ex commands..........................................|yanktools-ex|
@@ -35,8 +34,7 @@ FEATURES LIST                                             *yanktools-features*
 
 * Preservation of unnamed register: `c`, `C`, `x`, `X`, <del>, visual paste
 
-* Swap-&-paste: cycle among stack elements, or show them in popup/preview
-  window.
+* Swap-&-paste: cycle among stack elements, or show them in popup
 
 * Replace operator: replace text objects with register. Repeatable.
 
@@ -49,7 +47,7 @@ FEATURES LIST                                             *yanktools-features*
 * Autoindent: you can toggle it, or use mappings to perform a single indented
   paste.
 
-* Interactive paste: with preview window or |fzf-vim|
+* Interactive paste: in the command line or fzf
 
 * Convert yank type: convert selected register to/from blockwise.
 
@@ -162,7 +160,6 @@ COMMANDS                                                  *yanktools-commands*
   `yus`      save current [register] into the yank stack
   `yua`      select an item from the automatic stack
   `yuc`      convert [register] type (ch.wise/blockwise -> linewise, and vv.)
-  `yup`      interactive paste with preview
   `yui`      interactive paste
   `yu0`      set stack offset (index) to {first} + [count]
   `yu=`      toggle autoindent
@@ -295,13 +292,9 @@ the first line of which will be echoed in the command line.
 
 If your vim or nvim version supports floating popup windows, they will be used
 instead.
-                                                           *yanktools-preview*
-If you want to see a preview window, use the `yup` mapping instead. This
-window closes if you move the cursor to a different line, change tab, or paste
-the entry. If the preview window is open, `]y` or `[y` will keep use it.
-
                                                        *yanktools-interactive*
-By pressing `yui`, you will enter interactive paste. It will use |fzf-vim| if
+
+By pressing `yui`, you will enter interactive paste. It will use |fzf| if
 available.
 
 You can list stack items by pressing `yuY` (normal stack) or `yuZ` (zeta stack).
@@ -310,7 +303,7 @@ You can set an arbitrary index in the stack with [count]`yu0`.
 
 
 
-MAPPINGS                                                  *yanktools-mappings*
+OPTIONS                                                    *yanktools-options*
 ==============================================================================
 
 You can override every single mapping by defining your own: each mapping is
@@ -346,26 +339,10 @@ only assigned if the corresponding <Plug> hasn't been assigned by you.
                               Map the plugs for the zeta stack.
 
 
-
-
-OPTIONS                                                    *yanktools-options*
-==============================================================================
-
 *g:yanktools_persistance*       Default: 0
 
                               Enable/disable yank stack persistance across
                               vim restarts.
-
-*g:yanktools_autoindent*        Default: 0
-
-                              If autoindentation for paste commands should be
-                              enabled by default. The command
-                              `ToggleAutoIndent` (mapping `yuai`) will toggle
-                              it on and off.
-
-*g:yanktools_repeat*            Default: 1
-
-                              Enable/disable vim-repeat integration.
 
 *g:yanktools_auto_stack_size*   Default: 10
 
@@ -378,50 +355,62 @@ OPTIONS                                                    *yanktools-options*
 PLUGS                                                        *yanktools-plugs*
 ==============================================================================
 
-Plugs and default mappings. Mappings assume |g:yanktools_main_key| to be 's'.
+Plugs and mappings that use |g:yanktools_main_key|:
 
----------------------------------------+----------+----------+~
-Plug                                   |  Normal  |  Visual  |~
----------------------------------------+----------+----------+~
-<Plug>(Yank)                           |   sy     |   sy     |
-<Plug>(Cut)                            |   sd     |   sd     |
-<Plug>(Change)                         |   sc     |   sc     |
-<Plug>(Paste_p)                        |   p      |   p      |
-<Plug>(Paste_P)                        |   P      |          |
-<Plug>(Paste_gp)                       |   gp     |   gp     |
-<Plug>(Paste_gP)                       |   gP     |          |
-<Plug>(PasteIndent_p)                  |   ]p     |          |
-<Plug>(PasteIndent_P)                  |   [p     |          |
-<Plug>(Replace)                        |   s      |          |
-<Plug>(Replace)_                       |   ss     |          |
-<Plug>(ReplaceLines)                   |   srr    |          |
-<Plug>(Replace=)                       |   sq     |          |
-<Plug>(Replace=)_                      |   sqq    |          |
-<Plug>(Duplicate)                      |   yd     |   <M-d>  |
-<Plug>(Duplicate)_                     |   ydd    |          |
-<Plug>(DuplicateLines)                 |   <M-d>  |          |
-                                       |          |          |
-<Plug>(SwapPasteNext)                  |   <M-p>  |          |
-<Plug>(SwapPastePrevious)              |   <M-P>  |          |
-<Plug>(YankNext)                       |   ]y     |          |
-<Plug>(YankPrevious)                   |   [y     |          |
-                                       |          |          |
-<Plug>(ZetaYank)                       |   yz     |   ZY     |
-<Plug>(ZetaDelete)                     |   dz     |   ZD     |
-<Plug>(ZetaPaste_p)                    |   zp     |   ZP     |
-<Plug>(ZetaPaste_P)                    |   zP     |          |
-                                       |          |          |
-<Plug>(YankSaveCurrent)                |   yus    |          |
-<Plug>(ConvertYankType)                |   yuc    |          |
-<Plug>(InteractivePaste)               |   yui    |          |
-<Plug>(ToggleAutoIndent)               |   yuai   |          |
-<Plug>(ClearYankStack)                 |   yuxy   |          |
-<Plug>(ClearZetaStack)                 |   yuxz   |          |
-<Plug>(Yanks)                          |   yuY    |          |
-<Plug>(ZetaYanks)                      |   yuZ    |          |
-<Plug>(YankViewNext)                   |   yup    |          |
-<Plug>(YanksRewind)                    |   yu0    |          |
-<Plug>(YanktoolsHelp)                  |   yu?    |          |
+     Plug                                Normal    Visual  ~
+------------------------------------------------------------------------------
+  <Plug>(Yank)                             sy        sy     
+  <Plug>(Cut)                              sd        sd     
+  <Plug>(Change)                           sc        sc     
+  <Plug>(Replace)                          s                
+  <Plug>(Replace)_                         ss               
+  <Plug>(ReplaceLines)                     srr              
+  <Plug>(Replace=)                         sq               
+  <Plug>(Replace=)_                        sqq              
+
+
+Other plugs and default mappings:
+
+     Plug                                Normal    Visual  ~
+------------------------------------------------------------------------------
+  <Plug>(Paste_p)                          p         p      
+  <Plug>(Paste_P)                          P                
+  <Plug>(Paste_gp)                         gp        gp     
+  <Plug>(Paste_gP)                         gP               
+  <Plug>(PasteIndent_p)                    ]p               
+  <Plug>(PasteIndent_P)                    [p               
+
+  <Plug>(Duplicate)                        yd        <M-d>  
+  <Plug>(Duplicate)_                       ydd              
+  <Plug>(DuplicateLines)                   <M-d>            
+                                                            
+  <Plug>(SwapPasteNext)                    <M-p>            
+  <Plug>(SwapPastePrevious)                <M-P>            
+
+  <Plug>(YankNext)                         ]y               
+  <Plug>(YankPrevious)                     [y               
+                                                            
+  <Plug>(ZetaYank)                         yz        ZY     
+  <Plug>(ZetaDelete)                       dz        ZD     
+  <Plug>(ZetaPaste_p)                      zp        ZP     
+  <Plug>(ZetaPaste_P)                      zP               
+                                                            
+
+Plugs for commands and default mappings:
+
+     Plug                                Mapping  ~
+------------------------------------------------------------------------------
+  <Plug>(YankSaveCurrent)                 yus              
+  <Plug>(ConvertYankType)                 yuc              
+  <Plug>(InteractivePaste)                yui              
+  <Plug>(ToggleAutoIndent)                yuai             
+  <Plug>(ClearYankStack)                  yuxy             
+  <Plug>(ClearZetaStack)                  yuxz             
+  <Plug>(Yanks)                           yuY              
+  <Plug>(ZetaYanks)                       yuZ              
+  <Plug>(YankViewNext)                    yup              
+  <Plug>(YanksRewind)                     yu0              
+  <Plug>(YanktoolsHelp)                   yu?              
 
 
 
@@ -437,7 +426,6 @@ A few ex commands are defined:
   :ClearZetaStack         same as `yuxz`
   :ToggleAutoIndent       same as `yuai`
   :InteractivePaste       same as `yui`
-  :YanksPreview           same as `yuP`
   :ToggleRecordYanks[!]   same as `yur`, verbose with <bang>
 
 

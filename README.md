@@ -38,8 +38,7 @@ With vim-plug:
 
 * __Preservation of unnamed register__: c, C, x, X, Del, visual paste
 
-* __Swap-&-paste__: cycle among stack elements, or show them in popup/preview
-  window.
+* __Swap-&-paste__: cycle among stack elements, or show them in popup
 
 * __Replace operator__: replace text objects with register. Repeatable.
 
@@ -52,7 +51,7 @@ With vim-plug:
 * __Autoindent__: you can toggle it, or use mappings to perform a single
   indented paste.
 
-* __Interactive paste__: with preview window or fzf-vim
+* __Interactive paste__: in command line or fzf
 
 * __Convert yank type__: convert selected register to/from blockwise.
 
@@ -90,53 +89,6 @@ A main key should be defined, and this key will used for both saving into the
 stack, and for the replace operator. I use the 's' key.
 
       let g:yanktools_main_key = 's'   " or '<c-s>', 'S', 'Z'...
-
-Read the documentation for more details.
-
-Defined operators and their default behaviour (assuming 's' as main key):
-
-| mapping       | name          | function                            |
-|---------------|---------------|-------------------------------------|
-| <kbd>sy</kbd> | yank & save   | add yanked text to the yank stack   |
-| <kbd>sd</kbd> | delete & save | add deleted text to the yank stack  |
-| <kbd>s</kbd>  | replace       | replace text object with register   |
-| <kbd>yd</kbd> | duplicate     | duplicate text object               |
-
-Visual mode mappings:
-
-| mapping        | name                       |
-|----------------|----------------------------|
-|<kbd>sy</kbd>   | yank & save                |
-|<kbd>sd</kbd>   | delete & save              |
-|<kbd>Del</kbd>  | preserve unnamed register  |
-|<kbd>M-d</kbd>  | duplicate                  |
-
-Other normal mode mappings:
-
-| mapping        | name                                       |
-|----------------|--------------------------------------------|
-|<kbd>]p</kbd>   |  paste after the cursor and autoindent     |
-|<kbd>[p</kbd>   |  paste before the cursor and autoindent    |
-|<kbd>M-p</kbd>  |  cycle the stack (+1) and paste            |
-|<kbd>M-P</kbd>  |  cycle the stack (-1) and paste            |
-|<kbd>]y</kbd>   |  cycle the stack (+1) and preview in popup |
-|<kbd>[y</kbd>   |  cycle the stack (-1) and preview in popup |
-
-Zeta mode:
-
-|Normal                |              | Visual        |
-|----------------------|--------------|---------------|
-| <kbd>yz</kbd>        | yank         | <kbd>ZY</kbd> |
-| <kbd>dz</kbd>        | delete       | <kbd>ZD</kbd> |
-| <kbd>zp</kbd>        | paste        | <kbd>ZP</kbd> |
-
-Example settings:
-
-    " make 'S' replace until the end of the line
-    let g:yanktools_main_key = 's'
-    nmap      S s$
-    nnoremap  Y y$
-
 
 Full documentation with `:help yanktools.txt`
 

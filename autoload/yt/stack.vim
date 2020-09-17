@@ -25,7 +25,7 @@ fun! s:update_stack(...) dict
   let type = r[2]
 
   " text must contain printable characters
-  if text =~ '[[:graph:]]'
+  if text =~ (self is s:Auto ? '[[:graph:]]' : '[[:print:]]')
     let item = {'text': text, 'type': type, 'ft': &ft}
     " if entry is duplicate, put it upfront removing the previous one
     let ix = index(self.stack, item)

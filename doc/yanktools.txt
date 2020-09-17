@@ -235,6 +235,7 @@ REPLACE OPERATOR                                           *yanktools-replace*
 
 By default it's mapped to `s` (`ss` to replace lines), and it accepts
 a register from which to paste. Fully repeatable in all variations.
+The variant `sq` also reindents the text object.
 
 The `replace line` command can have two different behaviours:
 
@@ -248,6 +249,8 @@ The `replace line` command can have two different behaviours:
   <Plug>(Replace)              s                 text object
   <Plug>(ReplaceLine)          ss                [count] lines
   <Plug>(ReplaceLines)         srr               each of [count] lines
+  <Plug>(Replace=)             sq                text object
+  <Plug>(ReplaceLine=)         sqq               [count] lines
 
 
 

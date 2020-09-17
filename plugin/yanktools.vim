@@ -98,9 +98,11 @@ xnoremap <silent><expr>   <Plug>(Cut)                 yt#delete(v:count, v:regis
 nnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:register, 1)
 xnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:register, 1)
 
-nnoremap <silent><expr>   <Plug>(Replace)             yt#replace#operator(v:count, v:register)
-nnoremap <silent><expr>   <Plug>(ReplaceLine)         yt#replace#line(v:count, v:register, 0)
-nnoremap <silent><expr>   <Plug>(ReplaceLines)        yt#replace#line(v:count, v:register, 1)
+nnoremap <silent><expr>   <Plug>(Replace)             yt#replace#operator(v:count, v:register, 0)
+nnoremap <silent><expr>   <Plug>(ReplaceLine)         yt#replace#line(v:count, v:register, 0, 0)
+nnoremap <silent><expr>   <Plug>(ReplaceLines)        yt#replace#line(v:count, v:register, 1, 0)
+nnoremap <silent><expr>   <Plug>(Replace=)            yt#replace#operator(v:count, v:register, 1)
+nnoremap <silent><expr>   <Plug>(ReplaceLine=)        yt#replace#line(v:count, v:register, 0, 1)
 
 nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#operator(v:count)
 nnoremap <silent><expr>   <Plug>(DuplicateLine)       yt#duplicate#lines(v:count, 1)
@@ -233,6 +235,8 @@ call s:nmap(s:map.'cc', '<Plug>(Change)_')
 call s:nmap(s:map,          '<Plug>(Replace)')
 call s:nmap(s:map.s:map,    '<Plug>(ReplaceLine)')
 call s:nmap(s:map.'rr',     '<Plug>(ReplaceLines)')
+call s:nmap(s:map.'q',      '<Plug>(Replace=)')
+call s:nmap(s:map.'qq',     '<Plug>(ReplaceLine=)')
 
 
 

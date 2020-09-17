@@ -24,20 +24,6 @@ License..............................................|yanktools-license|
 
 
 
-INTRODUCTION ~
-==============================================================================
-
-Yanktools is a plugin inspired by |vim-yankstack| and |vim-easyclip|.
-
-To install, use {1} or any other Vim plugin manager.
-
-                                      {1} https://github.com/junegunn/vim-plug
-With |vim-plug|:
->
-    Plug 'mg979/vim-yanktools'
-
-
-
 FEATURES LIST                                             *yanktools-features*
 ==============================================================================
 
@@ -82,9 +68,9 @@ you can transfer items from this stack to the main one.
 
 Saving yanks and deletions in the stack is the result of either:
 
-* a yank/deletion performed with a specific mapping
-* saving a register directly in the stack
-* transferring a yank from the automatic stack
+  * a yank/deletion performed with a mapping        -> `sy`, `sd`, `sc`
+  * saving a register directly in the stack         -> `yus`
+  * transferring a yank from the automatic stack    -> `yua`
 
 A main key should be defined, and this key will used for both saving into the
 stack, and for the replace operator. I recommend the 's' key.
@@ -95,18 +81,22 @@ Read |yanktools-mappings| for more details.
 
 Defined operators and their default behaviour (assuming 's' as main key):
 
-  `sy`  (save yank)      add yanked text to the yank stack
-  `sd`  (save delete)    add deleted text to the yank stack
-  `sc`  (save change)    add changed text to the yank stack
-  `s`   (substitute)     replace text object with register
-  `yd`  (duplicate)      duplicate text object
+  `sy`      yank text object and save in the yank stack
+  `sd`      delete text object and save in the yank stack
+  `sc`      change text object and save in the yank stack
+
+  `s`       replace text object
+  `sq`      replace text object and reindent
+
+  `yd`      duplicate text object
+  `ydd`     duplicate same line [count] times
+  <M-d>   duplicate [count] lines
 
 Visual mode mappings:
 
   `sy`           save yank
   `sd`           save delete
   `sc`           save change
-  <Del>        black hole deletion
   <M-d>        duplicate
 
 Other normal mode mappings:
@@ -115,17 +105,15 @@ Other normal mode mappings:
   `[p`           paste before the cursor and autoindent
   <M-p>        cycle the stack (+1) and paste
   <M-P>        cycle the stack (-1) and paste
-  `]y`           cycle the stack (+1)
-  `[y`           cycle the stack (-1)
-  `]Y`           cycle the stack (+1) (with preview window)
-  `[Y`           cycle the stack (-1) (with preview window)
+  `]y`           cycle the stack (+1) (uses popup window if possible)
+  `[y`           cycle the stack (-1) (uses popup window if possible)
 
 Zeta mode (|yanktools-zeta|):
 
- Normal                 Visual ~
-  `yz`        yank         `ZY`
-  `dz`        delete       `ZD`
-  `zp`        paste        `ZP`
+ Normal   Visual ~
+  `yz`       `ZY`       yank
+  `dz`       `ZD`       delete
+  `zp`       `ZP`       paste
 
 Recommended settings:
 >
@@ -154,15 +142,14 @@ How is this different from this?
 >
   nnoremap c "_c
 
-you won't be able to specify another register, any change operation will
-redirect to the black hole register (|quote_|) in any case.
+With that mapping, you wouldn't be able to specify another register, any
+change operation will redirect to the black hole register (|quote_|) in any
+case.
 
 This way, instead, you can still specify a register:
 >
   cc     will restore the unnamed register
   "xcc   will work normally (overwriting unnamed and "x register)
-
-Finally, you can save the changed text in the stack with `sc` + text object.
 
 
 
@@ -247,10 +234,10 @@ The `replace line` command can have two different behaviours:
          Plug                  Mapping           replaces...~
 ------------------------------------------------------------------------------
   <Plug>(Replace)              s                 text object
-  <Plug>(ReplaceLine)          ss                [count] lines
+  <Plug>(Replace)_             ss                [count] lines
   <Plug>(ReplaceLines)         srr               each of [count] lines
   <Plug>(Replace=)             sq                text object
-  <Plug>(ReplaceLine=)         sqq               [count] lines
+  <Plug>(Replace=)_            sqq               [count] lines
 
 
 
@@ -263,7 +250,7 @@ the default register. Repeatable.
          Plug                  Mapping           duplicates...~
 ------------------------------------------------------------------------------
   <Plug>(Duplicate)            yd                text object
-  <Plug>(DuplicateLine)        ydd               the same line [count] times
+  <Plug>(Duplicate)_           ydd               the same line [count] times
   <Plug>(DuplicateLines)       <M-d>             [count] lines
   <Plug>(Duplicate)            <M-d>             visual selection
 
@@ -289,17 +276,12 @@ Note: visual mode uses uppercase Z mappings -> `ZY`, `ZD`, `ZP`
 
 
 
+
 REPEATABILITY                                               *yanktools-repeat*
 ==============================================================================
 
-These commands are repeatable:
-
-* replace and duplicate operators
-* delete and save in stack (both regular and zeta)
-* paste (indented or not)
-
-That is, most commands are repeatable, except `zeta-paste`, that is only
-repeatable with |repeat-vim|.
+All commands are repeatable, except `zeta-paste`, that is only repeatable with
+|repeat-vim|.
 
 
 
@@ -326,6 +308,7 @@ You can set an arbitrary index in the stack with [count]`yu0`.
 
 
 
+
 MAPPINGS                                                  *yanktools-mappings*
 ==============================================================================
 
@@ -340,15 +323,17 @@ only assigned if the corresponding <Plug> hasn't been assigned by you.
 
 *g:yanktools_main_key*          Default: ''
 
-                              Unless mappings are disabled, you must set this
-                              variable, or you will get an error before
-                              entering vim. The content of this variable will
-                              be the default prefix for yank, delete and
-                              replace operators. Recommended value: 's'.
+                              The content of this variable will be the default
+                              prefix for `yank-and-save`, `delete-and-save`
+                              and replace operators. If you don't set it,
+                              you'll have to map the plugs yourself.
+                              My personal choice is 's'.
 
 *g:yanktools_options_key*       Default: 'yu'
 
                               This will be the prefix for special commands.
+                              If set to an empty string, commands will not be
+                              mapped.
 
 *g:yanktools_preserve_unnamed*  Default: 1
 
@@ -358,6 +343,7 @@ only assigned if the corresponding <Plug> hasn't been assigned by you.
 *g:yanktools_map_zeta*          Default: 1
 
                               Map the plugs for the zeta stack.
+
 
 
 
@@ -394,51 +380,53 @@ OPTIONS                                                    *yanktools-options*
 
 
 
+
 PLUGS                                                        *yanktools-plugs*
 ==============================================================================
 
 Plugs and default mappings. Mappings assume |g:yanktools_main_key| to be 's'.
 
----------------------------------------+---------+----------------------------
-Plug                                   |  Modes  | Default                    ~
----------------------------------------+---------+----------------------------
-<Plug>(Yank)                           |   n x   |  sy
-<Plug>(Cut)                            |   n x   |  sd
-<Plug>(CutLine)                        |   n     |  sdd
-<Plug>(Paste_p)                        |   n x   |  p
-<Plug>(Paste_P)                        |   n x   |  P
-<Plug>(PasteIndent_p)                  |   n     |  ]p
-<Plug>(PasteIndent_P)                  |   n     |  [p
-<Plug>(Replace)                        |   n     |  s
-<Plug>(ReplaceLine)                    |   n     |  ss
-<Plug>(ReplaceLines)                   |   n     |  srr
-<Plug>(Duplicate)                      |   n x   |  yd / <M-d>
-<Plug>(DuplicateLine)                  |   n     |  ydd
-<Plug>(DuplicateLines)                 |   n     |  <M-d>
-                                       |         |
-<Plug>(SwapPasteNext)                  |   n     |  <M-d>
-<Plug>(SwapPastePrevious)              |   n     |  <M-d>
-<Plug>(YankNext)                       |   n     |  ]y
-<Plug>(YankPrevious)                   |   n     |  [y
-                                       |         |
-<Plug>(ZetaYank)                       |   n x   |  yz / ZY
-<Plug>(ZetaDelete)                     |   n x   |  yz / ZD
-<Plug>(ZetaDeleteLine)                 |   n     |  yz
-<Plug>(ZetaPaste_p)                    |   n x   |  zp / ZP
-<Plug>(ZetaPaste_P)                    |   n     |  zP
-                                       |         |
-<Plug>(YankSaveCurrent)                |   n     |  yus
-<Plug>(ConvertYankType)                |   n     |  yuc
-<Plug>(InteractivePaste)               |   n     |  yui
-<Plug>(ToggleRecordYanks)              |   n     |  yur
-<Plug>(ToggleAutoIndent)               |   n     |  yuai
-<Plug>(ClearYankStack)                 |   n     |  yuxy
-<Plug>(ClearZetaStack)                 |   n     |  yuxz
-<Plug>(Yanks)                          |   n     |  yuY
-<Plug>(ZetaYanks)                      |   n     |  yuZ
-<Plug>(YankViewNext)                   |   n     |  yup
-<Plug>(YanksPreview)                   |   n     |  yuP
-<Plug>(YanktoolsHelp)                  |   n     |  yu?
+---------------------------------------+----------+----------+~
+Plug                                   |  Normal  |  Visual  |~
+---------------------------------------+----------+----------+~
+<Plug>(Yank)                           |   sy     |   sy     |
+<Plug>(Cut)                            |   sd     |   sd     |
+<Plug>(Change)                         |   sc     |   sc     |
+<Plug>(Paste_p)                        |   p      |   p      |
+<Plug>(Paste_P)                        |   P      |          |
+<Plug>(PasteIndent_p)                  |   ]p     |          |
+<Plug>(PasteIndent_P)                  |   [p     |          |
+<Plug>(Replace)                        |   s      |          |
+<Plug>(Replace)_                       |   ss     |          |
+<Plug>(ReplaceLines)                   |   srr    |          |
+<Plug>(Replace=)                       |   sq     |          |
+<Plug>(Replace=)_                      |   sqq    |          |
+<Plug>(Duplicate)                      |   yd     |   <M-d>  |
+<Plug>(Duplicate)_                     |   ydd    |          |
+<Plug>(DuplicateLines)                 |   <M-d>  |          |
+                                       |          |          |
+<Plug>(SwapPasteNext)                  |   <M-p>  |          |
+<Plug>(SwapPastePrevious)              |   <M-P>  |          |
+<Plug>(YankNext)                       |   ]y     |          |
+<Plug>(YankPrevious)                   |   [y     |          |
+                                       |          |          |
+<Plug>(ZetaYank)                       |   yz     |   ZY     |
+<Plug>(ZetaDelete)                     |   dz     |   ZD     |
+<Plug>(ZetaPaste_p)                    |   zp     |   ZP     |
+<Plug>(ZetaPaste_P)                    |   zP     |          |
+                                       |          |          |
+<Plug>(YankSaveCurrent)                |   yus    |          |
+<Plug>(ConvertYankType)                |   yuc    |          |
+<Plug>(InteractivePaste)               |   yui    |          |
+<Plug>(ToggleAutoIndent)               |   yuai   |          |
+<Plug>(ClearYankStack)                 |   yuxy   |          |
+<Plug>(ClearZetaStack)                 |   yuxz   |          |
+<Plug>(Yanks)                          |   yuY    |          |
+<Plug>(ZetaYanks)                      |   yuZ    |          |
+<Plug>(YankViewNext)                   |   yup    |          |
+<Plug>(YanksRewind)                    |   yu0    |          |
+<Plug>(YanktoolsHelp)                  |   yu?    |          |
+
 
 
 
@@ -480,7 +468,7 @@ RELATED PROJECTS                                           *yanktools-related*
 
 vim-easyclip                    https://github.com/svermeulen/vim-easyclip
 vim-yankstack                   https://github.com/maxbrunsfeld/vim-yankstack
-nvim-miniyank                   https://github.com/bfredl/nvim-miniyank  
+nvim-miniyank                   https://github.com/bfredl/nvim-miniyank
 vim-yank-queue                  https://github.com/fvictorio/vim-yank-queue
 
 

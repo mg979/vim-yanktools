@@ -7,14 +7,6 @@ endif
 
 "------------------------------------------------------------------------------
 
-let s:map = get(g:, 'yanktools_main_key', '')
-
-if empty(s:map)
-  echohl ErrorMsg
-  echomsg 'g:yanktools_main_key HAS NOT BEEN SET, plugin disabled.'
-  finish
-endif
-
 let g:loaded_yanktools = 1
 
 let g:yanktools = {'vars': {}}
@@ -99,14 +91,11 @@ nnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:registe
 xnoremap <silent><expr>   <Plug>(Change)              yt#redirect('c', v:register, 1)
 
 nnoremap <silent><expr>   <Plug>(Replace)             yt#replace#operator(v:count, v:register, 0)
-nnoremap <silent><expr>   <Plug>(ReplaceLine)         yt#replace#line(v:count, v:register, 0, 0)
-nnoremap <silent><expr>   <Plug>(ReplaceLines)        yt#replace#line(v:count, v:register, 1, 0)
+nnoremap <silent><expr>   <Plug>(ReplaceLines)        yt#replace#line(v:count, v:register, 0)
 nnoremap <silent><expr>   <Plug>(Replace=)            yt#replace#operator(v:count, v:register, 1)
-nnoremap <silent><expr>   <Plug>(ReplaceLine=)        yt#replace#line(v:count, v:register, 0, 1)
 
 nnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#operator(v:count)
-nnoremap <silent><expr>   <Plug>(DuplicateLine)       yt#duplicate#lines(v:count, 1)
-nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate#lines(v:count, 0)
+nnoremap <silent><expr>   <Plug>(DuplicateLines)      yt#duplicate#lines(v:count)
 xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 
 nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 0)
@@ -128,7 +117,6 @@ nnoremap <silent>         <Plug>(YankFirst)           :<c-u>call yt#offset(1, 'f
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 0)
 xnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 1)
-nnoremap <silent><expr>   <Plug>(ZetaDeleteLine)      yt#zeta#delete_line(v:count, v:register)
 nnoremap <silent>         <Plug>(ZetaPaste_p)         :call yt#zeta#paste('p', '(ZetaPaste_p)')<cr>
 nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '(ZetaPaste_P)')<cr>
 xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
@@ -151,8 +139,6 @@ nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current
 if get(g:, 'yanktools_no_mappings', 0)
   finish
 endif
-
-let s:opt = get(g:, 'yanktools_options_key', 'yu')
 
 function! s:nmap(key, plug)
   if empty(maparg(a:key, 'n'))
@@ -204,39 +190,30 @@ if get(g:, 'yanktools_preserve_unnamed', 1)
   xnoremap <expr> <del> yt#redirect('d', v:register, 0)
 endif
 
-
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Yank                                                                      {{{1
+" Yank, delete, change, replace                                             {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call s:nxmap(s:map.'y', '<Plug>(Yank)')
-call s:nmap(s:map.'Y',  '<Plug>(Yank)$')
+let s:map = get(g:, 'yanktools_main_key', '')
 
+if !empty(s:map)
+  call s:nxmap(s:map.'y',  '<Plug>(Yank)')
+  call s:nmap(s:map.'Y',   '<Plug>(Yank)$')
 
+  call s:nxmap(s:map.'d',  '<Plug>(Cut)')
+  call s:nmap(s:map.'D',   '<Plug>(Cut)$')
+  call s:nmap(s:map.'dd',  '<Plug>(Cut)_')
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Delete                                                                    {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  call s:nxmap(s:map.'c',  '<Plug>(Change)')
+  call s:nmap(s:map.'C',   '<Plug>(Change)$')
+  call s:nmap(s:map.'cc',  '<Plug>(Change)_')
 
-call s:nxmap(s:map.'d', '<Plug>(Cut)')
-call s:nmap(s:map.'D',  '<Plug>(Cut)$')
-call s:nmap(s:map.'dd', '<Plug>(Cut)_')
-call s:nxmap(s:map.'c', '<Plug>(Change)')
-call s:nmap(s:map.'C',  '<Plug>(Change)$')
-call s:nmap(s:map.'cc', '<Plug>(Change)_')
-
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Replace operator                                                          {{{1
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-call s:nmap(s:map,          '<Plug>(Replace)')
-call s:nmap(s:map.s:map,    '<Plug>(ReplaceLine)')
-call s:nmap(s:map.'rr',     '<Plug>(ReplaceLines)')
-call s:nmap(s:map.'q',      '<Plug>(Replace=)')
-call s:nmap(s:map.'qq',     '<Plug>(ReplaceLine=)')
+  call s:nmap(s:map,       '<Plug>(Replace)')
+  call s:nmap(s:map.s:map, '<Plug>(Replace)_')
+  call s:nmap(s:map.'rr',  '<Plug>(ReplaceLines)')
+  call s:nmap(s:map.'q',   '<Plug>(Replace=)')
+  call s:nmap(s:map.'qq',  '<Plug>(Replace=)_')
+endif
 
 
 
@@ -245,8 +222,8 @@ call s:nmap(s:map.'qq',     '<Plug>(ReplaceLine=)')
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 call s:nmap('yd',    '<Plug>(Duplicate)')
-call s:nmap('ydd',   '<Plug>(DuplicateLine)')
-call s:nmap('<M-d>', '<Plug>(DuplicateLines)')
+call s:nmap('ydd',   '<Plug>(DuplicateLines)')
+call s:nmap('<M-d>', '<Plug>(Duplicate)_')
 call s:xmap('<M-d>', '<Plug>(Duplicate)')
 
 
@@ -289,7 +266,7 @@ if get(g:, 'yanktools_map_zeta', 1)
   call s:xmap('ZY', '<Plug>(ZetaYank)')
 
   call s:nmap('dz', '<Plug>(ZetaDelete)')
-  call s:nmap('dzd', '<Plug>(ZetaDeleteLine)')
+  call s:nmap('dzd', '<Plug>(ZetaDelete)_')
   call s:xmap('ZD', '<Plug>(ZetaDelete)')
 
   call s:nmap('zp', '<Plug>(ZetaPaste_p)')
@@ -303,21 +280,23 @@ endif
 " Misc commands                                                             {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-if get(g:, 'yanktools_map_commands', 1)
-  call s:nmapcmd(s:opt.'=', 'ToggleAutoIndent')
+let s:opt = get(g:, 'yanktools_options_key', 'yu')
+
+if !empty(s:opt)
+  call s:nmapcmd(s:opt.'=',  'ToggleAutoIndent')
   call s:nmapcmd(s:opt.'xy', 'ClearYankStack')
   call s:nmapcmd(s:opt.'xz', 'ClearZetaStack')
-  call s:nmapcmd(s:opt.'i', 'InteractivePaste')
+  call s:nmapcmd(s:opt.'i',  'InteractivePaste')
   call s:nmapcmd(s:opt.'a',  'AutoYanks')
   call s:nmapcmd(s:opt.'P',  'YanksPreview')
   call s:nmaparg(s:opt.'Y',  '<Plug>(Yanks)')
   call s:nmaparg(s:opt.'Z',  '<Plug>(ZetaYanks)')
-  call s:nmaparg(s:opt.'0', '<Plug>(SetYankFirst)')
-  call s:nmaparg(s:opt.'c', '<Plug>(ConvertYankType)')
-  call s:nmaparg(s:opt.'s', '<Plug>(YankSaveCurrent)')
-  call s:nmaparg(s:opt.'?', '<Plug>(YanktoolsHelp)')
-  call s:nmaparg(s:opt.'r', '<Plug>(ToggleRecordYanks)')
-  call s:nmaparg(s:opt.'p', '<Plug>(YankViewNext)')
+  call s:nmaparg(s:opt.'0',  '<Plug>(SetYankFirst)')
+  call s:nmaparg(s:opt.'c',  '<Plug>(ConvertYankType)')
+  call s:nmaparg(s:opt.'s',  '<Plug>(YankSaveCurrent)')
+  call s:nmaparg(s:opt.'?',  '<Plug>(YanktoolsHelp)')
+  call s:nmaparg(s:opt.'r',  '<Plug>(ToggleRecordYanks)')
+  call s:nmaparg(s:opt.'p',  '<Plug>(YankViewNext)')
 endif
 
 

@@ -5,13 +5,6 @@
 let s:v = g:yanktools.vars
 let s:F = g:yanktools.Funcs
 
-" s:COUNT: is always applied before g@, and is the number of replaced
-" lines/text objects
-
-" s:REPL_COUNT: is an empty string, except with the multiple-replace-line
-" operator, in this case it will be the same as a:count, and it will be the
-" number of the pasted replacements
-
 fun! yt#replace#operator(count, register, reindent)
   let s:repl_reg = a:register == "_" ? s:F.default_reg() : a:register
   let s:reindent = a:reindent
@@ -38,11 +31,10 @@ endfun
 " Replace lines
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! yt#replace#line(count, register, multi, reindent)
+fun! yt#replace#line(count, register, reindent)
   let s:repl_reg = a:register == "_" ? s:F.default_reg() : a:register
   let s:reindent = a:reindent
-  let n = a:count>1? string(a:count) : ''
-  let s:repl_count = a:multi ? n : ''
+  let s:repl_count = a:count>1? string(a:count) : ''
   set opfunc=yt#replace#opfunc
-  return ":\<c-u>\<cr>".n."g@_"
+  return ":\<c-u>\<cr>".s:repl_count."g@_"
 endfun

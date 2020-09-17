@@ -10,17 +10,10 @@ function! yt#duplicate#visual()
   return "y`[P`[".mode()."`]"
 endfunction
 
-function! yt#duplicate#lines(count, single)
-  " a:single   duplicate [count] lines 1 time
-  " !a:single  duplicate 1 line [count] times
+function! yt#duplicate#lines(count)
   set opfunc=yt#duplicate#opfunc
-  if a:single
-    let s:dupl_count = a:count>1? string(a:count) : ''
-    return ":\<c-u>\<cr>g@_"
-  else
-    let s:dupl_count = ''
-    return ":\<c-u>\<cr>".a:count."g@_"
-  endif
+  let s:dupl_count = a:count>1? string(a:count) : ''
+  return ":\<c-u>\<cr>g@_"
 endfunction
 
 function! yt#duplicate#operator(count)

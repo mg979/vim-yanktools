@@ -36,13 +36,6 @@ function! yt#zeta#del_opfunc(type)
   execute "normal! \"".s:register."d"
 endfunction
 
-function! yt#zeta#delete_line(count, register)
-  let s:v.has_changed = 1
-  let s:v.has_yanked = 1
-  let s:v.zeta = 1
-  return yt#zeta#delete(a:count, a:register, 0).'_'
-endfunction
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! yt#zeta#paste(key, plug)

@@ -208,12 +208,13 @@ CYCLE YANK STACK                                             *yanktools-cycle*
 
 Default mappings for cycling the yank stack are <M-p> / <M-P> (forward/back).
 
+If you press them after a paste key (`p`, `[p`, `]p`, `gp`, `gP`), the stack
+will be cycled keeping the properties of that paste command (before or after,
+move cursor at end, autoindent, etc).
+
 If you press one of these keys before doing a paste, it will paste the last
 entry of the stack (the last yanked item), using 'P' (paste before).
 
-If you press another paste key (p, [p, ]p...), the stack will be cycled
-keeping the properties of that paste command (before or after, move cursor at
-end, autoindent, etc).
 
 
 
@@ -362,13 +363,6 @@ OPTIONS                                                    *yanktools-options*
                               `ToggleAutoIndent` (mapping `yuai`) will toggle
                               it on and off.
 
-*g:yanktools_move_after*        Default: 0
-
-                              If you want the cursor to always move at the end
-                              of the pasted content. Some commands (replace
-                              operator, zeta paste) use this method by
-                              default.
-
 *g:yanktools_repeat*            Default: 1
 
                               Enable/disable vim-repeat integration.
@@ -394,6 +388,8 @@ Plug                                   |  Normal  |  Visual  |~
 <Plug>(Change)                         |   sc     |   sc     |
 <Plug>(Paste_p)                        |   p      |   p      |
 <Plug>(Paste_P)                        |   P      |          |
+<Plug>(Paste_gp)                       |   gp     |   gp     |
+<Plug>(Paste_gP)                       |   gP     |          |
 <Plug>(PasteIndent_p)                  |   ]p     |          |
 <Plug>(PasteIndent_P)                  |   [p     |          |
 <Plug>(Replace)                        |   s      |          |

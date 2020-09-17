@@ -13,7 +13,6 @@ let g:yanktools = {'vars': {}}
 call yt#funcs#init()
 call yt#stack#init()
 
-let g:yanktools_move_after = get(g:, 'yanktools_move_after', 0)
 let g:yanktools_autoindent = get(g:, 'yanktools_autoindent', 0)
 
 
@@ -101,6 +100,9 @@ xnoremap <silent><expr>   <Plug>(Duplicate)           yt#duplicate#visual()
 nnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 0)
 xnoremap <silent><expr>   <Plug>(Paste_p)             yt#paste_with_key("p", 1)
 nnoremap <silent><expr>   <Plug>(Paste_P)             yt#paste_with_key("P", 0)
+nnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 0)
+xnoremap <silent><expr>   <Plug>(Paste_gp)            yt#paste_with_key("gp", 1)
+nnoremap <silent><expr>   <Plug>(Paste_gP)            yt#paste_with_key("gP", 0)
 nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_indent("p")
 nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_indent("P")
 
@@ -232,10 +234,12 @@ call s:xmap('<M-d>', '<Plug>(Duplicate)')
 " Paste keys                                                                {{{1
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call s:nxmap('p', '<Plug>(Paste_p)')
-call s:nmap('P',  '<Plug>(Paste_P)')
-call s:nmap('[p', '<Plug>(PasteIndent_P)')
-call s:nmap(']p', '<Plug>(PasteIndent_p)')
+call s:nxmap('p',  '<Plug>(Paste_p)')
+call s:nmap('P',   '<Plug>(Paste_P)')
+call s:nxmap('gp', '<Plug>(Paste_gp)')
+call s:nmap('gP',  '<Plug>(Paste_gP)')
+call s:nmap('[p',  '<Plug>(PasteIndent_P)')
+call s:nmap(']p',  '<Plug>(PasteIndent_p)')
 
 
 

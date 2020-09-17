@@ -306,7 +306,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! s:is_moving_at_end()
-  return g:yanktools_move_after || s:v.move_this
+  return s:v.move_this
 endfun
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

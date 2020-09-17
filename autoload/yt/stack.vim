@@ -135,7 +135,9 @@ let s:Auto  = {
       \ 'clear': function('s:clear_stack'),
       \ 'get': function('s:get'),
       \ 'update_stack': function('s:update_stack'),
+      \ 'move_offset': function('s:move_offset'),
       \ 'update_register': function('s:update_register'),
+      \ 'synched': function('s:synched'),
       \}
 
 

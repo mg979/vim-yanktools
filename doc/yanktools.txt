@@ -203,14 +203,19 @@ pasted, and it is also transferred to the main yank stack.
 CYCLE YANK STACK                                             *yanktools-cycle*
 ==============================================================================
 
-Default mappings for cycling the yank stack are <M-p> / <M-P> (forward/back).
+         Plug                  Mapping     cycles...~
+------------------------------------------------------------------------------
+  <Plug>(SwapPasteNext)        <M-p>       yank stack (forward)
+  <Plug>(SwapPastePrevious)    <M-P>       yank stack (backwards)
+  <Plug>(SwapAutoNext)         <M-a>       auto stack (forward)
+  <Plug>(SwapAutoPrevious)     <M-A>       auto stack (backwards)
 
 If you press them after a paste key (`p`, `[p`, `]p`, `gp`, `gP`), the stack
 will be cycled keeping the properties of that paste command (before or after,
 move cursor at end, autoindent, etc).
 
 If you press one of these keys before doing a paste, it will paste the last
-entry of the stack (the last yanked item), using 'P' (paste before).
+entry of the stack (the last yanked item), using `P` (paste before).
 
 
 
@@ -236,6 +241,7 @@ The `replace line` command can have two different behaviours:
   <Plug>(ReplaceLines)         srr               each of [count] lines
   <Plug>(Replace=)             sq                text object
   <Plug>(Replace=)_            sqq               [count] lines
+
 
 
 
@@ -359,58 +365,58 @@ Plugs and mappings that use |g:yanktools_main_key|:
 
      Plug                                Normal    Visual  ~
 ------------------------------------------------------------------------------
-  <Plug>(Yank)                             sy        sy     
-  <Plug>(Cut)                              sd        sd     
-  <Plug>(Change)                           sc        sc     
-  <Plug>(Replace)                          s                
-  <Plug>(Replace)_                         ss               
-  <Plug>(ReplaceLines)                     srr              
-  <Plug>(Replace=)                         sq               
-  <Plug>(Replace=)_                        sqq              
+  <Plug>(Yank)                             sy        sy
+  <Plug>(Cut)                              sd        sd
+  <Plug>(Change)                           sc        sc
+  <Plug>(Replace)                          s
+  <Plug>(Replace)_                         ss
+  <Plug>(ReplaceLines)                     srr
+  <Plug>(Replace=)                         sq
+  <Plug>(Replace=)_                        sqq
 
 
 Other plugs and default mappings:
 
      Plug                                Normal    Visual  ~
 ------------------------------------------------------------------------------
-  <Plug>(Paste_p)                          p         p      
-  <Plug>(Paste_P)                          P                
-  <Plug>(Paste_gp)                         gp        gp     
-  <Plug>(Paste_gP)                         gP               
-  <Plug>(PasteIndent_p)                    ]p               
-  <Plug>(PasteIndent_P)                    [p               
+  <Plug>(Paste_p)                          p         p
+  <Plug>(Paste_P)                          P
+  <Plug>(Paste_gp)                         gp        gp
+  <Plug>(Paste_gP)                         gP
+  <Plug>(PasteIndent_p)                    ]p
+  <Plug>(PasteIndent_P)                    [p
 
-  <Plug>(Duplicate)                        yd        <M-d>  
-  <Plug>(Duplicate)_                       ydd              
-  <Plug>(DuplicateLines)                   <M-d>            
-                                                            
-  <Plug>(SwapPasteNext)                    <M-p>            
-  <Plug>(SwapPastePrevious)                <M-P>            
+  <Plug>(Duplicate)                        yd        <M-d>
+  <Plug>(Duplicate)_                       ydd
+  <Plug>(DuplicateLines)                   <M-d>
 
-  <Plug>(YankNext)                         ]y               
-  <Plug>(YankPrevious)                     [y               
-                                                            
-  <Plug>(ZetaYank)                         yz        ZY     
-  <Plug>(ZetaDelete)                       dz        ZD     
-  <Plug>(ZetaPaste_p)                      zp        ZP     
-  <Plug>(ZetaPaste_P)                      zP               
-                                                            
+  <Plug>(SwapPasteNext)                    <M-p>
+  <Plug>(SwapPastePrevious)                <M-P>
+
+  <Plug>(YankNext)                         ]y
+  <Plug>(YankPrevious)                     [y
+
+  <Plug>(ZetaYank)                         yz        ZY
+  <Plug>(ZetaDelete)                       dz        ZD
+  <Plug>(ZetaPaste_p)                      zp        ZP
+  <Plug>(ZetaPaste_P)                      zP
+
 
 Plugs for commands and default mappings:
 
      Plug                                Mapping  ~
 ------------------------------------------------------------------------------
-  <Plug>(YankSaveCurrent)                 yus              
-  <Plug>(ConvertYankType)                 yuc              
-  <Plug>(InteractivePaste)                yui              
-  <Plug>(ToggleAutoIndent)                yuai             
-  <Plug>(ClearYankStack)                  yuxy             
-  <Plug>(ClearZetaStack)                  yuxz             
-  <Plug>(Yanks)                           yuY              
-  <Plug>(ZetaYanks)                       yuZ              
-  <Plug>(YankViewNext)                    yup              
-  <Plug>(YanksRewind)                     yu0              
-  <Plug>(YanktoolsHelp)                   yu?              
+  <Plug>(YankSaveCurrent)                 yus
+  <Plug>(ConvertYankType)                 yuc
+  <Plug>(InteractivePaste)                yui
+  <Plug>(ToggleAutoIndent)                yuai
+  <Plug>(ClearYankStack)                  yuxy
+  <Plug>(ClearZetaStack)                  yuxz
+  <Plug>(Yanks)                           yuY
+  <Plug>(ZetaYanks)                       yuZ
+  <Plug>(YankViewNext)                    yup
+  <Plug>(YanksRewind)                     yu0
+  <Plug>(YanktoolsHelp)                   yu?
 
 
 

@@ -226,15 +226,16 @@ endfunction "}}}
 " If called without pasting anything, perform a P paste with the current
 " element in the yank stack.
 ""
-function! yt#swap_paste(forward, key)
+function! yt#swap_paste(forward, auto_stack)
     "{{{1
-    if s:Y.is_empty() | return | endif
+    let stack = a:auto_stack ? s:A : s:Y
+    if stack.is_empty() | return | endif
 
     " ensure register and stack are synched
-    let was_synched = s:Y.synched()
+    let was_synched = stack.synched()
 
     if !s:has_pasted || ( b:changedtick != s:last_paste_tick )
-        execute "normal ".a:key
+        execute "normal P"
         return
     endif
 
@@ -245,10 +246,10 @@ function! yt#swap_paste(forward, key)
 
     " move stack offset and get return message code
     " if stack wasn't synched, it has been moved already (to the current offset)
-    let result = was_synched ? s:Y.move_offset(a:forward ? 1 : -1) : 0
+    let result = was_synched ? stack.move_offset(a:forward ? 1 : -1) : 0
 
     " set register to offset
-    call s:Y.update_register()
+    call stack.update_register()
 
     " set flag before actual paste, so that autocmd call will run
     let s:has_pasted = 1 | let s:v.has_changed = 1
@@ -260,7 +261,7 @@ function! yt#swap_paste(forward, key)
     " update position, because using non recursive paste
     let s:post_paste_pos = getpos('.')
 
-    call s:msg(result)
+    call s:msg(stack, result)
 endfunction "}}}
 
 
@@ -311,10 +312,10 @@ function! s:is_moving_at_end()
     return s:v.move_this
 endfunction "}}}
 
-function! s:msg(n)
+function! s:msg(stack, n)
     "{{{1
     redraw
-    echo "Yank stack position: " . (s:Y.offset + 1) . "/" . s:Y.size()
+    echo "Yank stack position: " . (a:stack.offset + 1) . "/" . a:stack.size()
     if a:n
         echohl WarningMsg
         if a:n == 1 | echon " restarting from the beginning"

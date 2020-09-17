@@ -104,8 +104,10 @@ nnoremap <silent><expr>   <Plug>(Paste_gP)            yt#paste_with_key("gP", 0,
 nnoremap <silent><expr>   <Plug>(PasteIndent_p)       yt#paste_with_key("p", 0, 1)
 nnoremap <silent><expr>   <Plug>(PasteIndent_P)       yt#paste_with_key("P", 0, 1)
 
-nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, "P")<cr>
-nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, "P")<cr>
+nnoremap <silent>         <Plug>(SwapPasteNext)       :<c-u>call yt#swap_paste(1, 0)<cr>
+nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0, 0)<cr>
+nnoremap <silent>         <Plug>(SwapAutoNext)        :<c-u>call yt#swap_paste(1, 1)<cr>
+nnoremap <silent>         <Plug>(SwapAutoPrevious)    :<c-u>call yt#swap_paste(0, 1)<cr>
 
 nnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(v:count1)<cr>
 nnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(v:count1 * -1)<cr>
@@ -243,6 +245,8 @@ call s:nmap(']p',  '<Plug>(PasteIndent_p)')
 
 call s:nmap('<M-p>', '<Plug>(SwapPasteNext)')
 call s:nmap('<M-P>', '<Plug>(SwapPastePrevious)')
+call s:nmap('<M-a>', '<Plug>(SwapAutoNext)')
+call s:nmap('<M-A>', '<Plug>(SwapAutoPrevious)')
 
 
 

@@ -99,12 +99,16 @@ endfunction
 
 function! s:fzf_yank(yank)
   let index = str2nr(matchstr(a:yank, '\d\+')) - 1
-  call s:Y.set_at_offset(index)
+  if index >= 0
+      call s:Y.set_at_offset(index)
+  endif
 endfunction
 
 function! s:fzf_auto_yanks(yank)
   let index = str2nr(matchstr(a:yank, '\d\+')) - 1
-  call s:A.transfer_yank(index)
+  if index >= 0
+      call s:A.transfer_yank(index)
+  endif
 endfunction
 
 function! s:interactive(stack)

@@ -145,20 +145,6 @@ function! yt#paste_below(type)
 endfunction "}}}
 
 
-""
-" Function: yt#save_current
-" Save register in the yank stack (mapping 'yus').
-" @param reg: the register
-""
-function! yt#save_current(reg) abort
-    "{{{1
-    if empty(getreg(a:reg))
-        return s:F.msg('Register '.a:reg.' is empty!')
-    endif
-    call s:Y.update_stack(a:reg)
-    call s:F.msg('Register '''.a:reg.''' saved', 1)
-endfunction "}}}
-
 
 
 

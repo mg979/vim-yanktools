@@ -430,9 +430,8 @@ A few ex commands are defined:
   :ZetaYanks              same as `yuZ`
   :ClearYankStack         same as `yuxy`
   :ClearZetaStack         same as `yuxz`
-  :ToggleAutoIndent       same as `yuai`
+  :ToggleAutoIndent       same as `yu=`
   :InteractivePaste       same as `yui`
-  :ToggleRecordYanks[!]   same as `yur`, verbose with <bang>
 
 
 

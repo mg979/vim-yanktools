@@ -113,13 +113,12 @@ nnoremap <silent>         <Plug>(ZetaPaste_P)         :call yt#zeta#paste('P', '
 xnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 xnoremap <silent><expr>   <Plug>(ZetaPaste)           yt#zeta#visual_paste()
 
-nnoremap <silent>         <Plug>(SetYankFirst)        :<c-u>call yt#extras#set_offset(v:count, 1)<cr>
-nnoremap <silent>         <Plug>(SetYankLast)         :<c-u>call yt#extras#set_offset(v:count, 0)<cr>
+nnoremap <silent>         <Plug>(SetYank)             :<c-u>call yt#extras#set_offset(v:count)<cr>
 nnoremap <silent>         <Plug>(Yanks)               :<c-u>call yt#extras#show_yanks('y')<cr>
 nnoremap <silent>         <Plug>(ZetaYanks)           :<c-u>call yt#extras#show_yanks('z')<cr>
 nnoremap <silent>         <Plug>(ConvertYankType)     :<c-u>call yt#extras#convert_yank_type()<cr>
 nnoremap <silent>         <Plug>(YanktoolsHelp)       :<c-u>call yt#extras#help()<cr>
-nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#save_current(v:register)<cr>
+nnoremap <silent>         <Plug>(YankSaveCurrent)     :<c-u>call yt#extras#save_current(v:register)<cr>
 
 "}}}
 
@@ -240,11 +239,10 @@ if !empty(s:opt)
     call s:nmapcmd(s:opt.'a',  'AutoYanks')
     call s:nmap(s:opt.'Y',  '<Plug>(Yanks)')
     call s:nmap(s:opt.'Z',  '<Plug>(ZetaYanks)')
-    call s:nmap(s:opt.'0',  '<Plug>(SetYankFirst)')
+    call s:nmap(s:opt.'0',  '<Plug>(SetYank)')
     call s:nmap(s:opt.'c',  '<Plug>(ConvertYankType)')
     call s:nmap(s:opt.'s',  '<Plug>(YankSaveCurrent)')
     call s:nmap(s:opt.'?',  '<Plug>(YanktoolsHelp)')
-    call s:nmap(s:opt.'r',  '<Plug>(ToggleRecordYanks)')
     call s:nmap(s:opt.'p',  '<Plug>(YankViewNext)')
 endif
 "}}}

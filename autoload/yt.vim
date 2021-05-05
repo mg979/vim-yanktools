@@ -261,7 +261,7 @@ endfunction "}}}
 " Switch to the next/previous element in the yank stack.
 " Echo the selected element in a popup, or in the command line.
 ""
-function! yt#offset(count)
+function! yt#offset(count, visual)
     "{{{1
     if s:Y.is_empty() | return | endif
 
@@ -277,6 +277,10 @@ function! yt#offset(count)
         echo printf('[%d/%d] ', s:Y.offset+1, s:Y.size())
         echohl None
         echon split(s:Y.get().text, '\n')[0][:(&columns-10)]
+    endif
+
+    if a:visual
+        normal! gv
     endif
 endfunction "}}}
 

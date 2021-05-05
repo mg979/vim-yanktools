@@ -102,8 +102,10 @@ nnoremap <silent>         <Plug>(SwapPastePrevious)   :<c-u>call yt#swap_paste(0
 nnoremap <silent>         <Plug>(SwapAutoNext)        :<c-u>call yt#swap_paste(1, 1)<cr>
 nnoremap <silent>         <Plug>(SwapAutoPrevious)    :<c-u>call yt#swap_paste(0, 1)<cr>
 
-nnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(v:count1)<cr>
-nnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(v:count1 * -1)<cr>
+nnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(v:count1, 0)<cr>
+xnoremap <silent>         <Plug>(YankNext)            :<c-u>call yt#offset(v:count1, 1)<cr>
+nnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(v:count1 * -1, 0)<cr>
+xnoremap <silent>         <Plug>(YankPrevious)        :<c-u>call yt#offset(v:count1 * -1, 1)<cr>
 
 nnoremap <silent><expr>   <Plug>(ZetaYank)            yt#zeta#yank("y")
 nnoremap <silent><expr>   <Plug>(ZetaDelete)          yt#zeta#delete(v:count, v:register, 0)
@@ -214,7 +216,9 @@ call s:nmap('<M-A>', '<Plug>(SwapAutoPrevious)')
 "}}}
 " Choose offset {{{1
 call s:nmap(']y', '<Plug>(YankNext)')
+call s:xmap(']y', '<Plug>(YankNext)')
 call s:nmap('[y', '<Plug>(YankPrevious)')
+call s:xmap('[y', '<Plug>(YankPrevious)')
 "}}}
 " z mode {{{1
 if get(g:, 'yanktools_map_zeta', 1)

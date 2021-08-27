@@ -128,7 +128,7 @@ function! yt#paste_with_key(key, visual, indent)
     let s:last_paste_format_this = a:indent
 
     if a:indent && getregtype(v:register) == 'V'
-        let s:paste_count = v:count
+        let s:paste_pre = printf('%s"%s', v:count, v:register)
         let &operatorfunc = 'yt#paste_' . (a:key ==# 'P' ? 'above' : 'below')
         return 'g@^'
     else
@@ -137,11 +137,11 @@ function! yt#paste_with_key(key, visual, indent)
 endfunction
 
 function! yt#paste_above(type)
-    exe 'normal!' s:paste_count . 'P`[=`]`['
+    exe 'normal!' s:paste_pre . 'P`[=`]`['
 endfunction
 
 function! yt#paste_below(type)
-    exe 'normal!' s:paste_count . 'p`[=`]`]'
+    exe 'normal!' s:paste_pre . 'p`[=`]`]'
 endfunction "}}}
 
 

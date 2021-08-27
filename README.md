@@ -55,8 +55,6 @@ With vim-plug:
 
 * __Convert yank type__: convert selected register to/from blockwise.
 
-* __Optional persistance__
-
 
 
 ----------------------------------------------------------------------------

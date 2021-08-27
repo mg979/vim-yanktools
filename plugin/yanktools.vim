@@ -17,28 +17,8 @@ call yt#stack#init()
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Persistance and autocommands
+" Autocommands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-au VimEnter * call s:check_persistance()
-
-fun! s:check_persistance()
-    "{{{1
-    if exists('g:YANKTOOLS_PERSIST') && !get(g:, 'yanktools_persistance', 0)
-        unlet g:YANKTOOLS_PERSIST
-    elseif exists('g:YANKTOOLS_PERSIST')
-        let g:yanktools.yank.stack = deepcopy(g:YANKTOOLS_PERSIST)
-        let g:yanktools_persistance = 1
-    elseif get(g:, 'yanktools_persistance', 0)
-        let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
-    endif
-    if get(g:, 'yanktools_persistance', 0)
-        augroup yanktools_persist
-            au!
-            au BufWrite,VimLeave * let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
-        augroup END
-    endif
-endfun "}}}
 
 augroup plugin-yanktools
     "{{{1
@@ -69,7 +49,6 @@ command! ClearZetaStack     call yt#extras#clear_yanks(1)
 command! ToggleAutoIndent   call yt#extras#toggle_autoindent()
 command! InteractivePaste   call yt#extras#select_yank()
 command! AutoYanks          call yt#extras#auto_yanks()
-command! YanksPersistance   call yt#extras#toggle_persistance()
 "}}}
 " Plugs {{{1
 nnoremap <silent><expr>   <Plug>(Yank)                yt#yank_with_key("y")

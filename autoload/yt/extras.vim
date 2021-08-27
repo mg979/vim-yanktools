@@ -188,25 +188,6 @@ function! yt#extras#help()
     endfor
 endfunction "}}}
 
-""
-" Command: YanksPersistance
-""
-function! yt#extras#toggle_persistance() abort
-    "{{{1
-    let g:yanktools_persistance = !get(g:, 'yanktools_persistance', 0)
-    if g:yanktools_persistance
-        let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
-        augroup yanktools_persist
-            au!
-            au BufWrite,VimLeave * let g:YANKTOOLS_PERSIST = deepcopy(g:yanktools.yank.stack)
-        augroup END
-    else
-        autocmd! yanktools_persist
-        augroup! yanktools_persist
-        unlet g:YANKTOOLS_PERSIST
-    endif
-endfunction "}}}
-
 
 
 

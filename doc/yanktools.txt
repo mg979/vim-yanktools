@@ -17,7 +17,6 @@ Control stacks.......................................|yanktools-control|
 Options..............................................|yanktools-options|
 Plugs................................................|yanktools-plugs|
 Ex commands..........................................|yanktools-ex|
-Persistance..........................................|yanktools-persistance|
 Related projects.....................................|yanktools-related|
 License..............................................|yanktools-license|
 
@@ -345,11 +344,6 @@ only assigned if the corresponding <Plug> hasn't been assigned by you.
                               Map the plugs for the zeta stack.
 
 
-*g:yanktools_persistance*       Default: 0
-
-                              Enable/disable yank stack persistance across
-                              vim restarts.
-
 *g:yanktools_auto_stack_size*   Default: 10
 
                               Max size for the automatic stack, before items
@@ -432,23 +426,6 @@ A few ex commands are defined:
   :ClearZetaStack         same as `yuxz`
   :ToggleAutoIndent       same as `yu=`
   :InteractivePaste       same as `yui`
-
-
-
-PERSISTANCE                                            *yanktools-persistance*
-==============================================================================
-
-Add to the vimrc:
->
-  let g:yanktools_persistance = 1
-
-Activate in the current session with:
-
-  :YanksPersistance
-
-But for this command to be effective at vim restart, you must also add
-|g:yanktools_persistance| to your vimrc. It is still useful if you want to
-start saving the stack in your current session.
 
 
 
